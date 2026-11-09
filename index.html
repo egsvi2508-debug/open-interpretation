@@ -6,603 +6,232 @@
 <title>Open Interpretation</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..800;1,6..96,400..700&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..800;1,6..96,400..700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: a reference library for performers. Search first, then one long piece page with a sticky section bar;
-   the score explorer is the centre of gravity (score left, bar notes right). Accent = a teacher's blue pencil. */
+/* Layout: empty search → one result → piece home of window tiles → each window full-page; bar windows reached from markers above every bar. */
 :root{
   --paper:#F3F4F6; --surface:#FFFFFF; --sunk:#E9EBEF;
   --ink:#15171C; --muted:#5A6070; --faint:#8A90A0; --line:#D9DCE3;
-  --pencil:#2347C8; --pencil-ink:#1B3AA8; --pencil-soft:rgba(35,71,200,.10); --pencil-mid:rgba(35,71,200,.22);
-  --heat:#D9A21B; --heat-soft:rgba(217,162,27,.18);
-  --ok:#1C7A4C; --ok-soft:rgba(28,122,76,.10);
-  --ai:#6A5A9E; --ai-soft:rgba(106,90,158,.12);
-  --f-display:"Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
-  --f-body:"Source Sans 3", "Segoe UI", system-ui, sans-serif;
-  --f-mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --pencil:#2347C8; --pencil-ink:#1B3AA8; --pencil-soft:rgba(35,71,200,.10); --pencil-mid:rgba(35,71,200,.24);
+  --heat:#D9A21B; --heat-soft:rgba(217,162,27,.16);
+  --f-display:"Bodoni Moda","Didot","Bodoni 72",Georgia,serif;
+  --f-body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
   --score-filter:none;
-  --r:10px;
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --paper:#101217; --surface:#171A21; --sunk:#1E222B;
-    --ink:#E8EAF0; --muted:#A1A7B6; --faint:#727889; --line:#2A2F3B;
-    --pencil:#8AA4FF; --pencil-ink:#A9BCFF; --pencil-soft:rgba(138,164,255,.12); --pencil-mid:rgba(138,164,255,.26);
-    --heat:#E2B23C; --heat-soft:rgba(226,178,60,.18);
-    --ok:#5CC491; --ok-soft:rgba(92,196,145,.12);
-    --ai:#B3A4E8; --ai-soft:rgba(179,164,232,.14);
-    --score-filter:invert(1) hue-rotate(180deg) brightness(.86) contrast(.95);
-    color-scheme:dark;
-  }
-}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#101217; --surface:#171A21; --sunk:#1E222B; --ink:#E8EAF0; --muted:#A1A7B6; --faint:#727889; --line:#2A2F3B;
+  --pencil:#8AA4FF; --pencil-ink:#A9BCFF; --pencil-soft:rgba(138,164,255,.12); --pencil-mid:rgba(138,164,255,.28);
+  --heat:#E2B23C; --heat-soft:rgba(226,178,60,.16);
+  --score-filter:invert(1) hue-rotate(180deg) brightness(.86) contrast(.95); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --paper:#101217; --surface:#171A21; --sunk:#1E222B;
-  --ink:#E8EAF0; --muted:#A1A7B6; --faint:#727889; --line:#2A2F3B;
-  --pencil:#8AA4FF; --pencil-ink:#A9BCFF; --pencil-soft:rgba(138,164,255,.12); --pencil-mid:rgba(138,164,255,.26);
-  --heat:#E2B23C; --heat-soft:rgba(226,178,60,.18);
-  --ok:#5CC491; --ok-soft:rgba(92,196,145,.12);
-  --ai:#B3A4E8; --ai-soft:rgba(179,164,232,.14);
-  --score-filter:invert(1) hue-rotate(180deg) brightness(.86) contrast(.95);
-  color-scheme:dark;
-}
+  --paper:#101217; --surface:#171A21; --sunk:#1E222B; --ink:#E8EAF0; --muted:#A1A7B6; --faint:#727889; --line:#2A2F3B;
+  --pencil:#8AA4FF; --pencil-ink:#A9BCFF; --pencil-soft:rgba(138,164,255,.12); --pencil-mid:rgba(138,164,255,.28);
+  --heat:#E2B23C; --heat-soft:rgba(226,178,60,.16);
+  --score-filter:invert(1) hue-rotate(180deg) brightness(.86) contrast(.95); color-scheme:dark}
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
-@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
-body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
-a{color:var(--pencil-ink)}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;margin:0}
 button{font:inherit;color:inherit}
+a{color:var(--pencil-ink)}
 :focus-visible{outline:2px solid var(--pencil);outline-offset:2px;border-radius:4px}
-.wrap{max-width:1220px;margin:0 auto;padding-inline:clamp(16px,3vw,32px)}
-.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+h1,h2,h3{margin:0;text-wrap:balance} p{margin:0}
+.wrap{max-width:1100px;margin:0 auto;padding-inline:16px}
 .label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
-h1,h2,h3{text-wrap:balance;margin:0}
-p{margin:0}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 
-/* demo ribbon */
-.ribbon{background:var(--ink);color:var(--paper);font-size:13px;text-align:center;padding:6px 16px}
-.ribbon b{font-weight:600}
+/* home */
+.home{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding-top:22vh;padding-inline:16px}
+.home .mark{font-family:var(--f-display);font-size:clamp(30px,6vw,44px);font-weight:500;letter-spacing:-.01em;margin-bottom:26px}
+.sform{width:100%;max-width:620px;display:flex;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:999px;transition:border-color .15s,box-shadow .15s}
+.sform:focus-within{border-color:var(--pencil);box-shadow:0 0 0 4px var(--pencil-soft)}
+.sform input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:inherit;font-size:18px;padding:16px 8px 16px 24px;outline:none}
+.sform input::-webkit-search-cancel-button{display:none}
+.sform button{border:0;background:none;cursor:pointer;padding:12px 18px;color:var(--muted);display:grid;place-items:center}
+.sform button:hover{color:var(--pencil-ink)}
+.sform svg{width:20px;height:20px}
+.res{width:100%;max-width:620px;margin-top:18px}
+.res-item{display:flex;width:100%;text-align:left;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 20px;cursor:pointer}
+.res-item:hover{border-color:var(--pencil)}
+.res-item b{font-family:var(--f-display);font-size:20px;font-weight:600;display:block}
+.res-item span{color:var(--muted);font-size:14px}
+.res-item i{margin-left:auto;font-style:normal;color:var(--pencil-ink);font-size:20px}
+.res-none{color:var(--muted);padding:12px 4px}
 
-/* ---------- top bar ---------- */
-.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.topbar .wrap{display:flex;align-items:center;gap:20px;padding-block:10px}
-.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);background:none;border:0;cursor:pointer;padding:0;flex:none}
-.brand svg{width:30px;height:30px}
-.brand span{font-family:var(--f-display);font-size:20px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
-.topsearch{flex:1;max-width:520px;position:relative}
-.topnav{margin-left:auto;display:flex;gap:18px;font-size:14px;color:var(--muted)}
-.topnav span{white-space:nowrap}
-@media (max-width:820px){.topnav{display:none}.brand span{display:none}}
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--paper) 90%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .row1{display:flex;align-items:center;gap:12px;padding-block:10px}
+.iconbtn{border:1px solid var(--line);background:var(--surface);border-radius:8px;width:36px;height:36px;display:grid;place-items:center;cursor:pointer;flex:none}
+.iconbtn:hover{border-color:var(--pencil)}
+.iconbtn svg{width:16px;height:16px}
+.ptitle{background:none;border:0;padding:0;cursor:pointer;text-align:left;min-width:0}
+.ptitle b{font-family:var(--f-display);font-weight:600;font-size:18px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ptitle span{font-size:12px;color:var(--muted);display:block}
+.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;padding-bottom:8px}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:none;border:0;background:none;padding:7px 12px;border-radius:8px;font-weight:600;font-size:14px;color:var(--muted);cursor:pointer}
+.tabs button:hover{background:var(--sunk);color:var(--ink)}
+.tabs button.on{background:var(--pencil-soft);color:var(--pencil-ink)}
 
-/* ---------- search input ---------- */
-.search{position:relative}
-.search input{width:100%;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:12px 18px 12px 44px;font:inherit;font-size:16px;outline:none;transition:border-color .15s,box-shadow .15s}
-.search input:focus{border-color:var(--pencil);box-shadow:0 0 0 4px var(--pencil-soft)}
-.search .icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--muted);pointer-events:none}
-.search.big input{font-size:19px;padding:18px 24px 18px 54px;box-shadow:0 1px 0 var(--line),0 10px 30px -18px rgba(20,25,40,.35)}
-.search.big .icon{left:22px;width:20px;height:20px}
-.suggest{position:absolute;left:0;right:0;top:calc(100% + 6px);background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 40px -20px rgba(10,15,30,.4);overflow:hidden;z-index:40}
-.suggest button{display:flex;width:100%;text-align:left;gap:12px;align-items:center;background:none;border:0;padding:10px 16px;cursor:pointer}
-.suggest button:hover,.suggest button.on{background:var(--pencil-soft)}
-.suggest .t{flex:1;min-width:0}
-.suggest .t b{font-weight:600}
-.suggest .t small{display:block;color:var(--muted);font-size:13px}
+.view{padding-block:28px 80px}
+.vh{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+.vh h1{font-family:var(--f-display);font-weight:500;font-size:clamp(30px,5vw,44px);line-height:1.05}
 
-.status{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;border-radius:999px;padding:3px 10px;white-space:nowrap}
-.status::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
-.st-ready{color:var(--ok);background:var(--ok-soft)}
-.st-draft{color:var(--ai);background:var(--ai-soft)}
-.st-collect{color:var(--heat);background:var(--heat-soft)}
-.st-none{color:var(--muted);background:var(--sunk)}
+/* piece home */
+.phead{padding-block:40px 28px}
+.phead .comp{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--pencil-ink);font-weight:600}
+.phead h1{font-family:var(--f-display);font-weight:500;font-size:clamp(36px,7vw,64px);line-height:1.02;letter-spacing:-.02em;margin-top:8px}
+.phead h1 em{font-style:italic;font-weight:400;color:var(--muted);font-size:.55em}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;min-height:130px;display:flex;flex-direction:column;justify-content:space-between;text-align:left;cursor:pointer;transition:border-color .15s,transform .15s}
+.tile:hover{border-color:var(--pencil);transform:translateY(-2px)}
+.tile .num{font-family:var(--f-mono);font-size:12px;color:var(--faint)}
+.tile b{font-family:var(--f-display);font-size:26px;font-weight:600;line-height:1.1}
+.tile.big{grid-column:span 2;background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.tile.big .num{color:var(--paper);opacity:.6}
+@media (max-width:520px){.tiles{grid-template-columns:1fr 1fr}.tile{min-height:104px;padding:16px}.tile b{font-size:21px}}
 
-/* ---------- home ---------- */
-#home{padding-block:clamp(40px,9vh,110px) 60px}
-.home-inner{max-width:760px;margin:0 auto;text-align:left}
-.home-mark{display:flex;align-items:center;gap:14px;margin-bottom:28px}
-.home-mark svg{width:48px;height:48px}
-.home-mark .label{color:var(--pencil-ink)}
-.home h1{font-family:var(--f-display);font-weight:500;font-size:clamp(40px,7vw,76px);line-height:1.02;letter-spacing:-.02em}
-.home h1 em{font-style:italic;color:var(--pencil-ink)}
-.home .lede{font-size:19px;color:var(--muted);max-width:56ch;margin-top:18px}
-.home .search{margin-top:34px}
-.tryrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;align-items:center;font-size:14px;color:var(--muted)}
-.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:14px;cursor:pointer;color:var(--ink)}
-.chip:hover{border-color:var(--pencil);color:var(--pencil-ink)}
-.home-cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-top:64px}
-.home-cols>div{background:var(--surface);padding:20px}
-.home-cols h3{font-size:16px;font-weight:700;margin-bottom:6px}
-.home-cols p{font-size:15px;color:var(--muted)}
-@media (max-width:720px){.home-cols{grid-template-columns:1fr}}
+/* generic cards */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.kv{display:grid;grid-template-columns:180px 1fr;border-top:1px solid var(--line)}
+.kv:first-child{border-top:0}
+.kv>div{padding:14px 18px}
+.kv>div:first-child{color:var(--muted);font-size:14px;font-weight:600}
+@media (max-width:600px){.kv{grid-template-columns:1fr}.kv>div:first-child{padding-bottom:0}}
+.chip{font-family:var(--f-mono);font-size:12px;border:1px solid var(--line);background:var(--paper);border-radius:6px;padding:3px 8px;cursor:pointer;color:var(--pencil-ink);white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.chip:hover{border-color:var(--pencil);background:var(--pencil-soft)}
+.chip i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.sec-title{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:30px 0 10px}
 
-/* ---------- results ---------- */
-#results{padding-block:28px 80px}
-.res-meta{color:var(--muted);font-size:14px;margin-bottom:18px}
-.res-meta b{color:var(--ink)}
-.res-meta button{background:none;border:0;color:var(--pencil-ink);text-decoration:underline;cursor:pointer;padding:0}
-.res-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:28px;align-items:start}
-@media (max-width:900px){.res-grid{grid-template-columns:1fr}}
-.topcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:26px;cursor:pointer;transition:border-color .15s,transform .15s;display:block;width:100%;text-align:left}
-.topcard:hover{border-color:var(--pencil)}
-.topcard .kicker{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
-.topcard h2{font-family:var(--f-display);font-weight:500;font-size:clamp(28px,4vw,40px);line-height:1.08}
-.topcard .sub{color:var(--muted);margin-top:6px;font-size:16px}
-.topcard .facts{display:flex;flex-wrap:wrap;gap:22px;margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
-.fact b{display:block;font-family:var(--f-mono);font-size:20px;font-weight:500}
-.fact span{font-size:13px;color:var(--muted)}
-.topcard .open{margin-top:20px;display:inline-flex;gap:8px;align-items:center;font-weight:600;color:var(--pencil-ink)}
-.secthits{margin-top:24px}
-.secthits h3{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-.hit{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);align-items:flex-start;background:none;border-left:0;border-right:0;border-top:0;width:100%;text-align:left;cursor:pointer}
-.hit:hover .ht b{color:var(--pencil-ink)}
-.hit .type{flex:none;width:88px;font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;padding-top:3px}
-.hit .ht{min-width:0;flex:1}
-.hit .ht b{font-weight:600}
-.hit .ht small{display:block;color:var(--muted);font-size:14px}
-.side-box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px}
-.side-box+.side-box{margin-top:16px}
-.side-box h3{font-size:15px;font-weight:700;margin-bottom:10px}
-.side-box p{font-size:14px;color:var(--muted)}
-.pipeline-mini{list-style:none;margin:0;padding:0;display:grid;gap:10px}
-.pipeline-mini li{display:flex;gap:10px;font-size:14px}
-.pipeline-mini li i{flex:none;width:22px;height:22px;border-radius:50%;background:var(--pencil-soft);color:var(--pencil-ink);font-style:normal;font-family:var(--f-mono);font-size:12px;display:grid;place-items:center}
+/* segmented */
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:none;padding:8px 16px;font-weight:700;cursor:pointer;font-family:var(--f-display);font-size:16px}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button.on{background:var(--ink);color:var(--paper)}
 
-/* ---------- piece page ---------- */
-.hero{padding-block:36px 26px;border-bottom:1px solid var(--line)}
-.crumbs{font-size:14px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
-.crumbs button{background:none;border:0;padding:0;color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
-.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:36px;margin-top:18px;align-items:end}
-@media (max-width:900px){.hero-grid{grid-template-columns:1fr}}
-.composer{font-size:15px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--pencil-ink)}
-.hero h1{font-family:var(--f-display);font-weight:500;font-size:clamp(40px,6.4vw,74px);line-height:1;letter-spacing:-.02em;margin-top:10px}
-.hero h1 .op{font-style:italic;font-weight:400;color:var(--muted);font-size:.5em;letter-spacing:0;white-space:nowrap}
-.hero .subtitle{font-family:var(--f-display);font-style:italic;font-size:22px;color:var(--muted);margin-top:12px}
-.hero .meta{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:20px;font-size:15px;color:var(--muted)}
-.hero .meta b{color:var(--ink);font-weight:600}
-.prov{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
-.prov .row{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:6px 0;border-bottom:1px dashed var(--line)}
-.prov .row:last-child{border-bottom:0}
-.prov .row span{color:var(--muted)}
-.prov .row b{font-family:var(--f-mono);font-weight:500}
-.prov .head{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+/* score */
+.sheet{position:relative;line-height:0;background:#fff;border-radius:10px;overflow:hidden;border:1px solid var(--line);max-width:860px;margin:0 auto}
+.sheet img{width:100%;height:auto;display:block;filter:var(--score-filter)}
+.bz{position:absolute;border:0;padding:0;background:transparent;cursor:pointer;border-radius:3px}
+.bz:hover,.bz.flash{background:var(--pencil-soft);box-shadow:inset 0 0 0 1.5px var(--pencil)}
+.mk{position:absolute;transform:translate(-2px,-55%);border:1px solid var(--pencil);background:var(--surface);color:var(--pencil-ink);border-radius:6px;padding:1px 5px 2px;font-family:var(--f-mono);font-size:11px;line-height:1.3;cursor:pointer;display:flex;align-items:center;gap:3px;z-index:2;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.mk:hover{background:var(--pencil);color:var(--surface)}
+.mk.has{background:var(--pencil);color:var(--surface)}
+.mk i{width:6px;height:6px;border-radius:50%;display:inline-block;border:1px solid var(--surface)}
+@media (max-width:600px){.mk{font-size:9px;padding:0 3px}.mk i{width:4px;height:4px}}
 
-.secnav{position:sticky;top:calc(env(safe-area-inset-top,0px) + 57px);z-index:20;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.secnav .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-block:6px}
-.secnav .wrap::-webkit-scrollbar{display:none}
-.secnav a{flex:none;text-decoration:none;color:var(--muted);font-size:14px;font-weight:600;padding:8px 12px;border-radius:8px}
-.secnav a:hover{color:var(--ink);background:var(--sunk)}
-.secnav a.on{color:var(--pencil-ink);background:var(--pencil-soft)}
+/* bar window */
+.bnav{display:flex;gap:8px;align-items:center}
+.bhead h1{font-family:var(--f-display);font-weight:500;font-size:clamp(34px,6vw,52px);line-height:1}
+.bhead .sub{color:var(--muted);margin-top:6px}
+.snip{position:relative;overflow:hidden;background:#fff;border-radius:10px;border:1px solid var(--line);margin-top:18px}
+.snip img{position:absolute;display:block;max-width:none;filter:var(--score-filter)}
+.snip .hl{position:absolute;top:0;bottom:0;background:var(--pencil-soft);box-shadow:inset 0 0 0 2px var(--pencil);border-radius:3px}
+.bgrid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px;margin-top:18px;align-items:start}
+@media (max-width:860px){.bgrid{grid-template-columns:1fr}}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.box+.box{margin-top:16px}
+.box h3{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px;display:flex;justify-content:space-between;gap:8px}
+.box h4{font-family:var(--f-display);font-size:22px;font-weight:600;margin-bottom:8px}
+.box .src{font-size:12px;color:var(--faint);font-family:var(--f-mono);margin-top:10px}
+.ip{display:grid;grid-template-columns:110px 1fr;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.ip:first-of-type{border-top:0;padding-top:0}
+.ip b{font-size:14px}
+.ip small{display:block;font-size:11px;color:var(--muted);font-family:var(--f-mono)}
+@media (max-width:480px){.ip{grid-template-columns:1fr;gap:2px}}
+.mrow{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;padding:8px 0;border-top:1px solid var(--line)}
+.mrow:first-of-type{border-top:0;padding-top:0}
+.mrow .mn{font-weight:700;font-size:14px;display:flex;gap:6px;align-items:center;white-space:nowrap}
+.mrow .mn i{width:10px;height:10px;border-radius:50%}
+.none{color:var(--faint);font-size:14px}
 
-section.block{padding-block:56px 8px;scroll-margin-top:120px}
-.block-head{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;margin-bottom:24px}
-.block-head h2{font-family:var(--f-display);font-weight:500;font-size:clamp(30px,4vw,42px);line-height:1.05;letter-spacing:-.01em}
-.block-head p{color:var(--muted);max-width:60ch;margin-top:8px}
-.badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:6px;white-space:nowrap}
-.b-ai{background:var(--ai-soft);color:var(--ai)}
-.b-ok{background:var(--ok-soft);color:var(--ok)}
-.b-src{background:var(--sunk);color:var(--muted);font-family:var(--f-mono);font-weight:500}
-.b-pencil{background:var(--pencil-soft);color:var(--pencil-ink)}
-
-/* context */
-.ctx-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:36px}
-@media (max-width:900px){.ctx-grid{grid-template-columns:1fr}}
-.prose p{font-size:17px;line-height:1.65;max-width:64ch}
-.prose p+p{margin-top:14px}
-.quote{margin:22px 0 0;padding:16px 20px;border-left:3px solid var(--pencil);background:var(--surface);border-radius:0 10px 10px 0;font-family:var(--f-display);font-style:italic;font-size:19px;line-height:1.45}
-.quote cite{display:block;font-family:var(--f-body);font-style:normal;font-size:13px;color:var(--muted);margin-top:8px}
-.timeline{list-style:none;margin:0;padding:0;position:relative}
-.timeline::before{content:"";position:absolute;left:58px;top:8px;bottom:8px;width:1px;background:var(--line)}
-.timeline li{display:grid;grid-template-columns:50px 1fr;gap:24px;padding:8px 0;position:relative}
-.timeline li::after{content:"";position:absolute;left:54px;top:15px;width:9px;height:9px;border-radius:50%;background:var(--surface);border:2px solid var(--faint)}
-.timeline li.key::after{border-color:var(--pencil);background:var(--pencil)}
-.timeline .y{font-family:var(--f-mono);font-size:14px;color:var(--muted);text-align:right;padding-top:1px}
-.timeline .e{font-size:15px}
-.timeline .e small{display:block;color:var(--muted);font-size:13px}
-.lines{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-top:40px}
-@media (max-width:1000px){.lines{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:520px){.lines{grid-template-columns:1fr}}
-.line-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
-.line-card h4{margin:0;font-family:var(--f-display);font-size:20px;font-weight:600}
-.line-card p{font-size:14px;color:var(--muted);margin-top:6px}
-.line-card .where{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
-.barlink{font-family:var(--f-mono);font-size:12px;border:1px solid var(--line);background:var(--paper);border-radius:6px;padding:2px 7px;cursor:pointer;color:var(--pencil-ink)}
-.barlink:hover{border-color:var(--pencil);background:var(--pencil-soft)}
-
-/* structure */
-.form-wrap{display:grid;gap:22px}
-.form-mv{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 18px 14px}
-.form-mv header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px}
-.form-mv header h3{font-family:var(--f-display);font-size:22px;font-weight:600}
-.form-mv header span{color:var(--muted);font-size:14px}
-.bands{display:flex;gap:2px;height:54px}
-.band{min-width:0;border-radius:4px;padding:6px 7px;font-size:12px;line-height:1.2;overflow:hidden;cursor:pointer;border:0;text-align:left;color:var(--ink);background:var(--sunk);transition:filter .15s}
-.band:hover{filter:brightness(.95);outline:1px solid var(--pencil)}
-.band b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.band span{font-family:var(--f-mono);color:var(--muted);font-size:11px;white-space:nowrap}
-.band.g1{background:var(--pencil-soft)}
-.band.g2{background:var(--heat-soft)}
-.band.g3{background:var(--ai-soft)}
-.groups{display:flex;gap:2px;margin-top:6px}
-.groups div{font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;border-top:2px solid var(--line);padding-top:4px;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.form-key{font-size:13px;color:var(--muted);margin-top:10px}
-.bands-scroll{overflow-x:auto}
-.bands-scroll>div{min-width:640px}
-
-/* interpretations */
-.people{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:34px}
-@media (max-width:860px){.people{grid-template-columns:1fr}}
-.person{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:grid;grid-template-columns:44px 1fr;gap:14px}
-.av{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-display);font-weight:600;font-size:17px;background:var(--pencil-soft);color:var(--pencil-ink)}
-.person h4{margin:0;font-size:17px}
-.person .school{font-size:13px;color:var(--pencil-ink);font-weight:600}
-.person p{font-size:14px;color:var(--muted);margin-top:6px}
-.qs{display:grid;gap:16px}
-.q{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
-.q-head{padding:18px 20px;display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;border-bottom:1px solid var(--line)}
-.q-head h3{font-size:19px;font-weight:700}
-.q-head p{color:var(--muted);font-size:15px;margin-top:4px;max-width:70ch}
-.q-pos{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-.pos{padding:16px 20px;border-right:1px solid var(--line);border-top:1px solid var(--line);margin-top:-1px;margin-right:-1px;display:flex;flex-direction:column;gap:8px;min-width:0}
-.pos .who{font-weight:700;font-size:15px}
-.pos .how{font-size:12px;color:var(--muted);font-family:var(--f-mono)}
-.pos p{font-size:15px;flex:1}
-.agree{display:flex;align-items:center;gap:10px;margin-top:4px}
-.agree button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:4px 12px;font-size:13px;cursor:pointer;font-weight:600;white-space:nowrap}
-.agree button:hover{border-color:var(--pencil)}
-.agree button.on{background:var(--pencil);border-color:var(--pencil);color:var(--surface)}
-.agree .meter{flex:1;height:6px;border-radius:3px;background:var(--sunk);overflow:hidden}
-.agree .meter i{display:block;height:100%;background:var(--pencil);border-radius:3px;transition:width .3s}
-.agree .pct{font-family:var(--f-mono);font-size:12px;color:var(--muted);width:34px;text-align:right}
-.q-foot{padding:10px 20px;font-size:13px;color:var(--muted);background:var(--paper);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-
-/* score explorer */
-.mvtabs{display:flex;gap:6px;flex-wrap:wrap}
-.mvtabs button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600;font-size:14px}
-.mvtabs button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-.heat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px 10px;margin-bottom:16px}
-.heat-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-bottom:8px}
-.heat-legend{display:flex;gap:14px;flex-wrap:wrap}
-.heat-legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
-.heat-bars{display:flex;align-items:flex-end;gap:1px;height:56px;position:relative;cursor:pointer}
-.heat-bars .hb{flex:1;min-width:0;background:var(--line);height:2px;border-radius:1px 1px 0 0;transition:background .15s}
-.heat-bars .hb.a{background:var(--heat)}
-.heat-bars .hb.p{box-shadow:inset 0 -2px 0 var(--pencil)}
-.heat-bars .hb.sel{background:var(--pencil)}
-.heat-bars .hb:hover{background:var(--pencil)}
-.heat-page{position:absolute;bottom:-6px;height:3px;background:var(--pencil);border-radius:2px}
-.heat-axis{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:11px;color:var(--faint);margin-top:10px}
-.heat-tip{position:absolute;bottom:64px;transform:translateX(-50%);background:var(--ink);color:var(--paper);font-size:12px;padding:4px 8px;border-radius:6px;white-space:nowrap;pointer-events:none;font-family:var(--f-mono)}
-
-.explorer{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:20px;align-items:start}
-@media (max-width:960px){.explorer{grid-template-columns:1fr}}
-.score-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;position:sticky;top:130px}
-@media (max-width:960px){.score-card{position:static}}
-.score-img{position:relative;line-height:0;border-radius:6px;overflow:hidden;background:#fff}
-.score-img img{width:100%;height:auto;display:block;filter:var(--score-filter)}
-.barbox{position:absolute;border:0;padding:0;background:transparent;cursor:pointer;border-radius:3px;transition:background .12s}
-.barbox:hover{background:var(--pencil-soft);box-shadow:inset 0 0 0 1.5px var(--pencil)}
-.barbox.ann{background:linear-gradient(to top,var(--heat-soft),transparent 60%);box-shadow:inset 0 -3px 0 var(--heat)}
-.barbox.ann:hover{background:var(--pencil-soft)}
-.barbox.sel{background:var(--pencil-mid)!important;box-shadow:inset 0 0 0 2px var(--pencil)!important}
-.barbox .n{position:absolute;left:3px;top:3px;font-family:var(--f-mono);font-size:10px;line-height:1;padding:2px 4px;border-radius:3px;background:var(--ink);color:var(--paper);opacity:0;transition:opacity .12s}
-.barbox.ann .n,.barbox.sel .n,.barbox:hover .n{opacity:.85}
-.score-cap{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted);padding:10px 4px 2px}
-
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;min-width:0}
-.panel-head{padding:20px 22px 16px;border-bottom:1px solid var(--line)}
-.panel-head .loc{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
-.panel-head h3{font-family:var(--f-display);font-size:26px;font-weight:600;line-height:1.15}
-.panel-head .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-.tag{font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 9px}
-.pblock{padding:18px 22px;border-bottom:1px solid var(--line)}
-.pblock:last-child{border-bottom:0}
-.pblock h4{margin:0 0 10px;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
-.pblock h4 .label{font-size:12px}
-.pblock>p{font-size:16px;line-height:1.6}
-.prov-line{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
-.interp{display:grid;gap:10px}
-.ip{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start}
-.ip .av{width:34px;height:34px;font-size:13px}
-.ip .av.comp{background:var(--heat-soft);color:var(--ink)}
-.ip .av.orch{background:var(--ai-soft);color:var(--ai)}
-.ip .av.syn{background:var(--ok-soft);color:var(--ok)}
-.ip b{font-size:15px}
-.ip small{color:var(--muted);font-family:var(--f-mono);font-size:11px;margin-left:6px}
-.ip p{font-size:15px;margin-top:2px}
-.links{display:flex;flex-wrap:wrap;gap:8px}
-.linkc{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:14px;background:var(--paper);cursor:pointer;text-decoration:none;color:var(--ink)}
-.linkc:hover{border-color:var(--pencil);color:var(--pencil-ink)}
-.linkc .mono{font-size:11px;color:var(--muted)}
-.cmt{display:grid;grid-template-columns:44px 1fr;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
-.cmt:first-of-type{border-top:0;padding-top:4px}
-.vote{display:flex;flex-direction:column;align-items:center;gap:0;border:1px solid var(--line);border-radius:8px;background:var(--paper);cursor:pointer;padding:5px 0 4px;height:fit-content}
-.vote svg{width:12px;height:12px}
-.vote span{font-family:var(--f-mono);font-size:13px;font-weight:500}
+/* comments */
+.cmt{display:grid;grid-template-columns:42px 1fr;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.cmt:first-of-type{border-top:0;padding-top:2px}
+.vote{display:flex;flex-direction:column;align-items:center;border:1px solid var(--line);border-radius:8px;background:var(--paper);cursor:pointer;padding:5px 0 4px;height:fit-content}
+.vote svg{width:11px;height:11px}
+.vote span{font-family:var(--f-mono);font-size:13px}
 .vote:hover{border-color:var(--pencil)}
 .vote.on{background:var(--pencil);border-color:var(--pencil);color:var(--surface)}
-.cmt .by{font-size:13px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.cmt .by b{color:var(--ink);font-weight:600}
+.by{font-size:13px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.by b{color:var(--ink)}
 .role{font-size:11px;font-weight:600;padding:1px 7px;border-radius:999px;background:var(--sunk);color:var(--muted)}
-.role.teacher{background:var(--pencil-soft);color:var(--pencil-ink)}
-.role.performer{background:var(--heat-soft);color:var(--ink)}
-.role.musicologist{background:var(--ai-soft);color:var(--ai)}
-.role.imported{background:transparent;border:1px dashed var(--faint)}
-.role.you{background:var(--ok-soft);color:var(--ok)}
 .cmt p{font-size:15px;margin-top:3px}
 .replies{margin-top:8px;padding-left:12px;border-left:2px solid var(--line)}
-.replies .cmt{grid-template-columns:38px 1fr;padding:8px 0}
-.compose{display:grid;gap:8px;margin-top:12px}
-.compose textarea{width:100%;min-height:74px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;font-size:15px;background:var(--paper);color:var(--ink)}
-.compose textarea:focus{outline:none;border-color:var(--pencil);box-shadow:0 0 0 3px var(--pencil-soft)}
-.compose .row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.compose .row small{color:var(--muted);font-size:12px}
-.btn{border:0;border-radius:8px;background:var(--pencil);color:var(--surface);font-weight:600;padding:8px 14px;cursor:pointer;font-size:14px}
+.compose{display:flex;gap:8px;margin-top:12px}
+.compose textarea{flex:1;min-width:0;min-height:44px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;font-size:15px;background:var(--paper);color:var(--ink)}
+.compose textarea:focus{outline:none;border-color:var(--pencil)}
+.btn{border:0;border-radius:10px;background:var(--pencil);color:var(--surface);font-weight:700;padding:0 16px;cursor:pointer;font-size:14px}
 .btn:hover{background:var(--pencil-ink)}
-.btn.ghost{background:transparent;color:var(--pencil-ink);border:1px solid var(--line)}
-.empty{padding:28px 22px}
-.empty h3{font-family:var(--f-display);font-size:24px;font-weight:600}
-.empty p{color:var(--muted);margin-top:6px}
-.offpage{margin-top:10px;font-size:13px;color:var(--muted);background:var(--paper);border:1px dashed var(--line);border-radius:8px;padding:8px 10px}
+.btn.line{background:var(--surface);color:var(--pencil-ink);border:1px solid var(--line);padding:8px 14px}
+
+/* structure */
+.fm{padding:18px}
+.fm+.fm{margin-top:14px}
+.fm h3{font-family:var(--f-display);font-size:22px;font-weight:600;margin-bottom:12px}
+.bands-x{overflow-x:auto}
+.bands{display:flex;gap:2px;height:58px;min-width:620px}
+.band{min-width:0;border:0;border-radius:5px;padding:6px 7px;text-align:left;font-size:12px;line-height:1.25;overflow:hidden;cursor:pointer;background:var(--sunk)}
+.band:hover{outline:2px solid var(--pencil)}
+.band b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.band span{font-family:var(--f-mono);font-size:11px;color:var(--muted);white-space:nowrap}
+.band.g1{background:var(--pencil-soft)}.band.g2{background:var(--heat-soft)}.band.g3{background:color-mix(in srgb,var(--muted) 16%,transparent)}
+.band small{display:block;font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* interpretations */
+.q{margin-bottom:14px;overflow:hidden}
+.q-h{padding:16px 20px;display:flex;justify-content:space-between;gap:12px;align-items:flex-start;border-bottom:1px solid var(--line)}
+.q-h b{font-size:18px}
+.q-p{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.pos{padding:14px 20px;border-top:1px solid var(--line);border-right:1px solid var(--line);margin:-1px -1px 0 0;display:flex;flex-direction:column;gap:6px}
+.pos .who{font-weight:700}
+.pos .how{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.pos p{font-size:15px;flex:1}
+.agree{display:flex;align-items:center;gap:10px}
+.agree button{border:1px solid var(--line);background:var(--paper);border-radius:999px;width:30px;height:30px;cursor:pointer;display:grid;place-items:center;flex:none}
+.agree button.on{background:var(--pencil);border-color:var(--pencil);color:var(--surface)}
+.agree button svg{width:11px;height:11px}
+.meter{flex:1;height:6px;background:var(--sunk);border-radius:3px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--pencil)}
+.pct{font-family:var(--f-mono);font-size:12px;color:var(--muted);width:36px;text-align:right}
 
 /* connections */
-.conn-grid{display:grid;gap:22px}
-.arcs-card,.net-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
-.arcs-card h3,.net-card h3{font-size:18px;font-weight:700}
-.arcs-card>p,.net-card>p{font-size:14px;color:var(--muted);margin-top:4px}
-.svgwrap{overflow-x:auto;margin-top:12px}
-.svgwrap svg{display:block;min-width:720px;width:100%;height:auto}
-.arc{fill:none;stroke-width:2;cursor:pointer;opacity:.75;transition:opacity .15s,stroke-width .15s}
-.arc:hover,.arc.on{opacity:1;stroke-width:3.5}
-.arcs-dim .arc:not(.on){opacity:.18}
-.arc-cap{margin-top:12px;display:flex;gap:14px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;background:var(--paper);border-radius:10px;padding:12px 14px;min-height:64px}
-.arc-cap p{font-size:15px;max-width:72ch}
-.arc-cap b{display:block;font-size:15px}
-.thread-legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:10px;font-size:13px;color:var(--muted)}
-.thread-legend button{background:none;border:0;padding:0;cursor:pointer;color:var(--muted);display:inline-flex;gap:6px;align-items:center;font-size:13px}
-.thread-legend button:hover{color:var(--ink)}
-.thread-legend i{width:16px;height:3px;border-radius:2px;display:inline-block}
+.arcs{overflow-x:auto;padding:14px}
+.arcs svg{display:block;min-width:700px;width:100%;height:auto}
+.arc{fill:none;stroke-width:2;opacity:.75;cursor:pointer}
+.arc:hover{opacity:1;stroke-width:3.5}
+.dim .arc{opacity:.12}.dim .arc.on{opacity:1;stroke-width:3}
 .node{cursor:pointer}
-.node rect{fill:var(--surface);stroke:var(--line);stroke-width:1}
-.node:hover rect,.node.on rect{stroke:var(--pencil);stroke-width:2}
-.node text{fill:var(--ink);font-family:var(--f-body);font-size:13px}
-.node text.s{fill:var(--muted);font-size:11px;font-family:var(--f-mono)}
-.edge{stroke:var(--line);stroke-width:1.5;fill:none}
-.edge.on{stroke:var(--pencil);stroke-width:2.5}
-.center-node rect{fill:var(--ink)}
-.center-node text{fill:var(--paper);font-family:var(--f-display);font-size:16px;font-weight:600}
-.center-node text.s{fill:var(--paper);opacity:.7}
-
-/* voices */
-.filters{display:flex;gap:6px;flex-wrap:wrap}
-.filters button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:14px;cursor:pointer}
-.filters button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-.voices{columns:2 340px;column-gap:16px}
-.vcard{break-inside:avoid;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px;display:grid;grid-template-columns:44px 1fr;gap:12px}
-.vcard p{font-size:16px;line-height:1.55}
-.vcard .by{font-size:13px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
-.vcard .by b{color:var(--ink)}
-.vcard .where{margin-top:10px}
+.legend{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 14px}
+.legend button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:4px 10px;font-size:13px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.legend button.on{border-color:var(--ink)}
+.legend i{width:9px;height:9px;border-radius:50%}
+.mlist .mrow{padding:12px 18px}
+.mlist .mrow:first-of-type{padding-top:12px}
+.work{display:grid;grid-template-columns:1fr auto;gap:10px;padding:12px 18px;border-top:1px solid var(--line)}
+.work:first-child{border-top:0}
+.work b{display:block}
+.work span{font-size:14px;color:var(--muted)}
 
 /* sources */
-.pipeline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-bottom:28px;overflow:hidden}
-@media (max-width:860px){.pipeline{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:480px){.pipeline{grid-template-columns:1fr}}
-.pipeline>div{padding:18px;border-right:1px solid var(--line);position:relative}
-.pipeline>div:last-child{border-right:0}
-.pipeline .step{font-family:var(--f-mono);font-size:12px;color:var(--pencil-ink)}
-.pipeline b{display:block;font-size:24px;font-family:var(--f-mono);font-weight:500;margin-top:6px}
-.pipeline h4{margin:2px 0 4px;font-size:15px}
-.pipeline p{font-size:13px;color:var(--muted)}
-.srcs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
-@media (max-width:860px){.srcs{grid-template-columns:1fr}}
-.srcgroup h3{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:flex;justify-content:space-between}
-.src{padding:12px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start}
-.src .t{font-size:15px}
-.src .t i{font-style:italic}
-.src .t small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
-.src .r{display:flex;flex-direction:column;gap:4px;align-items:flex-end}
-.thesis-call{background:var(--ink);color:var(--paper);border-radius:14px;padding:22px 24px;display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;margin-bottom:28px}
-.thesis-call h3{font-family:var(--f-display);font-size:24px;font-weight:500}
-.thesis-call p{opacity:.8;font-size:15px;margin-top:4px;max-width:70ch}
-.thesis-call .btn{background:var(--paper);color:var(--ink)}
-@media (max-width:640px){.thesis-call{grid-template-columns:1fr}}
+.srcg{padding:6px 0}
+.srcg .s{padding:12px 18px;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:12px}
+.srcg .s:first-child{border-top:0}
+.srcg .s small{display:block;color:var(--muted);font-size:13px}
 
-footer.foot{margin-top:70px;border-top:1px solid var(--line);padding-block:26px 50px;color:var(--muted);font-size:14px}
-footer.foot .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
-
-.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:10px;font-size:14px;z-index:60;box-shadow:0 10px 30px -10px rgba(0,0,0,.4)}
-.flash{animation:flash 1.2s ease}
-@keyframes flash{0%{box-shadow:0 0 0 0 var(--pencil-mid)}30%{box-shadow:0 0 0 8px var(--pencil-soft)}100%{box-shadow:0 0 0 0 transparent}}
+/* discussion */
+.dl .cmt{padding:14px 18px}
+.dl .cmt:first-of-type{padding-top:14px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 14px;border-radius:10px;font-size:14px;z-index:60}
 </style>
 </head>
 <body>
 
 
-<div class="ribbon"><b>Prototype.</b> Analysis is summarised from real sources (credited). All user names, comments and vote counts are invented examples.</div>
-
-<header class="topbar" id="topbar" hidden>
-  <div class="wrap">
-    <button class="brand" id="brandBtn" aria-label="Open Interpretation home">
-      <svg viewBox="0 0 32 32" aria-hidden="true"><g stroke="currentColor" stroke-width="1.4"><line x1="2" y1="10" x2="30" y2="10"/><line x1="2" y1="16" x2="30" y2="16"/><line x1="2" y1="22" x2="30" y2="22"/></g><ellipse cx="16" cy="16" rx="7.2" ry="5.2" transform="rotate(-20 16 16)" fill="var(--paper)" stroke="var(--pencil)" stroke-width="2.6"/></svg>
-      <span>Open Interpretation</span>
-    </button>
-    <div class="topsearch search">
-      <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8.5" cy="8.5" r="6"/><path d="M13 13l5 5"/></svg>
-      <input id="q2" type="search" autocomplete="off" placeholder="Search a piece, composer or bar" aria-label="Search">
-    </div>
-    <nav class="topnav"><span>20 pilot pieces</span><span>Contribute</span><span>About</span></nav>
-  </div>
-</header>
-
-<main>
-<!-- ================= HOME ================= -->
-<section id="home" class="home wrap">
-  <div class="home-inner">
-    <div class="home-mark">
-      <svg viewBox="0 0 32 32" aria-hidden="true"><g stroke="currentColor" stroke-width="1.2"><line x1="2" y1="10" x2="30" y2="10"/><line x1="2" y1="16" x2="30" y2="16"/><line x1="2" y1="22" x2="30" y2="22"/></g><ellipse cx="16" cy="16" rx="7.2" ry="5.2" transform="rotate(-20 16 16)" fill="var(--paper)" stroke="var(--pencil)" stroke-width="2.6"/></svg>
-      <div class="label">Open Interpretation · pilot with mdw piano students</div>
-    </div>
-    <h1>Every way to play a piece, <em>in one open page.</em></h1>
-    <p class="lede">Context, analysis, editions, recordings, masterclass notes and student theses, pinned to the bars they talk about. Built by AI agents that find and credit sources, checked and extended by musicians.</p>
-    <div class="search big" id="homeSearch">
-      <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8.5" cy="8.5" r="6"/><path d="M13 13l5 5"/></svg>
-      <input id="q1" type="search" autocomplete="off" placeholder="Try “prokofiev sonata 4”" aria-label="Search a piece">
-    </div>
-    <div class="tryrow">Try:
-      <button class="chip" data-try="prokoviev soanta 4">prokoviev soanta 4</button>
-      <button class="chip" data-try="Prokofiev op. 29">Prokofiev op. 29</button>
-      <button class="chip" data-try="Rachmaninoff Paganini Rhapsody">Rachmaninoff Paganini Rhapsody</button>
-    </div>
-    <div class="home-cols">
-      <div><h3>Bar by bar</h3><p>Every insight is attached to the measures it is about, on the score itself.</p></div>
-      <div><h3>Many schools, side by side</h3><p>Sándor next to Berman next to the composer’s own recording. You decide.</p></div>
-      <div><h3>Nothing gets lost</h3><p>Theses, masterclass notes and the best comment-section wisdom get a permanent, credited home.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- ================= RESULTS ================= -->
-<section id="results" class="wrap" hidden></section>
-
-<!-- ================= PIECE ================= -->
-<div id="piece" hidden>
-  <div class="hero">
-    <div class="wrap">
-      <div class="crumbs"><button data-go="home">Library</button><span>/</span><span>Prokofiev</span><span>/</span><span>Piano sonatas</span></div>
-      <div class="hero-grid">
-        <div>
-          <div class="composer">Sergei Prokofiev · 1891–1953</div>
-          <h1>Piano Sonata No. 4 in C minor <span class="op">Op. 29</span></h1>
-          <div class="subtitle">“D’après des vieux cahiers” · From old notebooks</div>
-          <div class="meta">
-            <span><b>1917</b> (material from 1908)</span>
-            <span><b>3</b> movements</span>
-            <span>Premiere <b>17 Apr 1918</b>, Petrograd, the composer</span>
-            <span>Dedicated to the memory of <b>Maximilian Schmidthof</b></span>
-          </div>
-        </div>
-        <aside class="prov" aria-label="Page status">
-          <div class="head"><span class="status st-ready">Page reviewed</span><span class="badge b-ai">AI-drafted</span><span class="badge b-ok">✓ musician-checked</span></div>
-          <div class="row"><span>Sources cited</span><b id="statSources">–</b></div>
-          <div class="row"><span>Annotated passages</span><b id="statAnn">–</b></div>
-          <div class="row"><span>Community notes</span><b id="statCmt">–</b></div>
-          <div class="row"><span>Reviewed by</span><b>6 musicians</b></div>
-          <div class="row"><span>Last edit</span><b>2 days ago</b></div>
-        </aside>
-      </div>
-    </div>
-  </div>
-
-  <nav class="secnav" aria-label="Sections"><div class="wrap" id="secnav">
-    <a href="#context">Context</a><a href="#structure">Structure</a><a href="#interpretations">Interpretations</a><a href="#score">Score, bar by bar</a><a href="#connections">Connections</a><a href="#voices">Voices</a><a href="#sources">Sources</a>
-  </div></nav>
-
-  <div class="wrap">
-    <!-- CONTEXT -->
-    <section class="block" id="context">
-      <div class="block-head"><div><div class="label">01 · Context</div><h2>Where this sonata comes from</h2></div>
-        <span class="badge b-ai">AI summary · 6 sources · ✓ checked by 2 musicians</span></div>
-      <div class="ctx-grid">
-        <div class="prose">
-          <p>The subtitle is literal. Prokofiev built the Fourth Sonata out of student work: a piano sonata from his St. Petersburg Conservatory years (1908) and an abandoned Symphony in E minor. He rewrote it in 1917, premiered it himself in Petrograd on 17 April 1918, and A. Gutheil published it the same year. The Third Sonata, Op. 28, carries the same subtitle.</p>
-          <p>The slow movement has the most interesting story. In his diary of April 1917, Prokofiev describes looking for a new Andante, failing to find a lost manuscript, and then remembering the Andante of the E-minor Symphony, which he judged would work just as well on the piano. In 1934 he turned it back into an orchestral piece, the <i>Andante, Op. 29 bis</i>. That orchestral version later becomes one of the best clues for how to play the piano version.</p>
-          <p>The sonata is dedicated to Maximilian Schmidthof, Prokofiev’s close friend from the Conservatory, who took his own life in 1913. Compared with the brilliant Third and Seventh, the Fourth is inward and dark in its first two movements. Harlow Robinson hears something almost Schumannesque in it. It is played far less often than Nos. 3 and 7, yet some consider it the finest of the nine.</p>
-          <blockquote class="quote">Frank Merrick in 1948 already counted Prokofiev’s sonatas among “true sonatas” in the line of Haydn, Mozart and Beethoven.<cite>Merrick, Proceedings of the Royal Musical Association 75 (1948), via Cho 2023, p. 3</cite></blockquote>
-        </div>
-        <div>
-          <div class="label" style="margin-bottom:12px">Timeline</div>
-          <ol class="timeline">
-            <li class="key"><span class="y">1908</span><span class="e">Conservatory sonata and Symphony in E minor<small>The raw material of Op. 29</small></span></li>
-            <li><span class="y">1913</span><span class="e">Death of Maximilian Schmidthof<small>Dedicatee; Piano Concerto No. 2 is also dedicated to him</small></span></li>
-            <li class="key"><span class="y">1917</span><span class="e">Revision into Sonata No. 4<small>Diary, April 1917: the Andante rescued from the symphony</small></span></li>
-            <li class="key"><span class="y">1918</span><span class="e">Premiere by the composer, Petrograd<small>Published by A. Gutheil</small></span></li>
-            <li><span class="y">1934</span><span class="e">Andante for orchestra, Op. 29 bis</span></li>
-            <li class="key"><span class="y">1935</span><span class="e">Prokofiev records the Andante<small>Naxos Historical 8.110670</small></span></li>
-            <li><span class="y">1967</span><span class="e">György Sándor’s edition (MCA)</span></li>
-            <li><span class="y">1998</span><span class="e">Boris Berman’s complete recording (Chandos)</span></li>
-            <li><span class="y">2008</span><span class="e">Berman, <i>Prokofiev’s Piano Sonatas</i> (Yale)</span></li>
-            <li class="key"><span class="y">2023</span><span class="e">Soyoung Cho, DMA dissertation, UNT<small>Performance guide comparing Sándor and Berman</small></span></li>
-          </ol>
-        </div>
-      </div>
-      <div class="lines" id="lines"></div>
-    </section>
-
-    <!-- STRUCTURE -->
-    <section class="block" id="structure">
-      <div class="block-head"><div><div class="label">02 · Structure</div><h2>The form at a glance</h2><p>Bar numbers and keys from Cho (2023), Tables 4.1–4.4. Click a section to open its notes on the score.</p></div></div>
-      <div class="form-wrap" id="forms"></div>
-    </section>
-
-    <!-- INTERPRETATIONS -->
-    <section class="block" id="interpretations">
-      <div class="block-head"><div><div class="label">03 · Interpretations</div><h2>Open questions, different answers</h2><p>Where the score leaves a decision to the performer, this is what the main interpreters chose. Mark the answer that convinces you.</p></div></div>
-      <div class="people" id="people"></div>
-      <div class="qs" id="questions"></div>
-    </section>
-
-    <!-- SCORE -->
-    <section class="block" id="score">
-      <div class="block-head"><div><div class="label">04 · Score, bar by bar</div><h2>Click any bar</h2><p>Yellow bars have notes. The strip shows where the discussion concentrates across the whole movement; bars beyond the first page open their notes without the score.</p></div>
-        <div class="mvtabs" id="mvtabs"></div></div>
-      <div class="heat" id="heat"></div>
-      <div class="explorer">
-        <div class="score-card">
-          <div class="score-img" id="scoreImg"></div>
-          <div class="score-cap"><span id="scoreCap"></span><a href="https://imslp.org/wiki/Piano_Sonata_No.4,_Op.29_(Prokofiev,_Sergey)" target="_blank" rel="noopener">Full score on IMSLP ↗</a></div>
-        </div>
-        <div class="panel" id="panel" aria-live="polite"></div>
-      </div>
-    </section>
-
-    <!-- CONNECTIONS -->
-    <section class="block" id="connections">
-      <div class="block-head"><div><div class="label">05 · Connections</div><h2>A map, not a list</h2><p>Ideas that travel inside the sonata, and the works it talks to.</p></div></div>
-      <div class="conn-grid">
-        <div class="arcs-card">
-          <h3>Threads inside the sonata</h3>
-          <p>Each arc joins two places where the same idea appears. Click an arc to read why.</p>
-          <div class="svgwrap" id="arcs"></div>
-          <div class="thread-legend" id="threadLegend"></div>
-          <div class="arc-cap" id="arcCap"><p>Hover or click an arc.</p></div>
-        </div>
-        <div class="net-card">
-          <h3>Related works and people</h3>
-          <p>Click a node.</p>
-          <div class="svgwrap" id="net"></div>
-          <div class="arc-cap" id="netCap"><p>Sonata No. 4 sits between Prokofiev’s student years and his own later music, and leans on older models.</p></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- VOICES -->
-    <section class="block" id="voices">
-      <div class="block-head"><div><div class="label">06 · Voices</div><h2>What musicians say about it</h2><p>Teachers, students, performers and imported comments, ranked by votes. The best ideas rise.</p></div>
-        <div class="filters" id="vfilters"></div></div>
-      <div class="voices" id="voiceList"></div>
-    </section>
-
-    <!-- SOURCES -->
-    <section class="block" id="sources">
-      <div class="block-head"><div><div class="label">07 · Sources</div><h2>Everything this page stands on</h2><p>Every summary links back to a source. Nothing is copied; everything is credited.</p></div></div>
-      <div class="pipeline">
-        <div><div class="step">Step 1 · AI agents</div><b>214</b><h4>documents scanned</h4><p>Libraries, theses, edition prefaces, interviews, video comments.</p></div>
-        <div><div class="step">Step 2 · Summaries</div><b id="pSrc">31</b><h4>sources kept and cited</h4><p>Each claim is pinned to a page number and a bar.</p></div>
-        <div><div class="step">Step 3 · Musicians</div><b>6</b><h4>reviewers</h4><p>2 teachers, 3 students, 1 musicologist corrected and approved.</p></div>
-        <div><div class="step">Step 4 · Community</div><b id="pCmt">–</b><h4>notes and replies</h4><p>Ranked by votes. Imported comments keep their origin.</p></div>
-      </div>
-      <div class="thesis-call">
-        <div><h3>This page is built largely on one doctoral thesis.</h3><p>Soyoung Cho’s 2023 dissertation (University of North Texas) compares the editions and recordings of György Sándor and Boris Berman bar by bar. Here, its findings sit on the score where performers need them, credited to the author.</p></div>
-        <a class="btn" href="https://digital.library.unt.edu/search/?q=Prokofiev+Piano+Sonata+No.+4+Cho&t=fulltext" target="_blank" rel="noopener">Find the thesis ↗</a>
-      </div>
-      <div class="srcs" id="srcs"></div>
-    </section>
-  </div>
-</div>
-</main>
-
-<footer class="foot"><div class="wrap"><span>Open Interpretation · prototype for Project Slam, mdw Vienna</span><span>Score: Gutheil / Breitkopf &amp; Härtel first edition, public domain, via IMSLP</span></div></footer>
+<div id="app"></div>
 
 <script>
-/* ======================== DATA ======================== */
 const SCORE = {
   I:{img:'score/mvt1-p2.png',crop:[110,230,960,1040],page:'p. 2',total:197,label:'I. Allegro molto sostenuto',
      systems:[{y:[300,462],first:0,xs:[232,423,572,739,906,1050]},{y:[485,665],first:5,xs:[140,396,542,733,919,1048]},{y:[688,862],first:10,xs:[140,416,600,774,938,1049]},{y:[885,1062],first:15,xs:[140,413,660,852,1048]},{y:[1088,1258],first:19,xs:[140,420,600,805,1048]}]},
@@ -864,14 +493,6 @@ const LINES = [
  ['Scherzo-ish','Prokofiev preferred this to “grotesque”: whimsy, laughter, mockery.','The smirking cadence in I, the extended endings and the stuttering last bars of III.',[['I',61],['III',222]]]
 ];
 
-const THREADS = [
- {k:'murmur',name:'Opening murmur',col:'#2347C8',arcs:[[['I',0],['I',21],'The oscillating sixteenths of the upbeat return in the transition, now leaning on G.'],[['I',0],['I',65],'From m. 65 the closing section incorporates the opening murmur.'],[['I',0],['III',40],'The finale’s first bridge ends on two oscillating notes (D–E♭) that seem to come from the first movement’s opening.']]},
- {k:'grace',name:'Grace-note sweep',col:'#C7871A',arcs:[[['I',37],['I',40],'Grace notes that appear in mm. 37–39 become the main character of the second theme.'],[['I',40],['I',88],'In development B1 accented octaves rise chromatically, mirroring the grace notes of the second theme.'],[['I',40],['I',162],'The second theme returns in C major; now the grace notes sweep to the leading tone B.']]},
- {k:'thirds',name:'Repeated-third pulse',col:'#1C7A4C',arcs:[[['II',1],['II',33],'The left-hand pattern of the Quasi cadenza recalls the repeated thirds of the opening.'],[['II',1],['II',71],'Theme A’s accompaniment returns under the combined themes, now with a pedal mark.'],[['II',1],['III',88],'The eighth-note thirds of theme C in the finale recall the accompaniment of the slow movement’s opening.']]},
- {k:'themes',name:'Themes combined',col:'#6A5A9E',arcs:[[['II',39],['II',71],'Theme B returns in the right hand, against theme A in the left: two metres at once.'],[['I',1],['I',137],'Sonata form: theme 1 returns in the recapitulation.']]},
- {k:'finale',name:'Finale returns',col:'#B0413E',arcs:[[['III',1],['III',201],'The opening flourish comes back five times, each one higher, before the last statement of A.'],[['III',83],['III',161],'Theme C interrupts the rushing second bridge, melody in the left hand, inversion in the right.'],[['III',25],['III',153],'Bridge 2 is bridge 1 extended: fifteen groups of sixteenths instead of seven.']]}
-];
-
 const NET = [
  {id:'N-sonata3',x:120,y:70,t:'Sonata No. 3, Op. 28',s:'1917',type:'own',d:'Same subtitle, “From old notebooks”. Both sonatas were reworked from Conservatory material and are often paired.'},
  {id:'N-symph',x:110,y:170,t:'Symphony in E minor',s:'1908, abandoned',type:'own',d:'The source of the Andante. Prokofiev doubted he would ever pull the symphony “from under the dust”, so he moved its slow movement into the sonata.'},
@@ -910,389 +531,227 @@ const SOURCES = {
   ['Sviatoslav Richter · Sonata No. 4','various live recordings','Not yet summarised',"https://www.youtube.com/results?search_query=Richter+Prokofiev+Sonata+No.+4"]]
 };
 
-/* ======================== STATE ======================== */
-const store = {get(k,d){try{const v=localStorage.getItem('oi:'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('oi:'+k,JSON.stringify(v))}catch(e){}}};
-const voted = new Set(store.get('voted',[]));
-const qvotes = store.get('qvotes',{});
-const userComments = store.get('ucmt',{});
-let curMv = 'I', curAnn = null, curBar = null;
-const annById = Object.fromEntries(ANN.map(a=>[a.id,a]));
-ANN.forEach(a=>{a.c.forEach((c,i)=>c.key=a.id+'#'+i); (userComments[a.id]||[]).forEach(u=>a.c.push(u));});
 
-const $ = s=>document.querySelector(s);
-const esc = s=>String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
-const barLabel = (from,to)=> from===0&&to===0 ? 'upbeat' : (from===to ? 'm. '+from : 'mm. '+from+'–'+to);
-const roleCls = r=>({Teacher:'teacher',Performer:'performer',Musicologist:'musicologist',Imported:'imported',You:'you'}[r]||'');
-const initials = n=>n.startsWith('Imported')?'YT':n.split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase();
-function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2200)}
-function cmtCount(a){return a.c.reduce((s,c)=>s+1+(c.replies?c.replies.length:0),0)}
-function voteVal(c){return c.v+(voted.has(c.key)?1:0)}
-function annFor(mv,bar){return ANN.find(a=>a.mv===mv&&bar>=a.from&&bar<=a.to)}
 
-/* ======================== SEARCH ======================== */
-const INDEX = [
- {k:'prok4',t:'Prokofiev · Piano Sonata No. 4 in C minor, Op. 29',s:'1917 · “From old notebooks”',st:'ready'},
- {k:'prok3',t:'Prokofiev · Piano Sonata No. 3 in A minor, Op. 28',s:'1917 · “From old notebooks”',st:'draft'},
- {k:'prok7',t:'Prokofiev · Piano Sonata No. 7 in B-flat major, Op. 83',s:'1942 · War Sonatas',st:'draft'},
- {k:'prokand',t:'Prokofiev · Andante, Op. 29 bis (orchestra)',s:'1934 · from Sonata No. 4',st:'collect'},
- {k:'rach',t:'Rachmaninoff · Rhapsody on a Theme of Paganini, Op. 43',s:'1934 · piano and orchestra',st:'collect'},
- {k:'chopin',t:'Chopin · Ballade No. 1 in G minor, Op. 23',s:'1835',st:'draft'},
- {k:'beet',t:'Beethoven · Piano Sonata No. 31 in A-flat major, Op. 110',s:'1821',st:'draft'},
- {k:'schub',t:'Schubert · Impromptu in G-flat major, D. 899 No. 3',s:'1827',st:'collect'},
- {k:'bach',t:'Bach · Partita No. 2 in C minor, BWV 826',s:'1727',st:'collect'}
+/* motifs: the system that links bars to each other */
+const MOTIFS = [
+ {k:'murmur',name:'Opening murmur',col:'#2F5BEA',refs:[['I',0,0],['I',21,22],['I',65,70],['III',40,42]]},
+ {k:'theme1',name:'Theme 1',col:'#7A5CD6',refs:[['I',1,17],['I',71,80],['I',88,96],['I',107,116],['I',117,125],['I',137,149]]},
+ {k:'grace',name:'Grace-note sweep',col:'#D08A12',refs:[['I',17,20],['I',37,39],['I',40,60],['I',88,98],['I',162,183]]},
+ {k:'cadence',name:'Ironic cadence',col:'#8C8F99',refs:[['I',68,70],['I',194,197],['III',222,223]]},
+ {k:'thirds',name:'Repeated thirds',col:'#1E9A5F',refs:[['II',1,12],['II',33,35],['II',71,80],['III',84,99]]},
+ {k:'andA',name:'Andante theme A',col:'#D2463F',refs:[['II',1,9],['II',13,24],['II',25,32],['II',54,61],['II',71,80],['II',81,84]]},
+ {k:'andB',name:'Andante theme B',col:'#0F97A3',refs:[['II',36,38],['II',39,53],['II',71,80]]},
+ {k:'flourish',name:'Finale flourish',col:'#D04F9A',refs:[['III',1,1],['III',66,66],['III',201,207]]},
+ {k:'rising',name:'Rising sixteenths',col:'#9A6B2E',refs:[['III',25,39],['III',153,160]]},
+ {k:'themeC',name:'Finale theme C',col:'#4E8F1E',refs:[['III',83,133],['III',161,166]]}
 ];
-const ST = {ready:['st-ready','Page ready'],draft:['st-draft','AI draft · in review'],collect:['st-collect','Collecting sources'],none:['st-none','No page yet']};
-const norm = s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
-function classify(q){
-  const n=norm(q);
-  const prok=/pro[ck]+o?[fvw]|prokf|prokof|prokov|prok/.test(n);
-  const op29=/op ?29|\b29\b/.test(n);
-  const four=/(^| )(4|no ?4|nr ?4|four|iv|4th|fourth|vierte)( |$)/.test(n);
-  const three=/(^| )(3|no ?3|three|iii|third)( |$)/.test(n)||/op ?28/.test(n);
-  const seven=/(^| )(7|seven|vii)( |$)/.test(n);
-  if(prok&&(op29||four)) return 'prok4';
-  if(prok&&three) return 'prok3';
-  if(prok&&seven) return 'prok7';
-  if(prok) return 'prok';
-  if(/rach|paganini|rhaps/.test(n)) return 'rach';
-  if(/chopin|ballade/.test(n)) return 'chopin';
-  if(/beethoven|110/.test(n)) return 'beet';
-  if(/schubert|impromptu/.test(n)) return 'schub';
-  if(/bach|partita/.test(n)) return 'bach';
-  return n? 'none':'';
-}
-function suggestions(q){
-  const n=norm(q); if(!n) return [];
-  const c=classify(q); const words=n.split(' ');
-  let list=INDEX.filter(it=>{const t=norm(it.t+' '+it.s);return words.every(w=>t.includes(w))});
-  if(c==='prok4'||c==='prok') list=[INDEX[0],...INDEX.filter(i=>i.k.startsWith('prok')&&i.k!=='prok4')];
-  else if(c&&c!=='none'){const hit=INDEX.find(i=>i.k===c); if(hit) list=[hit,...list.filter(i=>i!==hit)];}
-  return list.slice(0,6);
-}
-function bindSearch(input){
-  const host=input.parentElement; let box=null, idx=-1, items=[];
-  const close=()=>{if(box){box.remove();box=null}idx=-1};
-  const render=()=>{
-    items=suggestions(input.value); close(); if(!items.length) return;
-    box=document.createElement('div'); box.className='suggest'; box.setAttribute('role','listbox');
-    box.innerHTML=items.map((it,i)=>`<button type="button" data-i="${i}"><span class="t"><b>${esc(it.t)}</b><small>${esc(it.s)}</small></span><span class="status ${ST[it.st][0]}">${ST[it.st][1]}</span></button>`).join('');
-    box.addEventListener('mousedown',e=>{const b=e.target.closest('button');if(!b)return;e.preventDefault();const it=items[+b.dataset.i];input.value=it.k==='prok4'?'Prokofiev Sonata No. 4':it.t.split(' · ')[0]+' '+it.t.split(' · ')[1];close();runSearch(input.value,it.k)});
-    host.appendChild(box);
-  };
-  input.addEventListener('input',render);
-  input.addEventListener('focus',render);
-  input.addEventListener('blur',()=>setTimeout(close,120));
-  input.addEventListener('keydown',e=>{
-    if(e.key==='ArrowDown'||e.key==='ArrowUp'){if(!box)return;e.preventDefault();idx=(idx+(e.key==='ArrowDown'?1:-1)+items.length)%items.length;box.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('on',i===idx))}
-    else if(e.key==='Enter'){e.preventDefault();const it=idx>=0?items[idx]:null;close();runSearch(input.value,it?it.k:null)}
-    else if(e.key==='Escape'){close()}
-  });
-}
+const WINDOWS=[['context','Context'],['structure','Structure'],['score','Score'],['interpretations','Interpretations'],['connections','Connections'],['discussion','Discussion'],['sources','Sources']];
+const MV=['I','II','III'];
 
-function show(view){
-  ['home','results','piece'].forEach(v=>$('#'+v).hidden=v!==view);
-  $('#topbar').hidden=view==='home';
-  window.scrollTo({top:0,behavior:'auto'});
-}
-function runSearch(q,forced){
-  q=(q||'').trim(); if(!q) return;
-  $('#q2').value=q;
-  const kind=forced||classify(q);
-  renderResults(q,kind); show('results');
-}
+/* state */
+const store={get(k,d){try{const v=localStorage.getItem('oi2:'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('oi2:'+k,JSON.stringify(v))}catch(e){}}};
+const voted=new Set(store.get('voted',[])); const qvotes=store.get('qvotes',{}); const userC=store.get('ucmt',{});
+const annById=Object.fromEntries(ANN.map(a=>[a.id,a]));
+ANN.forEach(a=>{a.c.forEach((c,i)=>{c.key=a.id+'#'+i;(c.replies||[]).forEach((r,j)=>r.key=c.key+'r'+j)})});
+Object.entries(userC).forEach(([id,list])=>{let a=annById[id];if(!a){const m=id.match(/^(I{1,3})-b(\d+)$/);if(!m)return;a={id,mv:m[1],from:+m[2],to:+m[2],title:'',tags:[],a:'',src:[],ip:[],links:[],c:[]};ANN.push(a);annById[id]=a}list.forEach(c=>a.c.push(c))});
+let lastQ='', scoreMv='I';
 
-function renderResults(q,kind){
-  const el=$('#results');
-  const canonical='Prokofiev Piano Sonata No. 4 in C minor, Op. 29';
-  if(kind==='prok4'||kind==='prok'){
-    const corrected = norm(q)!==norm('prokofiev sonata no 4')&&norm(q)!==norm('prokofiev sonata 4');
-    el.innerHTML=`
-      <div class="res-meta">${corrected?`Showing results for <b>${canonical}</b>. You searched for “${esc(q)}”.`:`About <b>${ANN.length+QUESTIONS.length+19}</b> results in Open Interpretation`}</div>
-      <div class="res-grid"><div>
-        <button class="topcard" id="openPiece">
-          <div class="kicker"><span class="label">Piece page</span><span class="status st-ready">Page ready</span><span class="badge b-ok">✓ checked by 6 musicians</span></div>
-          <h2>Piano Sonata No. 4 in C minor, Op. 29</h2>
-          <div class="sub">Sergei Prokofiev · 1917 (1908) · “D’après des vieux cahiers” · 3 movements, about 20 minutes</div>
-          <div class="facts">
-            <div class="fact"><b>${ANN.length}</b><span>annotated passages</span></div>
-            <div class="fact"><b>${QUESTIONS.length}</b><span>open interpretive questions</span></div>
-            <div class="fact"><b>${Object.values(SOURCES).flat().length}</b><span>sources cited</span></div>
-            <div class="fact"><b>${ANN.reduce((s,a)=>s+cmtCount(a),0)}</b><span>community notes</span></div>
-          </div>
-          <span class="open">Open the page →</span>
-        </button>
-        <div class="secthits"><h3>Inside this page</h3>
-          ${[['Bar note','II-1','II, mm. 1–4 · Theme A: how to play the left-hand thirds','Prokofiev’s 1935 recording vs. Sándor vs. Berman vs. the orchestral version'],
-             ['Bar note','I-17','I, mm. 17–18 · Transition: the grace notes','On the beat (Sándor) or melodic and soft (Berman)?'],
-             ['Question','Q-cadenza','II, m. 33 · What happens to the pulse at 12/8?','The composer’s recording and his score disagree'],
-             ['Bar note','III-25','III, mm. 25–39 · Bridge 1: a hidden pattern','A whole-tone line and a bass in major thirds: a memory aid']].map(h=>`<button class="hit" data-open="${h[1]}"><span class="type">${h[0]}</span><span class="ht"><b>${h[2]}</b><small>${h[3]}</small></span></button>`).join('')}
-        </div>
-        <div class="secthits"><h3>Related pages</h3>
-          ${INDEX.filter(i=>i.k!=='prok4'&&i.k.startsWith('prok')).map(i=>`<button class="hit" data-stub="${i.k}"><span class="type">Piece</span><span class="ht"><b>${esc(i.t)}</b><small>${esc(i.s)} · <span class="status ${ST[i.st][0]}" style="margin-left:4px">${ST[i.st][1]}</span></small></span></button>`).join('')}
-        </div>
-        <div class="secthits"><h3>Sources that discuss it</h3>
-          <a class="hit" href="https://digital.library.unt.edu/search/?q=Prokofiev+Piano+Sonata+No.+4+Cho&t=fulltext" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><span class="type">Thesis</span><span class="ht"><b>Cho, Prokofiev’s Piano Sonata No. 4 … A Performance Guide (UNT, 2023)</b><small>Summarised into 31 bar notes on the page ↗</small></span></a>
-          <div class="hit" style="cursor:default"><span class="type">Book</span><span class="ht"><b>Berman, Prokofiev’s Piano Sonatas: A Guide for the Listener and the Performer (Yale, 2008)</b><small>Master-class chapter, cited via Cho</small></span></div>
-          <div class="hit" style="cursor:default"><span class="type">Recording</span><span class="ht"><b>Prokofiev plays the Andante (1935)</b><small>The composer’s only recording of this sonata</small></span></div>
-        </div>
-      </div>
-      <aside>
-        <div class="side-box"><h3>How this page was made</h3>
-          <ol class="pipeline-mini"><li><i>1</i><span>AI agents searched libraries, theses, editions and comment sections.</span></li><li><i>2</i><span>They summarised every finding and linked it to its source and its bars.</span></li><li><i>3</i><span>Students and teachers checked, corrected and added their own views.</span></li><li><i>4</i><span>The community keeps voting the best ideas up.</span></li></ol></div>
-        <div class="side-box"><h3>Part of the mdw pilot</h3><p>One of the 20 pieces most played in mdw piano exams, built with mdw students.</p></div>
-      </aside></div>`;
-  } else if(kind && kind!=='none'){
-    const it=INDEX.find(i=>i.k===kind);
-    el.innerHTML=`<div class="res-meta">Results for <b>${esc(q)}</b></div>
-      <div class="res-grid"><div>
-        <div class="topcard" style="cursor:default"><div class="kicker"><span class="label">Piece page</span><span class="status ${ST[it.st][0]}">${ST[it.st][1]}</span></div>
-          <h2>${esc(it.t.split(' · ')[1])}</h2><div class="sub">${esc(it.t.split(' · ')[0])} · ${esc(it.s)}</div>
-          <div class="facts"><div class="fact"><b>${it.k==='rach'?47:23}</b><span>sources found so far</span></div><div class="fact"><b>0</b><span>reviewed by musicians</span></div></div>
-          <p style="margin-top:16px;color:var(--muted)">${it.st==='collect'?'AI agents are still collecting and summarising sources. The page opens once musicians have reviewed the first draft.':'An AI draft exists and is waiting for review by musicians.'} In this prototype, only Prokofiev’s Sonata No. 4 is built out.</p>
-          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px"><button class="btn" data-toast="Thanks. You’re on the reviewer list for this piece (demo).">Help review this page</button><button class="btn ghost" data-run="Prokofiev Sonata No. 4">See a finished page</button></div>
-        </div></div><aside><div class="side-box"><h3>Want to contribute?</h3><p>Students, teachers and performers can check the AI draft, correct it and add their own views.</p></div></aside></div>`;
-  } else {
-    el.innerHTML=`<div class="res-meta">No piece page matches <b>${esc(q)}</b> yet.</div>
-      <div class="res-grid"><div><div class="topcard" style="cursor:default"><div class="kicker"><span class="status st-none">No page yet</span></div>
-      <h2>Request this piece</h2><div class="sub">AI agents will start collecting sources, then musicians review the draft.</div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px"><button class="btn" data-toast="Request noted (demo).">Request a page</button><button class="btn ghost" data-run="Prokofiev Sonata No. 4">Try: Prokofiev Sonata No. 4</button></div></div></div><aside></aside></div>`;
-  }
-  const op=$('#openPiece'); if(op) op.onclick=()=>openPiece();
-  el.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{openPiece(); const id=b.dataset.open; setTimeout(()=>id.startsWith('Q-')?goQuestion(id):goAnn(id),60)});
-  el.querySelectorAll('[data-stub]').forEach(b=>b.onclick=()=>runSearch(INDEX.find(i=>i.k===b.dataset.stub).t,b.dataset.stub));
-  el.querySelectorAll('[data-toast]').forEach(b=>b.onclick=()=>toast(b.dataset.toast));
-  el.querySelectorAll('[data-run]').forEach(b=>b.onclick=()=>runSearch(b.dataset.run,'prok4'));
-}
-
-/* ======================== PIECE PAGE ======================== */
-let pieceBuilt=false;
-function openPiece(){
-  if(!pieceBuilt){buildPiece();pieceBuilt=true}
-  show('piece');
-}
-function buildPiece(){
-  $('#statSources').textContent=Object.values(SOURCES).flat().length;
-  $('#statAnn').textContent=ANN.length;
-  updateCounts();
-  // five lines
-  $('#lines').innerHTML=LINES.map(l=>`<div class="line-card"><div class="label">Prokofiev’s line</div><h4>${l[0]}</h4><p>${l[1]}</p><p style="color:var(--ink)">${l[2]}</p><div class="where">${l[3].map(b=>barBtn(b[0],b[1])).join('')}</div></div>`).join('');
-  // forms
-  $('#forms').innerHTML=Object.entries(FORMS).map(([mv,f])=>{
-    const tot=f.total;
-    return `<div class="form-mv"><header><h3>${f.title}</h3><span>${f.sub} · ${tot} bars</span></header><div class="bands-scroll"><div>
-      <div class="bands">${f.secs.map(s=>`<button class="band g${s[4]}" style="flex:${Math.max(s[2]-s[1]+1,3)}" data-mv="${mv}" data-bar="${s[1]}" title="${esc(s[0])} · mm. ${s[1]}–${s[2]} ${s[3]?'· '+esc(s[3]):''}"><b>${esc(s[0])}</b><span>${s[1]}–${s[2]}</span></button>`).join('')}</div>
-      <div class="groups">${f.groups.map(g=>`<div style="flex:${g[2]-g[1]+1}">${g[0]}</div>`).join('')}</div>
-      <div class="form-key">${f.secs.filter(s=>s[3]).map(s=>`<b>${esc(s[0])}</b> ${esc(s[3])}`).join(' · ')}</div></div></div></div>`;
-  }).join('');
-  $('#forms').querySelectorAll('.band').forEach(b=>b.onclick=()=>goBar(b.dataset.mv,+b.dataset.bar));
-  // people + questions
-  $('#people').innerHTML=PEOPLE.map(p=>`<div class="person"><div class="av">${p.i}</div><div><h4>${p.n}</h4><div class="school">${p.s}</div><p>${p.p}</p></div></div>`).join('');
-  renderQuestions();
-  // movement tabs
-  $('#mvtabs').innerHTML=['I','II','III'].map(m=>`<button data-mv="${m}">${FORMS[m].title}</button>`).join('');
-  $('#mvtabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{setMv(b.dataset.mv);const first=ANN.find(a=>a.mv===b.dataset.mv);selectAnn(first,first.from)});
-  setMv('I'); selectAnn(annById['II-1']&&curMv==='II'?annById['II-1']:annById['I-1'],1);
-  renderArcs(); renderNet(); renderVoices('All'); renderSources();
-  // secnav highlighting
-  const links=[...document.querySelectorAll('#secnav a')];
-  const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.toggle('on',l.getAttribute('href')==='#'+e.target.id))}})},{rootMargin:'-40% 0px -55% 0px'});
-  document.querySelectorAll('section.block').forEach(s=>obs.observe(s));
-}
-function barBtn(mv,bar){const a=annFor(mv,bar);const lab=a?barLabel(a.from,a.to):'m. '+bar;return `<button class="barlink" data-mv="${mv}" data-bar="${bar}">${mv} · ${lab}</button>`}
-document.addEventListener('click',e=>{const b=e.target.closest('.barlink');if(b){goBar(b.dataset.mv,+b.dataset.bar)}});
-
-function updateCounts(){const n=ANN.reduce((s,a)=>s+cmtCount(a),0);$('#statCmt').textContent=n;const p=$('#pCmt');if(p)p.textContent=n}
-
-/* ---- questions ---- */
-function renderQuestions(){
-  $('#questions').innerHTML=QUESTIONS.map(q=>{
-    const my=qvotes[q.id];
-    const counts=q.pos.map((p,i)=>p[3]+(my===i?1:0)); const tot=counts.reduce((a,b)=>a+b,0);
-    return `<article class="q" id="${q.id}"><div class="q-head"><div><div class="label">${esc(q.where)}</div><h3>${esc(q.title)}</h3><p>${esc(q.text)}</p></div>${barBtn(q.bar[0],q.bar[1])}</div>
-      <div class="q-pos">${q.pos.map((p,i)=>`<div class="pos"><div><div class="who">${esc(p[0])}</div><div class="how">${esc(p[1])}</div></div><p>${esc(p[2])}</p>
-        <div class="agree"><button class="${my===i?'on':''}" data-q="${q.id}" data-i="${i}">${my===i?'✓ Convinced':'Convinces me'}</button><span class="meter"><i style="width:${Math.round(counts[i]/tot*100)}%"></i></span><span class="pct">${Math.round(counts[i]/tot*100)}%</span></div></div>`).join('')}</div>
-      <div class="q-foot"><span>${tot} musicians have weighed in</span><span>Sources: Cho 2023 · editions and recordings listed below</span></div></article>`}).join('');
-  $('#questions').querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{const id=b.dataset.q,i=+b.dataset.i;qvotes[id]=qvotes[id]===i?undefined:i;store.set('qvotes',qvotes);renderQuestions()});
-}
-function goQuestion(id){const el=document.getElementById(id);if(!el)return;el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash')}
-
-/* ---- score explorer ---- */
-function setMv(mv){
-  curMv=mv;
-  $('#mvtabs').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.mv===mv));
-  const S=SCORE[mv]; const [cx,cy,cw,ch]=S.crop;
-  let html=`<img src="${S.img}" alt="Score, first page of movement ${mv}, first edition" width="${cw}" height="${ch}">`;
-  S.systems.forEach(sys=>{
-    for(let i=0;i<sys.xs.length-1;i++){
-      const bar=sys.first+i, x0=sys.xs[i], x1=sys.xs[i+1];
-      const a=annFor(mv,bar);
-      const l=(x0-cx)/cw*100, t=(sys.y[0]-cy)/ch*100, w=(x1-x0)/cw*100, h=(sys.y[1]-sys.y[0])/ch*100;
-      html+=`<button class="barbox${a?' ann':''}" data-bar="${bar}" style="left:${l}%;top:${t}%;width:${w}%;height:${h}%" aria-label="${bar===0?'Upbeat':'Bar '+bar}${a?', has notes':''}"><span class="n">${bar===0?'up':bar}</span></button>`;
-    }
-  });
-  $('#scoreImg').innerHTML=html;
-  $('#scoreImg').querySelectorAll('.barbox').forEach(b=>b.onclick=()=>{const bar=+b.dataset.bar;const a=annFor(mv,bar);selectAnn(a,bar)});
-  const lastBar=S.systems.at(-1).first+S.systems.at(-1).xs.length-2;
-  $('#scoreCap').textContent=`${S.label} · first edition (Gutheil), ${S.page} · bars ${S.systems[0].first===0?'upbeat':S.systems[0].first}–${lastBar} shown`;
-  renderHeat();
-}
-function pageRange(mv){const S=SCORE[mv];return [S.systems[0].first,S.systems.at(-1).first+S.systems.at(-1).xs.length-2]}
-function renderHeat(){
-  const mv=curMv, N=SCORE[mv].total, [p0,p1]=pageRange(mv);
-  const vals=[]; for(let b=1;b<=N;b++){const a=annFor(mv,b);vals.push(a?cmtCount(a)+2:0)}
-  const max=Math.max(...vals,1);
-  const f=FORMS[mv];
-  $('#heat').innerHTML=`<div class="heat-top"><span><b style="color:var(--ink)">${f.title}</b> · discussion across all ${N} bars</span><span class="heat-legend"><span><i style="background:var(--heat)"></i>notes and comments</span><span><i style="background:var(--pencil)"></i>on the score page shown</span></span></div>
-   <div class="heat-bars" id="hb">${vals.map((v,i)=>`<div class="hb${v?' a':''}${(i+1)>=p0&&(i+1)<=p1?' p':''}" data-bar="${i+1}" style="height:${v?Math.max(8,v/max*100):4}%"></div>`).join('')}
-   <div class="heat-page" style="left:${(Math.max(p0,1)-1)/N*100}%;width:${(p1-Math.max(p0,1)+1)/N*100}%"></div></div>
-   <div class="heat-axis"><span>1</span><span>${Math.round(N/4)}</span><span>${Math.round(N/2)}</span><span>${Math.round(3*N/4)}</span><span>${N}</span></div>`;
-  const hb=$('#hb'); let tip=null;
-  hb.addEventListener('mousemove',e=>{const el=e.target.closest('.hb');if(!el)return;const b=+el.dataset.bar;const a=annFor(mv,b);if(!tip){tip=document.createElement('div');tip.className='heat-tip';hb.appendChild(tip)}tip.textContent=a?`${barLabel(a.from,a.to)} · ${a.title}`:`m. ${b} · no notes yet`;tip.style.left=(el.offsetLeft+el.offsetWidth/2)+'px'});
-  hb.addEventListener('mouseleave',()=>{if(tip){tip.remove();tip=null}});
-  hb.addEventListener('click',e=>{const el=e.target.closest('.hb');if(!el)return;const b=+el.dataset.bar;selectAnn(annFor(mv,b),b)});
-  markSel();
-}
-function markSel(){
-  const a=curAnn;
-  $('#scoreImg').querySelectorAll('.barbox').forEach(bx=>{const b=+bx.dataset.bar;bx.classList.toggle('sel',a?(a.mv===curMv&&b>=a.from&&b<=a.to):b===curBar)});
-  document.querySelectorAll('#hb .hb').forEach(h=>{const b=+h.dataset.bar;h.classList.toggle('sel',a?(a.mv===curMv&&b>=a.from&&b<=a.to):b===curBar)});
-}
-function selectAnn(a,bar){curAnn=a||null;curBar=bar;renderPanel();markSel()}
-function goAnn(id){const a=annById[id];if(!a)return;if(curMv!==a.mv)setMv(a.mv);selectAnn(a,a.from);document.getElementById('score').scrollIntoView({behavior:'smooth'})}
-function goBar(mv,bar){if(curMv!==mv)setMv(mv);selectAnn(annFor(mv,bar),bar);document.getElementById('score').scrollIntoView({behavior:'smooth'})}
-
+/* helpers */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+const bl=(f,t)=>f===0&&t===0?'upbeat':f===t?'m. '+f:'mm. '+f+'–'+t;
+const one=b=>b===0?'upbeat':'m. '+b;
+const annFor=(mv,b)=>ANN.find(a=>a.mv===mv&&b>=a.from&&b<=a.to&&(a.a||a.c.length));
+const motifsAt=(mv,b)=>MOTIFS.filter(m=>m.refs.some(r=>r[0]===mv&&b>=r[1]&&b<=r[2]));
+const secAt=(mv,b)=>{const s=FORMS[mv].secs.filter(s=>b>=s[1]&&b<=s[2]);return s[s.length-1]||FORMS[mv].secs[0]};
+const voteVal=c=>c.v+(voted.has(c.key)?1:0);
 const upSvg='<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2l4.5 6h-9z" fill="currentColor"/></svg>';
-function cmtHtml(c,reply){
-  return `<div class="cmt"><button class="vote${voted.has(c.key)?' on':''}" data-key="${c.key}" aria-label="Upvote">${upSvg}<span>${voteVal(c)}</span></button><div><div class="by"><b>${esc(c.u)}</b><span class="role ${roleCls(c.r)}">${esc(c.r)}</span></div><p>${esc(c.t)}</p>${(c.replies&&c.replies.length)?`<div class="replies">${c.replies.map(r=>cmtHtml(r,true)).join('')}</div>`:''}</div></div>`;
-}
-function renderPanel(){
-  const P=$('#panel'), a=curAnn, mv=curMv;
-  const [p0,p1]=pageRange(mv);
-  if(!a){
-    const near=ANN.filter(x=>x.mv===mv).sort((x,y)=>Math.abs(x.from-curBar)-Math.abs(y.from-curBar)).slice(0,3);
-    P.innerHTML=`<div class="empty"><div class="label">Mvt ${mv} · m. ${curBar}</div><h3>No notes on this bar yet</h3><p>Know something about m. ${curBar}? A teacher’s image, a fingering, a source? Add the first note.</p>
-      <div class="compose"><textarea id="newNote" placeholder="Your note on m. ${curBar}…"></textarea><div class="row"><small>Demo: saved in this browser only</small><button class="btn" id="addFirst">Post note</button></div></div>
-      <div style="margin-top:22px" class="label">Nearby notes</div><div class="links" style="margin-top:8px">${near.map(n=>`<button class="linkc" data-ann="${n.id}"><span class="mono">${barLabel(n.from,n.to)}</span>${esc(n.title)}</button>`).join('')}</div></div>`;
-    $('#addFirst').onclick=()=>{const t=$('#newNote').value.trim();if(!t){toast('Write a note first.');return}
-      const id=`${mv}-u${curBar}`; const na={id,mv,from:curBar,to:curBar,title:'Community note',sec:'',tags:['community'],a:'',src:[],ip:[],links:[],c:[]};
-      ANN.push(na);annById[id]=na;addComment(na,t);setMv(mv);selectAnn(na,curBar)};
-    P.querySelectorAll('[data-ann]').forEach(b=>b.onclick=()=>goAnn(b.dataset.ann));
-    return;
-  }
-  const off = a.from>p1 || a.to<p0;
-  const sorted=[...a.c].sort((x,y)=>voteVal(y)-voteVal(x));
-  const linkHtml=a.links.map(l=>{
-    if(l.startsWith('Q-')){const q=QUESTIONS.find(q=>q.id===l);return q?`<button class="linkc" data-q="${l}"><span class="mono">question</span>${esc(q.title)}</button>`:''}
-    if(l.startsWith('N-')){const n=NET.find(n=>n.id===l);return n?`<button class="linkc" data-net="${l}"><span class="mono">work</span>${esc(n.t)}</button>`:''}
-    const t=annById[l];return t?`<button class="linkc" data-ann="${l}"><span class="mono">${t.mv} · ${barLabel(t.from,t.to)}</span>${esc(t.title)}</button>`:'';
-  }).join('');
-  P.innerHTML=`<div class="panel-head"><div class="loc"><span class="badge b-pencil mono">Mvt ${a.mv} · ${barLabel(a.from,a.to)}</span>${a.sec?`<span class="label">${esc(a.sec)}</span>`:''}</div>
-      <h3>${esc(a.title)}</h3><div class="tags">${a.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
-      ${off?`<div class="offpage">This passage is beyond the first page of the score shown in the prototype. In the full platform the score scrolls here.</div>`:''}</div>
-    ${a.a?`<div class="pblock"><h4><span class="label">Analysis</span></h4><p>${esc(a.a)}</p>
-      <div class="prov-line">${a.src.map(s=>`<span class="badge b-src">${esc(s)}</span>`).join('')}<span class="badge b-ai">AI summary</span><span class="badge b-ok">✓ checked</span></div></div>`:''}
-    ${a.ip.length?`<div class="pblock"><h4><span class="label">How they play it</span><span class="badge b-ai">${a.ip.length} views</span></h4><div class="interp">${a.ip.map(p=>`<div class="ip"><div class="av ${p.kind}">${p.kind==='orch'?'Orch':initials(p.who)}</div><div><b>${esc(p.who)}</b><small>${esc(p.how)}</small><p>${esc(p.t)}</p></div></div>`).join('')}</div></div>`:''}
-    ${linkHtml?`<div class="pblock"><h4><span class="label">Connected to</span></h4><div class="links">${linkHtml}</div></div>`:''}
-    <div class="pblock"><h4><span class="label">Discussion · ${cmtCount(a)}</span><span style="font-size:12px;color:var(--muted)">ranked by votes</span></h4>
-      <div id="cmts">${sorted.length?sorted.map(c=>cmtHtml(c)).join(''):'<p style="color:var(--muted);font-size:15px">No comments yet.</p>'}</div>
-      <div class="compose"><textarea id="newCmt" placeholder="Add your view on ${barLabel(a.from,a.to)}: an image, a fingering, a teacher’s remark…"></textarea><div class="row"><small>Demo: saved in this browser only</small><button class="btn" id="postCmt">Post</button></div></div></div>`;
-  P.querySelectorAll('[data-ann]').forEach(b=>b.onclick=()=>goAnn(b.dataset.ann));
-  P.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>goQuestion(b.dataset.q));
-  P.querySelectorAll('[data-net]').forEach(b=>b.onclick=()=>{document.getElementById('connections').scrollIntoView({behavior:'smooth'});selectNode(b.dataset.net)});
-  $('#postCmt').onclick=()=>{const t=$('#newCmt').value.trim();if(!t){toast('Write something first.');return}addComment(a,t);renderPanel();renderHeat();toast('Posted. Others can now vote on it.')};
-}
-function addComment(a,t){
-  const c={u:'You',r:'You',v:1,t,replies:[],key:a.id+'#u'+Date.now()};
-  a.c.push(c); (userComments[a.id]=userComments[a.id]||[]).push(c); store.set('ucmt',userComments);
-  updateCounts(); renderVoices(curFilter);
-}
-document.addEventListener('click',e=>{
-  const v=e.target.closest('.vote'); if(!v) return;
-  const k=v.dataset.key; voted.has(k)?voted.delete(k):voted.add(k); store.set('voted',[...voted]);
-  const c=findCmt(k); v.classList.toggle('on',voted.has(k)); v.querySelector('span').textContent=voteVal(c);
-  document.querySelectorAll(`.vote[data-key="${CSS.escape(k)}"]`).forEach(o=>{o.classList.toggle('on',voted.has(k));o.querySelector('span').textContent=voteVal(c)});
-});
-function findCmt(k){for(const a of ANN){for(const c of a.c){if(c.key===k)return c;for(const r of (c.replies||[]))if(r.key===k)return r}}}
-ANN.forEach(a=>a.c.forEach(c=>(c.replies||[]).forEach((r,j)=>r.key=c.key+'r'+j)));
+const go=h=>{location.hash=h};
+const chip=(mv,b,col)=>`<button class="chip" data-go="bar-${mv}-${b}">${col?`<i style="background:${col}"></i>`:''}${mv} · ${one(b)}</button>`;
+function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),1800)}
+function geom(mv,b){const S=SCORE[mv];for(const sys of S.systems){const i=b-sys.first;if(i>=0&&i<sys.xs.length-1)return{sys,x0:sys.xs[i],x1:sys.xs[i+1]}}return null}
 
-/* ---- arcs ---- */
-function renderArcs(){
-  const W=1000,H=270,base=220,pad=20,gap=24;
-  const tot=SCORE.I.total+1+SCORE.II.total+SCORE.III.total;
-  const usable=W-2*pad-2*gap; const k=usable/tot;
+/* ---------- router ---------- */
+window.addEventListener('hashchange',route);
+document.addEventListener('click',e=>{
+  const g=e.target.closest('[data-go]'); if(g){go(g.dataset.go);return}
+  const v=e.target.closest('.vote'); if(v){const k=v.dataset.key;voted.has(k)?voted.delete(k):voted.add(k);store.set('voted',[...voted]);const c=findC(k);document.querySelectorAll(`.vote[data-key="${CSS.escape(k)}"]`).forEach(o=>{o.classList.toggle('on',voted.has(k));o.querySelector('span').textContent=voteVal(c)})}
+});
+function findC(k){for(const a of ANN)for(const c of a.c){if(c.key===k)return c;for(const r of c.replies||[])if(r.key===k)return r}}
+function route(){
+  const h=location.hash.replace('#','');
+  window.scrollTo(0,0);
+  if(!h||h==='home') return home();
+  if(h==='piece') return shell('',pieceHome());
+  const bm=h.match(/^bar-(I{1,3})-(\d+)$/); if(bm) return shell('score',barView(bm[1],+bm[2]),()=>bindBar(bm[1],+bm[2]));
+  const sm=h.match(/^score(?:-(I{1,3}))?$/); if(sm){scoreMv=sm[1]||scoreMv;return shell('score',scoreView(),bindScore)}
+  const fns={context:contextView,structure:structureView,interpretations:interpView,connections:connView,discussion:discView,sources:sourcesView};
+  if(fns[h]) return shell(h,fns[h](),binders[h]);
+  home();
+}
+
+/* ---------- home ---------- */
+function home(){
+  $('#app').innerHTML=`<div class="home"><div class="mark">Open Interpretation</div>
+    <form class="sform" id="sf" role="search"><input id="q" type="search" autocomplete="off" spellcheck="false" aria-label="Search" value="${esc(lastQ)}"><button type="submit" aria-label="Search"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8.5" cy="8.5" r="6"/><path d="M13 13l5 5"/></svg></button></form>
+    <div class="res" id="res"></div></div>`;
+  const q=$('#q'); q.focus();
+  $('#sf').onsubmit=e=>{e.preventDefault();lastQ=q.value;results()};
+  if(lastQ) results();
+}
+function results(){
+  const n=lastQ.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  if(!n.trim()){$('#res').innerHTML='';return}
+  const hit=/pro[ck]|sonat|soant|op\.? ?29/.test(n);
+  $('#res').innerHTML=hit?`<button class="res-item" data-go="piece"><div><b>Piano Sonata No. 4 in C minor, Op. 29</b><span>Sergei Prokofiev</span></div><i>→</i></button>`:`<div class="res-none">No results</div>`;
+}
+
+/* ---------- shell ---------- */
+function shell(active,html,after){
+  $('#app').innerHTML=`<header class="top"><div class="wrap"><div class="row1">
+      <button class="iconbtn" data-go="${active?'piece':'home'}" aria-label="Back"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg></button>
+      <button class="ptitle" data-go="piece"><b>Piano Sonata No. 4, Op. 29</b><span>Prokofiev</span></button>
+      <button class="iconbtn" data-go="home" aria-label="Search" style="margin-left:auto"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8.5" cy="8.5" r="6"/><path d="M13 13l5 5"/></svg></button></div>
+    ${active?`<nav class="tabs">${WINDOWS.map(w=>`<button class="${w[0]===active?'on':''}" data-go="${w[0]}">${w[1]}</button>`).join('')}</nav>`:''}</div></header>
+    <main class="wrap">${html}</main>`;
+  if(after) after();
+}
+
+/* ---------- piece home ---------- */
+function pieceHome(){
+  return `<div class="phead"><div class="comp">Sergei Prokofiev</div><h1>Piano Sonata No. 4 in C minor <em>Op. 29</em></h1></div>
+   <div class="tiles">${WINDOWS.map((w,i)=>`<button class="tile${w[0]==='score'?' big':''}" data-go="${w[0]}"><span class="num">0${i+1}</span><b>${w[1]}</b></button>`).join('')}</div><div style="height:60px"></div>`;
+}
+
+/* ---------- context ---------- */
+function contextView(){
+  const rows=[
+    ['Composed','1917, reworked from 1908 material: a Conservatory piano sonata and a Symphony in E minor'],
+    ['Subtitle','“D’après des vieux cahiers” (From old notebooks), shared with Sonata No. 3, Op. 28'],
+    ['Premiere','17 April 1918, Petrograd, Prokofiev at the piano'],
+    ['First edition','A. Gutheil, 1918'],
+    ['Dedication','To the memory of Maximilian Schmidthof, Prokofiev’s Conservatory friend (d. 1913)'],
+    ['Movements','I. Allegro molto sostenuto · II. Andante assai · III. Allegro con brio, ma non leggiere'],
+    ['Slow movement','Taken from the E-minor Symphony (diary, April 1917). Orchestrated in 1934 as Andante, Op. 29 bis. Recorded by Prokofiev in 1935.'],
+    ['Character','Dark and inward in I and II; Robinson hears something Schumannesque'],
+    ['Reception','Played far less than Nos. 3 and 7; called “true sonatas” by Merrick (1948); considered by some the finest of the nine']
+  ];
+  return `<div class="view"><div class="vh"><h1>Context</h1></div>
+   <div class="card">${rows.map(r=>`<div class="kv"><div>${r[0]}</div><div>${esc(r[1])}</div></div>`).join('')}</div>
+   <div class="sec-title">Prokofiev’s five lines in this sonata</div>
+   <div class="card">${LINES.map(l=>`<div class="kv"><div>${l[0]}</div><div>${esc(l[2])}<div class="chips" style="margin-top:8px">${l[3].map(b=>chip(b[0],b[1])).join('')}</div></div></div>`).join('')}</div>
+   <div class="src mono" style="font-size:12px;color:var(--faint);margin-top:12px">Cho 2023, ch. 1–4 · Berman 2008 · Robinson 2002 · Prokofiev, Autobiography</div></div>`;
+}
+
+/* ---------- structure ---------- */
+function structureView(){
+  return `<div class="view"><div class="vh"><h1>Structure</h1></div>${MV.map(mv=>{const f=FORMS[mv];return `<div class="card fm"><h3>${f.title}</h3><div class="bands-x"><div class="bands">${f.secs.map(s=>`<button class="band g${s[4]}" style="flex:${Math.max(s[2]-s[1]+1,4)}" data-go="bar-${mv}-${s[1]}"><b>${esc(s[0])}</b><span>${s[1]}–${s[2]}</span>${s[3]?`<small>${esc(s[3])}</small>`:''}</button>`).join('')}</div></div></div>`}).join('')}</div>`;
+}
+
+/* ---------- score ---------- */
+function scoreView(){
+  const S=SCORE[scoreMv],[cx,cy,cw,ch]=S.crop;
+  let m='';
+  S.systems.forEach(sys=>{for(let i=0;i<sys.xs.length-1;i++){
+    const b=sys.first+i,x0=sys.xs[i],x1=sys.xs[i+1];
+    const l=(x0-cx)/cw*100,t=(sys.y[0]-cy)/ch*100,w=(x1-x0)/cw*100,h=(sys.y[1]-sys.y[0])/ch*100;
+    const mot=motifsAt(scoreMv,b), has=!!annFor(scoreMv,b);
+    m+=`<button class="bz" id="bz-${b}" data-go="bar-${scoreMv}-${b}" style="left:${l}%;top:${t}%;width:${w}%;height:${h}%" aria-label="${one(b)}"></button>`;
+    m+=`<button class="mk${has?' has':''}" data-go="bar-${scoreMv}-${b}" style="left:${l+0.6}%;top:${t}%">${b===0?'up':b}${mot.map(x=>`<i style="background:${x.col}"></i>`).join('')}</button>`;
+  }});
+  return `<div class="view"><div class="vh"><h1>Score</h1><div class="seg">${MV.map(v=>`<button class="${v===scoreMv?'on':''}" data-go="score-${v}">${v}</button>`).join('')}</div></div>
+    <div class="sheet"><img src="${S.img}" alt="Score, movement ${scoreMv}" width="${cw}" height="${ch}">${m}</div></div>`;
+}
+let flashBar=null;
+function bindScore(){if(flashBar&&flashBar[0]===scoreMv){const el=document.getElementById('bz-'+flashBar[1]);if(el){el.classList.add('flash');el.scrollIntoView({block:'center'});setTimeout(()=>el.classList.remove('flash'),1600)}}flashBar=null}
+
+/* ---------- bar window ---------- */
+function barView(mv,b){
+  const total=SCORE[mv].total, min=mv==='I'?0:1;
+  b=Math.max(min,Math.min(total,b));
+  const a=annFor(mv,b), sec=secAt(mv,b), mot=motifsAt(mv,b), g=geom(mv,b);
+  let snip='';
+  if(g){const S=SCORE[mv],[cx,cy,cw,ch]=S.crop,sx0=g.sys.xs[0],sx1=g.sys.xs.at(-1),sy0=g.sys.y[0],sy1=g.sys.y[1],W=sx1-sx0,H=sy1-sy0;
+    snip=`<div class="snip" style="aspect-ratio:${W}/${H}"><img src="${S.img}" alt="" style="width:${cw/W*100}%;left:${-(sx0-cx)/W*100}%;top:${-(sy0-cy)/H*100}%"><div class="hl" style="left:${(g.x0-sx0)/W*100}%;width:${(g.x1-g.x0)/W*100}%"></div></div>`}
+  const prev=b>min?`bar-${mv}-${b-1}`:null, next=b<total?`bar-${mv}-${b+1}`:null;
+  // connections
+  const conn=mot.map(m=>{const others=m.refs.filter(r=>!(r[0]===mv&&b>=r[1]&&b<=r[2]));return `<div class="mrow"><span class="mn"><i style="background:${m.col}"></i>${m.name}</span><div class="chips">${others.map(r=>chip(r[0],r[1],m.col)).join('')}</div></div>`}).join('');
+  const linked=a?a.links.filter(l=>annById[l]).map(l=>chip(annById[l].mv,annById[l].from)).join(''):'';
+  const qs=a?a.links.filter(l=>l.startsWith('Q-')).map(l=>QUESTIONS.find(q=>q.id===l)).filter(Boolean):[];
+  const sorted=a?[...a.c].sort((x,y)=>voteVal(y)-voteVal(x)):[];
+  return `<div class="view">
+   <div class="vh bhead"><div><div class="label">Movement ${mv}</div><h1>${b===0?'Upbeat':'Bar '+b}</h1><div class="sub">${esc(sec[0])}${sec[3]?' · '+esc(sec[3]):''}</div></div>
+     <div class="bnav"><button class="iconbtn" ${prev?`data-go="${prev}"`:'disabled'} aria-label="Previous bar"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg></button>
+       <button class="btn line" id="onScore">Score</button>
+       <button class="iconbtn" ${next?`data-go="${next}"`:'disabled'} aria-label="Next bar"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l5 5-5 5"/></svg></button></div></div>
+   ${snip}
+   <div class="bgrid"><div>
+     <div class="box"><h3><span>Analysis</span>${a&&a.a?`<span class="mono">${bl(a.from,a.to)}</span>`:''}</h3>${a&&a.a?`<h4>${esc(a.title)}</h4><p>${esc(a.a)}</p><div class="src">${a.src.map(esc).join(' · ')}</div>`:'<p class="none">—</p>'}</div>
+     <div class="box"><h3>Interpretations</h3>${a&&a.ip.length?a.ip.map(p=>`<div class="ip"><div><b>${esc(p.who)}</b><small>${esc(p.how)}</small></div><p>${esc(p.t)}</p></div>`).join(''):'<p class="none">—</p>'}
+       ${qs.length?`<div class="chips" style="margin-top:12px">${qs.map(q=>`<button class="chip" data-go="interpretations">${esc(q.title)}</button>`).join('')}</div>`:''}</div>
+     <div class="box"><h3><span>Discussion</span><span class="mono">${sorted.length}</span></h3><div id="cl">${sorted.map(c=>cmt(c)).join('')||''}</div>
+       <div class="compose"><textarea id="nc" aria-label="Comment"></textarea><button class="btn" id="post">Post</button></div></div>
+   </div><div>
+     <div class="box"><h3>Connected bars</h3>${conn||linked?'' :'<p class="none">—</p>'}${conn}${linked?`<div class="mrow"><span class="mn">See also</span><div class="chips">${linked}</div></div>`:''}</div>
+     <div class="box"><h3>Position</h3>
+       <div class="mrow"><span class="mn">Movement</span><span>${esc(FORMS[mv].title)}</span></div>
+       <div class="mrow"><span class="mn">Section</span><span>${esc(sec[0])} (mm. ${sec[1]}–${sec[2]})</span></div>
+       ${sec[3]?`<div class="mrow"><span class="mn">Key</span><span>${esc(sec[3])}</span></div>`:''}</div>
+   </div></div></div>`;
+}
+function cmt(c){return `<div class="cmt"><button class="vote${voted.has(c.key)?' on':''}" data-key="${c.key}" aria-label="Upvote">${upSvg}<span>${voteVal(c)}</span></button><div><div class="by"><b>${esc(c.u)}</b><span class="role">${esc(c.r)}</span></div><p>${esc(c.t)}</p>${c.replies&&c.replies.length?`<div class="replies">${c.replies.map(cmt).join('')}</div>`:''}</div></div>`}
+function bindBar(mv,b){
+  $('#onScore').onclick=()=>{flashBar=[mv,b];go('score-'+mv)};
+  $('#post').onclick=()=>{const t=$('#nc').value.trim();if(!t)return;
+    let a=annFor(mv,b); if(!a){const id=`${mv}-b${b}`;a=annById[id]||{id,mv,from:b,to:b,title:'',tags:[],a:'',src:[],ip:[],links:[],c:[]};if(!annById[id]){ANN.push(a);annById[id]=a}}
+    const c={u:'You',r:'You',v:1,t,replies:[],key:a.id+'#u'+Date.now()};a.c.push(c);(userC[a.id]=userC[a.id]||[]).push(c);store.set('ucmt',userC);route()};
+}
+
+/* ---------- interpretations ---------- */
+function interpView(){
+  return `<div class="view"><div class="vh"><h1>Interpretations</h1></div>${QUESTIONS.map(q=>{const my=qvotes[q.id];const n=q.pos.map((p,i)=>p[3]+(my===i?1:0));const tot=n.reduce((x,y)=>x+y,0);
+   return `<div class="card q"><div class="q-h"><b>${esc(q.title)}</b>${chip(q.bar[0],q.bar[1])}</div><div class="q-p">${q.pos.map((p,i)=>`<div class="pos"><span class="who">${esc(p[0])}</span><span class="how">${esc(p[1])}</span><p>${esc(p[2])}</p><div class="agree"><button class="${my===i?'on':''}" data-q="${q.id}" data-i="${i}" aria-label="Vote">${upSvg}</button><span class="meter"><i style="width:${Math.round(n[i]/tot*100)}%"></i></span><span class="pct">${Math.round(n[i]/tot*100)}%</span></div></div>`).join('')}</div></div>`}).join('')}</div>`;
+}
+const binders={interpretations(){document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{const id=b.dataset.q,i=+b.dataset.i;qvotes[id]=qvotes[id]===i?undefined:i;store.set('qvotes',qvotes);const y=window.scrollY;route();window.scrollTo(0,y)})},connections:bindConn};
+
+/* ---------- connections ---------- */
+function connView(){
+  const W=1000,H=300,base=240,pad=24,gap=26,tot=SCORE.I.total+1+SCORE.II.total+SCORE.III.total,k=(W-2*pad-2*gap)/tot;
   const off={I:pad,II:pad+(SCORE.I.total+1)*k+gap,III:pad+(SCORE.I.total+1+SCORE.II.total)*k+2*gap};
   const X=(mv,b)=>off[mv]+(mv==='I'?b:b-1)*k;
-  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Arc diagram of motifs across the sonata"><g id="arcG">`;
-  THREADS.forEach(th=>th.arcs.forEach((a,i)=>{
-    const x1=X(a[0][0],a[0][1]),x2=X(a[1][0],a[1][1]);const h=Math.min(200,Math.abs(x2-x1)*0.55+18);
-    s+=`<path class="arc" data-t="${th.k}" data-i="${i}" stroke="${th.col}" d="M${x1},${base} C${x1},${base-h} ${x2},${base-h} ${x2},${base}"/>`;
-  }));
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Connections between bars"><g id="ag">`;
+  MOTIFS.forEach(m=>{for(let i=0;i<m.refs.length-1;i++){const r1=m.refs[i],r2=m.refs[i+1],x1=X(r1[0],r1[1]),x2=X(r2[0],r2[1]),h=Math.min(220,Math.abs(x2-x1)*.6+16);
+    s+=`<path class="arc" data-m="${m.k}" stroke="${m.col}" d="M${x1},${base} C${x1},${base-h} ${x2},${base-h} ${x2},${base}"/>`}});
   s+='</g>';
-  ['I','II','III'].forEach(mv=>{const x0=X(mv,mv==='I'?0:1),x1=X(mv,SCORE[mv].total);
-    s+=`<line x1="${x0}" y1="${base}" x2="${x1}" y2="${base}" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>`;
-    FORMS[mv].secs.forEach(sec=>{const xx=X(mv,sec[1]);s+=`<line x1="${xx}" y1="${base-4}" x2="${xx}" y2="${base+4}" stroke="var(--faint)" stroke-width="1"/>`});
-    s+=`<text x="${x0}" y="${base+26}" fill="var(--ink)" font-family="var(--f-display)" font-size="17" font-weight="600">${mv}</text><text x="${x0+26}" y="${base+26}" fill="var(--muted)" font-size="12" font-family="var(--f-body)">${FORMS[mv].title.split('. ')[1]} · ${SCORE[mv].total} bars</text>`;
-  });
+  MV.forEach(mv=>{const x0=X(mv,mv==='I'?0:1),x1=X(mv,SCORE[mv].total);
+    s+=`<line x1="${x0}" y1="${base}" x2="${x1}" y2="${base}" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/><text x="${x0}" y="${base+28}" fill="var(--ink)" font-family="var(--f-display)" font-size="18" font-weight="600">${mv}</text>`});
+  MOTIFS.forEach(m=>m.refs.forEach(r=>{s+=`<circle class="node" data-go="bar-${r[0]}-${r[1]}" data-m="${m.k}" cx="${X(r[0],r[1])}" cy="${base}" r="5" fill="${m.col}" stroke="var(--surface)" stroke-width="1.5"><title>${m.name} · ${r[0]} ${bl(r[1],r[2])}</title></circle>`}));
   s+='</svg>';
-  $('#arcs').innerHTML=s;
-  $('#threadLegend').innerHTML=THREADS.map(t=>`<button data-t="${t.k}"><i style="background:${t.col}"></i>${t.name}</button>`).join('');
-  const g=$('#arcG');
-  const pick=(t,i)=>{
-    g.parentNode.classList.add('arcs-dim');
-    g.querySelectorAll('.arc').forEach(p=>p.classList.toggle('on',p.dataset.t===t&&(i===undefined||+p.dataset.i===i)));
-    const th=THREADS.find(x=>x.k===t);
-    if(i===undefined){$('#arcCap').innerHTML=`<div><b>${th.name}</b><p>${th.arcs.length} connections. Click one arc to read it.</p></div>`;return}
-    const a=th.arcs[i];
-    $('#arcCap').innerHTML=`<div><b style="color:${th.col}">${th.name}</b><p>${esc(a[2])}</p></div><div class="links">${barBtn(a[0][0],a[0][1])}${barBtn(a[1][0],a[1][1])}</div>`;
-  };
-  g.querySelectorAll('.arc').forEach(p=>{p.addEventListener('click',()=>pick(p.dataset.t,+p.dataset.i));p.addEventListener('mouseenter',()=>pick(p.dataset.t,+p.dataset.i))});
-  $('#threadLegend').querySelectorAll('button').forEach(b=>b.onclick=()=>pick(b.dataset.t));
+  return `<div class="view"><div class="vh"><h1>Connections</h1></div>
+   <div class="card"><div class="arcs" id="arcs">${s}</div><div class="legend">${MOTIFS.map(m=>`<button data-m="${m.k}"><i style="background:${m.col}"></i>${m.name}</button>`).join('')}</div></div>
+   <div class="sec-title">Between bars</div>
+   <div class="card mlist">${MOTIFS.map(m=>`<div class="mrow"><span class="mn"><i style="background:${m.col}"></i>${m.name}</span><div class="chips">${m.refs.map(r=>chip(r[0],r[1],m.col)).join('')}</div></div>`).join('')}</div>
+   <div class="sec-title">Other works</div>
+   <div class="card">${NET.map(n=>`<div class="work"><div><b>${esc(n.t)}</b><span>${esc(n.d)}</span></div>${n.bar?chip(n.bar[0],n.bar[1]):''}</div>`).join('')}</div></div>`;
+}
+function bindConn(){
+  const arcs=$('#arcs');
+  document.querySelectorAll('.legend button').forEach(b=>b.onclick=()=>{const on=b.classList.toggle('on');document.querySelectorAll('.legend button').forEach(o=>{if(o!==b)o.classList.remove('on')});arcs.classList.toggle('dim',on);arcs.querySelectorAll('.arc').forEach(p=>p.classList.toggle('on',on&&p.dataset.m===b.dataset.m))});
 }
 
-/* ---- network ---- */
-function renderNet(){
-  const W=880,H=440,cx=420,cy=215;
-  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Network of related works"><g>`;
-  NET.forEach(n=>{s+=`<path class="edge" data-e="${n.id}" d="M${cx},${cy} Q${(cx+n.x)/2},${(cy+n.y)/2-20} ${n.x},${n.y}" ${n.type==='model'?'stroke-dasharray="5 4"':''}/>`});
-  s+='</g>';
-  NET.forEach(n=>{const w=Math.max(n.t.length,n.s.length)*7.1+24;
-    s+=`<g class="node" data-n="${n.id}" tabindex="0" role="button" aria-label="${esc(n.t)}"><rect x="${n.x-w/2}" y="${n.y-22}" width="${w}" height="44" rx="8"/><text x="${n.x}" y="${n.y-3}" text-anchor="middle">${esc(n.t)}</text><text class="s" x="${n.x}" y="${n.y+13}" text-anchor="middle">${esc(n.s)}</text></g>`});
-  s+=`<g class="center-node"><rect x="${cx-110}" y="${cy-30}" width="220" height="60" rx="10"/><text x="${cx}" y="${cy+2}" text-anchor="middle">Sonata No. 4, Op. 29</text><text class="s" x="${cx}" y="${cy+20}" text-anchor="middle" font-size="11">this page</text></g>`;
-  s+=`<g font-size="12" font-family="var(--f-body)"><line x1="20" y1="${H-14}" x2="44" y2="${H-14}" stroke="var(--faint)" stroke-width="1.5"/><text x="50" y="${H-10}" fill="var(--muted)">Prokofiev’s own work or life</text><line x1="230" y1="${H-14}" x2="254" y2="${H-14}" stroke="var(--faint)" stroke-width="1.5" stroke-dasharray="5 4"/><text x="260" y="${H-10}" fill="var(--muted)">model or precedent</text></g>`;
-  s+='</svg>';
-  $('#net').innerHTML=s;
-  $('#net').querySelectorAll('.node').forEach(g=>{g.addEventListener('click',()=>selectNode(g.dataset.n));g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectNode(g.dataset.n)}})});
-}
-function selectNode(id){
-  const n=NET.find(x=>x.id===id); if(!n) return;
-  $('#net').querySelectorAll('.node').forEach(g=>g.classList.toggle('on',g.dataset.n===id));
-  $('#net').querySelectorAll('.edge').forEach(e=>e.classList.toggle('on',e.dataset.e===id));
-  $('#netCap').innerHTML=`<div><b>${esc(n.t)}</b><p>${esc(n.d)}</p></div>${n.bar?`<div class="links">${barBtn(n.bar[0],n.bar[1])}</div>`:''}`;
+/* ---------- discussion ---------- */
+function discView(){
+  const all=[];ANN.forEach(a=>a.c.forEach(c=>all.push({a,c})));all.sort((x,y)=>voteVal(y.c)-voteVal(x.c));
+  return `<div class="view"><div class="vh"><h1>Discussion</h1><span class="label">Example data</span></div><div class="card dl">${all.map(({a,c})=>`<div class="cmt"><button class="vote${voted.has(c.key)?' on':''}" data-key="${c.key}" aria-label="Upvote">${upSvg}<span>${voteVal(c)}</span></button><div><div class="by"><b>${esc(c.u)}</b><span class="role">${esc(c.r)}</span>${chip(a.mv,a.from)}</div><p>${esc(c.t)}</p></div></div>`).join('')}</div></div>`;
 }
 
-/* ---- voices ---- */
-let curFilter='All';
-function renderVoices(f){
-  curFilter=f;
-  const roles=['All','Teacher','Student','Performer','Musicologist','Imported'];
-  $('#vfilters').innerHTML=roles.map(r=>`<button class="${r===f?'on':''}" data-f="${r}">${r==='All'?'All':r==='Imported'?'Imported comments':r+'s'}</button>`).join('');
-  $('#vfilters').querySelectorAll('button').forEach(b=>b.onclick=()=>renderVoices(b.dataset.f));
-  const all=[]; ANN.forEach(a=>a.c.forEach(c=>all.push({a,c})));
-  const list=all.filter(x=>f==='All'||x.c.r===f).sort((x,y)=>voteVal(y.c)-voteVal(x.c)).slice(0,12);
-  $('#voiceList').innerHTML=list.map(({a,c})=>`<div class="vcard"><button class="vote${voted.has(c.key)?' on':''}" data-key="${c.key}" aria-label="Upvote">${upSvg}<span>${voteVal(c)}</span></button><div><div class="by"><b>${esc(c.u)}</b><span class="role ${roleCls(c.r)}">${esc(c.r)}</span></div><p>${esc(c.t)}</p><div class="where">${barBtn(a.mv,a.from)} <span style="font-size:13px;color:var(--muted)">${esc(a.title)}</span></div></div></div>`).join('');
+/* ---------- sources ---------- */
+function sourcesView(){
+  return `<div class="view"><div class="vh"><h1>Sources</h1></div>${Object.entries(SOURCES).map(([g,l])=>`<div class="sec-title">${g}</div><div class="card srcg">${l.map(s=>`<div class="s"><div>${s[0]}<small>${esc(s[1])}</small></div>${s[3]?`<a class="chip" href="${s[3]}" target="_blank" rel="noopener">Open ↗</a>`:'<span></span>'}</div>`).join('')}</div>`).join('')}</div>`;
 }
 
-/* ---- sources ---- */
-function renderSources(){
-  $('#srcs').innerHTML=Object.entries(SOURCES).map(([g,l])=>`<div class="srcgroup"><h3><span>${g}</span><span class="mono">${l.length}</span></h3>${l.map(s=>`<div class="src"><div class="t">${s[0]}<small>${esc(s[1])}</small></div><div class="r">${s[3]?`<a class="badge b-pencil" href="${s[3]}" target="_blank" rel="noopener">Open ↗</a>`:''}<span class="badge ${/Not yet/.test(s[2])?'b-src':'b-ok'}">${esc(s[2])}</span></div></div>`).join('')}</div>`).join('');
-}
-
-/* ======================== BOOT ======================== */
-bindSearch($('#q1')); bindSearch($('#q2'));
-document.querySelectorAll('[data-try]').forEach(b=>b.onclick=()=>{$('#q1').value=b.dataset.try;runSearch(b.dataset.try)});
-$('#brandBtn').onclick=()=>show('home');
-document.addEventListener('click',e=>{const g=e.target.closest('[data-go="home"]');if(g)show('home')});
-if(location.hash==='#piece'){openPiece()}
+route();
 </script>
 
 </body>
