@@ -278,6 +278,11 @@ article.art p+p{margin-top:12px}
 .work2 .to button:hover{border-color:var(--pencil)}
 .keyb{font-family:var(--f-mono);font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:2px}
 /* v4 additions */
+.oitem{padding:18px 20px;border-top:1px solid var(--line)}
+.oitem:first-child{border-top:0}
+.oitem h3{font-family:var(--f-display);font-size:21px;font-weight:600;margin-bottom:6px}
+.oitem h3 .wref{font-style:normal}
+.oitem p{font-size:16px;max-width:68ch}
 .kv{display:grid;grid-template-columns:180px minmax(0,1fr);border-top:1px solid var(--line)}
 .kv:first-child{border-top:0}
 .kv>div{padding:13px 18px;min-width:0}
@@ -805,7 +810,7 @@ const GEN=[
 ];
 GEN.forEach((c,i)=>c.key='GEN#'+i);
 
-const OTHER=[
+const OTHER_ALL=[
  {id:'o1',sh:'Student sonata, 1908',piece:'Student sonata (1908)',q:null,bar:null,where:'Whole movement',type:'Source material',status:'Documented',why:'The subtitle “From old notebooks” is literal: Prokofiev reworked a sonata he wrote at the St. Petersburg Conservatory in 1908.',src:'Cho 2023, p. 18; Prokofiev, Autobiography, p. 27'},
  {id:'o2',sh:'Sonata No. 3, Op. 28',piece:'Sonata No. 3 in A minor, Op. 28',q:'Prokofiev Piano Sonata No.3',bar:null,where:'Whole movement',type:'Same period',status:'Documented',why:'Written in the same year with the same subtitle, also reworked from a student sonata (1907).',src:'Cho 2023, p. 18'},
  {id:'o3',sh:'Classical Symphony',piece:'Symphony No. 1 “Classical”, Op. 25',q:'Prokofiev Symphony No.1',bar:['I',1],where:'Form and phrasing',type:'Same period',status:'Documented',why:'Completed in 1917 and premiered in Petrograd in April 1918, the same month as this sonata. Both show Prokofiev’s Classical line.',src:'Cho 2023, ch. 2; histories of Op. 25'},
@@ -816,6 +821,7 @@ const OTHER=[
  {id:'o8',sh:'Schumann',piece:'Schumann',q:'Schumann piano',bar:null,where:'Character of the sonata',type:'Model',status:'Suggested',why:'Robinson hears an impressionistic, almost shapeless quality reminiscent of Schumann.',src:'Robinson 2002, p. 133, via Cho p. 3'},
  {id:'o9',sh:'Sonata No. 4, finale',piece:'Sonata No. 4, III. Allegro con brio',q:'Prokofiev Piano Sonata No.4',bar:['I',0],where:'Upbeat, the opening murmur',type:'Same sonata',status:'Suggested',why:'The finale’s first bridge ends on two oscillating notes (D–E♭, mm. 40–42) that seem to come from this opening figure.',src:'Cho 2023, p. 43'}
 ];
+const OTHER=OTHER_ALL.filter(o=>['o2','o3','o5','o7'].includes(o.id));
 const TYPECOL={'Source material':'#2F5BEA','Same period':'#1E9A5F','Same dedicatee':'#7A5CD6','Model':'#D08A12','Same sonata':'#D2463F'};
 
 const RECS=[
@@ -1036,20 +1042,9 @@ function motifView(k){
 
 /* ---------- 7 other pieces ---------- */
 function otherView(){
-  const Wd=760,H=460,cx=380,cy=230,R=[175,195];
-  const n=OTHER.length;
-  let s=`<svg viewBox="0 0 ${Wd} ${H}" role="img" aria-label="Map of connections to other pieces">`;
-  const pos=OTHER.map((o,i)=>{const ang=-Math.PI/2+i*2*Math.PI/n;return [cx+Math.cos(ang)*R[i%2]*1.45,cy+Math.sin(ang)*R[i%2]*.95]});
-  OTHER.forEach((o,i)=>{const [x,y]=pos[i];s+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="${TYPECOL[o.type]}" stroke-width="2" ${o.status==='Suggested'?'stroke-dasharray="6 5"':''} opacity=".7"/>`});
-  s+=`<g><rect x="${cx-95}" y="${cy-28}" width="190" height="56" rx="10" fill="var(--ink)"/><text x="${cx}" y="${cy-4}" text-anchor="middle" fill="var(--paper)" font-family="var(--f-display)" font-size="16" font-weight="600">Sonata No. 4 · I</text><text x="${cx}" y="${cy+15}" text-anchor="middle" fill="var(--paper)" opacity=".7" font-family="var(--f-body)" font-size="12">Allegro molto sostenuto</text></g>`;
-  OTHER.forEach((o,i)=>{const [x,y]=pos[i];const label=o.sh;const w=Math.max(label.length*7+26,90);
-    s+=`<g class="onode" data-o="${o.id}" tabindex="0" role="button" aria-label="${esc(o.piece)}"><rect x="${x-w/2}" y="${y-17}" width="${w}" height="34" rx="8" fill="var(--surface)" stroke="${TYPECOL[o.type]}" stroke-width="1.5"/><text x="${x}" y="${y+4}" text-anchor="middle" fill="var(--ink)" font-family="var(--f-body)" font-size="12">${esc(label)}</text></g>`});
-  s+='</svg>';
+  const keep=['o2','o3','o5','o7'];
   return `<div class="view"><div class="vh"><h1>Other pieces</h1></div>
-   <div class="card"><div class="arcs net">${s}</div>
-   <div class="legend">${Object.entries(TYPECOL).map(([t,c])=>`<span class="lg"><i style="background:${c}"></i>${t}</span>`).join('')}<span class="lg"><i style="background:none;border:1.5px dashed var(--muted)"></i>Suggested, not documented</span></div></div>
-   <div class="olist">${OTHER.map(o=>`<div class="ocard" id="o-${o.id}"><div class="o-top"><span class="tbadge" style="color:${TYPECOL[o.type]};border-color:${TYPECOL[o.type]}">${o.type}</span><span class="sbadge ${o.status==='Documented'?'doc':''}">${o.status}</span></div>
-     <h3>${o.q?W(esc(o.piece),o.q):esc(o.piece)}</h3><div class="o-where">${esc(o.where)} ${o.bar?chip(o.bar[0],o.bar[1]):''}</div><p>${esc(o.why)}</p><div class="srcl">${esc(o.src)}</div></div>`).join('')}</div></div>`;
+   <div class="card">${OTHER.filter(o=>keep.includes(o.id)).map(o=>`<div class="oitem"><h3>${o.q?W(esc(o.piece),o.q):esc(o.piece)}</h3><p>${esc(o.why)}</p>${o.bar?`<div style="margin-top:8px">${chip(o.bar[0],o.bar[1])}</div>`:''}<div class="srcl">${esc(o.src)}</div></div>`).join('')}</div></div>`;
 }
 
 /* ---------- 8 statistics ---------- */
@@ -1119,7 +1114,6 @@ function sourcesView(){
 const binders={
   perspectives(){document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{const id=b.dataset.q,i=+b.dataset.i;qvotes[id]=qvotes[id]===i?undefined:i;store.set('qvotes',qvotes);const y=window.scrollY;route();window.scrollTo(0,y)})},
   context(){document.querySelectorAll('[data-art]').forEach(a=>a.onclick=e=>{e.preventDefault();document.getElementById('art-'+a.dataset.art).scrollIntoView({behavior:'smooth'})})},
-  other(){document.querySelectorAll('.onode').forEach(g=>{const f=()=>{const el=document.getElementById('o-'+g.dataset.o);el.scrollIntoView({behavior:'smooth',block:'center'});document.querySelectorAll('.ocard').forEach(x=>x.classList.remove('hl'));el.classList.add('hl')};g.addEventListener('click',f);g.addEventListener('keydown',e=>{if(e.key==='Enter')f()})})}
 };
 
 /* ---------- example 2: individual pieces, linked through one idea (Rosen, Music and Sentiment, pp. 24–27) ---------- */
