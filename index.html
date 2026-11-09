@@ -819,8 +819,8 @@ const RECS=[
  ['Yakov Kasman','complete sonatas',''],['Oleg Marshev','complete sonatas',''],['Vladimir Ovchinnikov','complete sonatas',''],['Matti Raekallio','complete sonatas',''],
  ['Natalia Trull','complete sonatas',''],['Nikolai Lugansky','selected sonatas',''],['Alexandra Silocea','selected sonatas','']];
 
-const WINDOWS=[['glance','At a glance'],['context','Context'],['perspectives','Perspectives'],['structure','Structure'],['score','Score'],['connections','Connections'],['other','Other pieces'],['stats','Statistics'],['listening','Listening'],['sources','Sources']];
-const GROUPS=[['Understand',['glance','context','perspectives']],['Inside the score',['structure','score','connections']],['Beyond the piece',['other','stats','listening']],['Reference',['sources']]];
+const WINDOWS=[['context','Context'],['perspectives','Perspectives'],['structure','Structure'],['score','Score'],['connections','Connections'],['other','Other pieces'],['stats','Statistics'],['listening','Listening'],['sources','Sources']];
+const GROUPS=[['Understand',['context','perspectives']],['Inside the score',['structure','score','connections']],['Beyond the piece',['other','stats','listening']],['Reference',['sources']]];
 const CROP=[90,110,1005,1240];
 
 /* ---------- state ---------- */
@@ -874,7 +874,7 @@ function route(){
   if(m=h.match(/^bar-I+-(\d+)$/)){window.scrollTo(0,0);return shell('score',barView('I',+m[1]),()=>bindBar('I',+m[1]))}
   if(m=h.match(/^motif-(\w+)$/)){window.scrollTo(0,0);return shell('connections',motifView(m[1]))}
   if(h.startsWith('score')){shell('score',scoreView(),bindScore);return}
-  const fns={glance:glanceView,context:contextView,perspectives:perspView,structure:structureView,connections:connView,other:otherView,stats:statsView,listening:listenView,sources:sourcesView};
+  const fns={context:contextView,perspectives:perspView,structure:structureView,connections:connView,other:otherView,stats:statsView,listening:listenView,sources:sourcesView};
   window.scrollTo(0,0);
   if(fns[h]) return shell(h,fns[h](),binders[h]);
   home();
