@@ -14,7 +14,7 @@
   --paper:#F3F4F6; --surface:#FFFFFF; --sunk:#E9EBEF;
   --ink:#15171C; --muted:#5A6070; --faint:#8A90A0; --line:#D9DCE3;
   --pencil:#2347C8; --pencil-ink:#1B3AA8; --pencil-soft:rgba(35,71,200,.10); --pencil-mid:rgba(35,71,200,.24);
-  --heat-soft:rgba(217,162,27,.16);
+  --heat:#C98A0E; --heat-soft:rgba(217,162,27,.16);
   --f-display:"Bodoni Moda","Didot","Bodoni 72",Georgia,serif;
   --f-body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
@@ -23,12 +23,12 @@
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --paper:#101217; --surface:#171A21; --sunk:#1E222B; --ink:#E8EAF0; --muted:#A1A7B6; --faint:#727889; --line:#2A2F3B;
   --pencil:#8AA4FF; --pencil-ink:#A9BCFF; --pencil-soft:rgba(138,164,255,.12); --pencil-mid:rgba(138,164,255,.28);
-  --heat-soft:rgba(226,178,60,.16);
+  --heat:#E2B23C; --heat-soft:rgba(226,178,60,.16);
   --score-filter:invert(1) hue-rotate(180deg) brightness(.86) contrast(.95); color-scheme:dark}}
 :root[data-theme="dark"]{
   --paper:#101217; --surface:#171A21; --sunk:#1E222B; --ink:#E8EAF0; --muted:#A1A7B6; --faint:#727889; --line:#2A2F3B;
   --pencil:#8AA4FF; --pencil-ink:#A9BCFF; --pencil-soft:rgba(138,164,255,.12); --pencil-mid:rgba(138,164,255,.28);
-  --heat-soft:rgba(226,178,60,.16);
+  --heat:#E2B23C; --heat-soft:rgba(226,178,60,.16);
   --score-filter:invert(1) hue-rotate(180deg) brightness(.86) contrast(.95); color-scheme:dark}
 *{box-sizing:border-box}
 html{scroll-padding-top:120px}
@@ -277,6 +277,77 @@ article.art p+p{margin-top:12px}
 .work2 .to button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:3px 10px;font-size:13px;cursor:pointer;color:var(--pencil-ink)}
 .work2 .to button:hover{border-color:var(--pencil)}
 .keyb{font-family:var(--f-mono);font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:2px}
+/* v4 additions */
+.wt{display:grid;grid-template-columns:minmax(0,190px) 80px 34px minmax(0,1fr);gap:10px;align-items:center;padding:10px 18px;border-top:1px solid var(--line)}
+.wt:first-child{border-top:0}
+.wt i{font-family:var(--f-display);font-size:16px}
+.wt .kind{font-size:11px;font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:.06em}
+@media (max-width:620px){.wt{grid-template-columns:1fr auto;}.wt .kind{display:none}.wt .chips{grid-column:1/-1}}
+.wpage{max-width:820px}
+.wbox{padding:18px 20px}
+.wbox p{font-size:17px;line-height:1.65}
+.wbox.idea{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:18px;align-items:center}
+.wbox.idea h3{font-family:var(--f-display);font-size:20px;font-weight:600;margin-bottom:6px}
+.wbox.idea p{font-size:15px}
+.wbox.idea svg{width:100%;height:auto}
+@media (max-width:640px){.wbox.idea{grid-template-columns:1fr}}
+
+.phead .mvt{font-family:var(--f-display);font-style:italic;font-size:24px;color:var(--muted);margin-top:8px}
+.summary{margin-top:16px;padding:16px 20px;border-left:3px solid var(--pencil);background:var(--surface);border-radius:0 12px 12px 0;font-size:17px;line-height:1.65;max-width:72ch}
+.srcl{font-family:var(--f-mono);font-size:12px;color:var(--faint);margin-top:12px}
+.kv small.kind{display:block;font-size:11px;font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:.06em}
+.views{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.vw{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;justify-content:space-between;gap:12px}
+.vw blockquote{margin:0;font-family:var(--f-display);font-size:18px;line-height:1.45}
+.vw figcaption{font-size:13px;color:var(--muted)}
+.vw figcaption b{display:block;color:var(--ink);font-size:14px}
+.groups{display:flex;gap:2px;margin-top:6px;min-width:620px}
+.groups div{font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;border-top:2px solid var(--line);padding-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.legend2{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted)}
+.legend2 span{display:inline-flex;align-items:center;gap:6px}
+.legend2 i{width:10px;height:10px;display:inline-block}
+.legend2 .lg-has{background:var(--pencil);border-radius:3px}
+.marks{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.marks span{font-family:var(--f-display);font-style:italic;font-size:15px;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:2px 9px}
+.mono{font-family:var(--f-mono)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.kpis>div{background:var(--surface);padding:14px 16px}
+.kpis span{display:block;font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.kpis b{display:block;font-size:26px;font-weight:600;margin-top:4px;font-family:var(--f-display)}
+.kpis small{font-size:12px;color:var(--muted)}
+.statc{padding:18px}
+.bars{display:flex;align-items:flex-end;gap:10px;height:180px;padding-bottom:4px;border-bottom:1px solid var(--line)}
+.bcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px}
+.bb{width:100%;max-width:56px;background:var(--pencil);border-radius:4px 4px 0 0;min-height:3px}
+.bn{font-family:var(--f-mono);font-size:13px}
+.bl{font-family:var(--f-display);font-style:italic;font-size:16px;margin-top:2px}
+.where{margin-top:14px;display:grid;gap:8px}
+.wrow{display:grid;grid-template-columns:48px 1fr;gap:10px;align-items:start}
+.wrow b{font-family:var(--f-display);font-style:italic;font-size:16px}
+.prop{display:flex;gap:2px;border-radius:6px;overflow:hidden;min-width:0}
+.prop span{padding:6px 8px;font-size:12px;color:var(--ink);min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.prop span b{margin-left:6px;font-family:var(--f-mono);font-weight:500}
+.lm{display:grid;gap:6px}
+.lm span{font-size:15px}
+.pending{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.pending div{border:1.5px dashed var(--line);border-radius:12px;padding:22px 14px;text-align:center;color:var(--faint);font-weight:600;font-size:14px}
+.net svg{min-width:640px}
+.onode{cursor:pointer}
+.onode:hover rect,.onode:focus rect{stroke-width:3}
+.legend .lg{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.legend .lg i{width:16px;height:4px;border-radius:2px;display:inline-block}
+.legend{gap:8px 16px}
+.olist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-top:16px}
+.ocard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;scroll-margin-top:130px;transition:box-shadow .3s,border-color .3s}
+.ocard.hl{border-color:var(--pencil);box-shadow:0 0 0 4px var(--pencil-soft)}
+.o-top{display:flex;gap:8px;flex-wrap:wrap}
+.tbadge{font-size:12px;font-weight:700;border:1.5px solid;border-radius:999px;padding:1px 9px}
+.sbadge{font-size:12px;font-weight:600;border-radius:999px;padding:2px 9px;background:var(--sunk);color:var(--muted)}
+.sbadge.doc{background:var(--pencil-soft);color:var(--pencil-ink)}
+.ocard h3{font-family:var(--f-display);font-size:20px;font-weight:600;margin:10px 0 4px}
+.ocard h3 .wref{font-style:normal}
+.o-where{font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ocard p{font-size:15px;margin-top:8px}
 </style>
 </head>
 <body>
@@ -285,8 +356,8 @@ article.art p+p{margin-top:12px}
 <div id="app"></div>
 
 <script>
-const GEOM = {"I":[{"p":2,"systems":[{"y":[299,460],"first":0,"xs":[237,422,570,737,904,1049]},{"y":[482,663],"first":5,"xs":[170,395,541,733,918,1049]},{"y":[685,857],"first":10,"xs":[170,416,600,774,938,1049]},{"y":[885,1058],"first":15,"xs":[171,414,661,853,1049]},{"y":[1093,1274],"first":19,"xs":[172,423,603,811,1049]}]},{"p":3,"systems":[{"y":[166,356],"first":23,"xs":[136,387,603,784,1012]},{"y":[381,564],"first":27,"xs":[136,375,551,681,835,1012]},{"y":[597,776],"first":32,"xs":[137,345,516,693,844,1012]},{"y":[806,983],"first":37,"xs":[137,312,422,542,668,790,881,1012]},{"y":[1062,1252],"first":44,"xs":[136,289,372,455,591,758,893,1012]}]},{"p":4,"systems":[{"y":[134,327],"first":51,"xs":[167,355,506,643,773,855,955,1046]},{"y":[329,500],"first":58,"xs":[167,333,431,571,678,786,898,1045]},{"y":[515,692],"first":65,"xs":[168,375,519,671,840,938,1044]},{"y":[730,906],"first":71,"xs":[168,352,507,661,867,1046]},{"y":[907,1090],"first":76,"xs":[168,435,612,776,928,1045]},{"y":[1132,1296],"first":81,"xs":[168,373,456,526,676,864,1046]}]},{"p":5,"systems":[{"y":[121,288],"first":87,"xs":[130,391,584,732,877,1010]},{"y":[321,488],"first":92,"xs":[131,326,469,605,731,837,1010]},{"y":[514,696],"first":98,"xs":[131,438,679,854,1009]},{"y":[733,918],"first":102,"xs":[131,376,533,695,829,1009]},{"y":[929,1103],"first":107,"xs":[131,351,514,672,842,1009]},{"y":[1113,1292],"first":112,"xs":[131,331,466,736,876,1009]}]},{"p":6,"systems":[{"y":[128,314],"first":117,"xs":[171,492,658,855,1051]},{"y":[364,550],"first":121,"xs":[172,400,595,872,1050]},{"y":[609,800],"first":125,"xs":[173,492,681,860,1049]},{"y":[834,1012],"first":129,"xs":[172,458,675,897,1049]},{"y":[1060,1237],"first":133,"xs":[172,351,471,604,728,889,1048]}]},{"p":7,"systems":[{"y":[143,318],"first":139,"xs":[135,394,597,799,1013]},{"y":[361,558],"first":143,"xs":[135,337,506,676,808,992]},{"y":[612,797],"first":148,"xs":[136,466,663,839,1014]},{"y":[841,1033],"first":152,"xs":[136,357,527,701,852,1014]},{"y":[1070,1263],"first":157,"xs":[137,388,562,719,876,978]}]},{"p":8,"systems":[{"y":[140,301],"first":162,"xs":[171,355,489,581,703,817,907,1051]},{"y":[314,510],"first":169,"xs":[171,388,536,660,774,898,1051]},{"y":[523,700],"first":175,"xs":[171,347,518,616,711,807,913,1050]},{"y":[704,871],"first":182,"xs":[171,349,504,605,706,871,1050]},{"y":[908,1078],"first":188,"xs":[171,430,610,709,893,1050]},{"y":[1120,1289],"first":193,"xs":[171,412,611,729,899,1046]}]}],"II":[{"p":9,"systems":[{"y":[199,378],"first":1,"xs":[151,406,605,811,1007]},{"y":[382,555],"first":5,"xs":[128,389,590,795,1006]},{"y":[584,753],"first":9,"xs":[128,361,568,788,1007]},{"y":[812,1004],"first":13,"xs":[128,567,1006]},{"y":[1048,1253],"first":15,"xs":[127,442,728,1006]}]},{"p":10,"systems":[{"y":[146,342],"first":18,"xs":[175,622,1054]},{"y":[396,591],"first":20,"xs":[176,628,1054]},{"y":[650,840],"first":22,"xs":[176,1053]},{"y":[875,1074],"first":23,"xs":[176,1053]},{"y":[1089,1264],"first":24,"xs":[176,676,1053]}]},{"p":11,"systems":[{"y":[140,350],"first":26,"xs":[134,573,1013]},{"y":[396,587],"first":28,"xs":[135,596,1013]},{"y":[630,833],"first":30,"xs":[136,590,1013]},{"y":[890,1071],"first":32,"xs":[136,516,1013]},{"y":[1111,1279],"first":34,"xs":[137,603,1014]}]},{"p":12,"systems":[{"y":[142,313],"first":36,"xs":[170,587,1047]},{"y":[377,553],"first":38,"xs":[170,484,766,1046]},{"y":[601,800],"first":41,"xs":[170,481,770,1047]},{"y":[844,1035],"first":44,"xs":[170,486,792,1047]},{"y":[1073,1276],"first":47,"xs":[300,483,773,1047]}]},{"p":13,"systems":[{"y":[153,330],"first":50,"xs":[135,569,1011]},{"y":[354,560],"first":52,"xs":[136,598,983]},{"y":[606,782],"first":54,"xs":[136,592,1011]},{"y":[816,1012],"first":56,"xs":[137,593,1011]},{"y":[1040,1242],"first":58,"xs":[136,579,1011]}]},{"p":14,"systems":[{"y":[148,341],"first":60,"xs":[173,516,834,1049]},{"y":[393,574],"first":63,"xs":[173,460,627,863,1049]},{"y":[601,790],"first":67,"xs":[174,458,674,854,1049]},{"y":[841,1023],"first":71,"xs":[173,622,1049]},{"y":[1087,1258],"first":73,"xs":[172,631,1048]}]},{"p":15,"systems":[{"y":[197,391],"first":75,"xs":[140,592,1012]},{"y":[446,636],"first":77,"xs":[139,608,1012]},{"y":[677,866],"first":79,"xs":[139,564,1013]},{"y":[902,1077],"first":81,"xs":[138,473,702,1012]},{"y":[1111,1292],"first":84,"xs":[139,345,516,699,886,1011]}]}],"III":[{"p":16,"systems":[{"y":[229,416],"first":1,"xs":[205,574,828,1044]},{"y":[450,632],"first":4,"xs":[168,392,604,826,1045]},{"y":[674,851],"first":8,"xs":[169,366,546,712,876,1047]},{"y":[880,1058],"first":13,"xs":[163,360,525,707,871,1047]},{"y":[1088,1263],"first":18,"xs":[163,364,524,716,883,1046]}]},{"p":17,"systems":[{"y":[178,363],"first":23,"xs":[148,400,614,776,1026]},{"y":[408,600],"first":27,"xs":[148,418,636,809,1026]},{"y":[645,841],"first":31,"xs":[139,408,645,835,1026]},{"y":[889,1073],"first":35,"xs":[146,378,585,802,1026]},{"y":[1122,1304],"first":39,"xs":[151,413,622,829,1026]}]},{"p":18,"systems":[{"y":[128,315],"first":43,"xs":[161,392,609,823,1038]},{"y":[362,545],"first":47,"xs":[162,436,627,864,1038]},{"y":[592,778],"first":51,"xs":[162,410,612,816,1039]},{"y":[824,1009],"first":55,"xs":[163,414,612,836,1039]},{"y":[1058,1248],"first":59,"xs":[163,401,610,834,1039]}]},{"p":19,"systems":[{"y":[173,364],"first":63,"xs":[160,374,570,767,1039]},{"y":[418,595],"first":67,"xs":[160,407,620,837,1039]},{"y":[648,830],"first":71,"xs":[161,409,629,828,1040]},{"y":[886,1071],"first":75,"xs":[161,404,622,822,1039]},{"y":[1117,1297],"first":79,"xs":[162,368,561,732,861,1006]}]},{"p":20,"systems":[{"y":[150,317],"first":84,"xs":[167,347,462,599,808,931,1044]},{"y":[365,548],"first":90,"xs":[167,341,448,568,694,802,906,1045]},{"y":[609,787],"first":97,"xs":[166,349,466,605,719,834,938,1044]},{"y":[848,1021],"first":104,"xs":[165,349,468,580,698,813,930,1042]},{"y":[1080,1264],"first":111,"xs":[157,351,476,594,708,817,933,1042]}]},{"p":21,"systems":[{"y":[206,381],"first":118,"xs":[157,342,451,562,745,836,944,1036]},{"y":[437,631],"first":125,"xs":[158,338,455,562,667,775,924,1035]},{"y":[681,864],"first":132,"xs":[158,347,479,700,889,1036]},{"y":[900,1083],"first":137,"xs":[159,372,530,707,865,1036]},{"y":[1122,1310],"first":142,"xs":[159,397,608,802,1036]}]},{"p":22,"systems":[{"y":[127,314],"first":146,"xs":[160,396,619,830,1037]},{"y":[361,548],"first":150,"xs":[161,374,561,730,848,1037]},{"y":[589,784],"first":155,"xs":[161,416,628,838,1037]},{"y":[828,1008],"first":159,"xs":[160,405,626,771,905,1036]},{"y":[1053,1237],"first":164,"xs":[146,286,382,468,632,826,1035]}]},{"p":23,"systems":[{"y":[169,364],"first":170,"xs":[148,385,590,808,1027]},{"y":[409,588],"first":174,"xs":[149,387,517,668,1001]},{"y":[633,830],"first":178,"xs":[149,403,619,801,1026]},{"y":[900,1094],"first":182,"xs":[149,395,612,829,1026]},{"y":[1134,1318],"first":186,"xs":[149,457,751,1027]}]},{"p":24,"systems":[{"y":[129,325],"first":189,"xs":[167,426,652,853,1054]},{"y":[369,563],"first":193,"xs":[175,410,622,845,1053]},{"y":[617,820],"first":197,"xs":[176,412,604,827,1053]},{"y":[864,1058],"first":201,"xs":[176,756,1054]},{"y":[1100,1275],"first":203,"xs":[175,761,1053]}]},{"p":25,"systems":[{"y":[179,353],"first":205,"xs":[131,621,1009]},{"y":[411,588],"first":207,"xs":[131,704,1010]},{"y":[635,828],"first":209,"xs":[132,327,496,666,853,1010]},{"y":[872,1057],"first":214,"xs":[133,334,497,668,837,1010]},{"y":[1094,1277],"first":219,"xs":[133,366,536,762,898,1008]}]}]};
-const TOTAL={I:197,II:88,III:223};
+const GEOM = {"I":[{"p":2,"systems":[{"y":[299,460],"first":0,"xs":[237,422,570,737,904,1049]},{"y":[482,663],"first":5,"xs":[170,395,541,733,918,1049]},{"y":[685,857],"first":10,"xs":[170,416,600,774,938,1049]},{"y":[885,1058],"first":15,"xs":[171,414,661,853,1049]},{"y":[1093,1274],"first":19,"xs":[172,423,603,811,1049]}]},{"p":3,"systems":[{"y":[166,356],"first":23,"xs":[136,387,603,784,1012]},{"y":[381,564],"first":27,"xs":[136,375,551,681,835,1012]},{"y":[597,776],"first":32,"xs":[137,345,516,693,844,1012]},{"y":[806,983],"first":37,"xs":[137,312,422,542,668,790,881,1012]},{"y":[1062,1252],"first":44,"xs":[136,289,372,455,591,758,893,1012]}]},{"p":4,"systems":[{"y":[134,327],"first":51,"xs":[167,355,506,643,773,855,955,1046]},{"y":[329,500],"first":58,"xs":[167,333,431,571,678,786,898,1045]},{"y":[515,692],"first":65,"xs":[168,375,519,671,840,938,1044]},{"y":[730,906],"first":71,"xs":[168,352,507,661,867,1046]},{"y":[907,1090],"first":76,"xs":[168,435,612,776,928,1045]},{"y":[1132,1296],"first":81,"xs":[168,373,526,676,864,1046]}]},{"p":5,"systems":[{"y":[121,288],"first":86,"xs":[130,391,584,732,877,1010]},{"y":[321,488],"first":91,"xs":[131,326,469,605,731,837,1010]},{"y":[514,696],"first":97,"xs":[131,438,679,854,1009]},{"y":[733,918],"first":101,"xs":[131,376,533,695,829,1009]},{"y":[929,1103],"first":106,"xs":[131,351,514,672,842,1009]},{"y":[1113,1292],"first":111,"xs":[131,331,466,599,736,876,1009]}]},{"p":6,"systems":[{"y":[128,314],"first":117,"xs":[171,492,658,855,1051]},{"y":[364,550],"first":121,"xs":[172,400,595,872,1050]},{"y":[609,800],"first":125,"xs":[173,492,681,860,1049]},{"y":[834,1012],"first":129,"xs":[172,458,675,897,1049]},{"y":[1060,1237],"first":133,"xs":[172,351,471,604,728,889,1048]}]},{"p":7,"systems":[{"y":[143,318],"first":139,"xs":[135,394,597,799,1013]},{"y":[361,558],"first":143,"xs":[135,337,506,676,808,992]},{"y":[612,797],"first":148,"xs":[136,466,663,839,1014]},{"y":[841,1033],"first":152,"xs":[136,357,527,701,852,1014]},{"y":[1070,1263],"first":157,"xs":[137,388,562,719,876,978]}]},{"p":8,"systems":[{"y":[140,301],"first":162,"xs":[171,355,489,581,703,817,907,1051]},{"y":[314,510],"first":169,"xs":[171,388,536,660,774,898,1051]},{"y":[523,700],"first":175,"xs":[171,347,518,616,711,807,913,1050]},{"y":[704,871],"first":182,"xs":[171,349,504,605,706,871,1050]},{"y":[908,1078],"first":188,"xs":[171,430,610,709,893,1050]},{"y":[1120,1289],"first":193,"xs":[171,412,611,729,899,1046]}]}]};
+const TOTAL={I:197};
 const FORMS = {
   I:{title:'I. Allegro molto sostenuto',sub:'Sonata form · 3/4 · C minor → C',total:197,groups:[['Exposition',1,70],['Development',71,137],['Recapitulation',137,197]],
      secs:[['First theme',1,17,'C minor',1],['Transition',17,40,'→ E♭',0],['Second theme',40,61,'E♭ major',2],['Closing',61,70,'E♭ major',0],['Dev. A',71,87,'E♭ m → F m',3],['B1',88,98,'',3],['B2',99,106,'',3],['B3',107,116,'hemiolas',3],['C',117,137,'G pedal',3],['First theme',137,149,'C minor',1],['Transition',149,162,'',0],['Second theme',162,183,'C major',2],['Closing',183,197,'C',0]]},
@@ -580,111 +651,6 @@ const SOURCES = {
 
 
 
-
-const MOTIFS = [
- {k:'murmur',name:'Opening murmur',col:'#2F5BEA',refs:[['I',0,0],['I',21,22],['I',65,67]]},
- {k:'theme1',name:'Theme 1 returns',col:'#7A5CD6',refs:[['I',1,4],['I',71,74],['I',107,109],['I',137,140]]},
- {k:'grace',name:'Grace-note sweep',col:'#D08A12',refs:[['I',17,18],['I',37,39],['I',40,42],['I',162,165]]},
- {k:'cadence',name:'Ironic cadence',col:'#D2463F',refs:[['I',68,70],['I',194,197]]}
-];
-ANN.splice(0,ANN.length,...ANN.filter(a=>a.mv==='I'));
-const WINDOWS=[['context','Context'],['structure','Structure'],['score','Score'],['interpretations','Interpretations'],['connections','Connections'],['sources','Sources']];
-const MV=['I'];
-const CROP=[90,110,1005,1240];
-
-/* ---------- state ---------- */
-const store={get(k,d){try{const v=localStorage.getItem('oi3:'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('oi3:'+k,JSON.stringify(v))}catch(e){}}};
-const voted=new Set(store.get('voted',[])); const qvotes=store.get('qvotes',{}); const userC=store.get('ucmt',{});
-const annById=Object.fromEntries(ANN.map(a=>[a.id,a]));
-ANN.forEach(a=>{a.c.forEach((c,i)=>{c.key=a.id+'#'+i;(c.replies||[]).forEach((r,j)=>r.key=c.key+'r'+j)})});
-Object.entries(userC).forEach(([id,list])=>{let a=annById[id];if(!a){const m=id.match(/^(I{1,3})-b(\d+)$/);if(!m)return;a={id,mv:m[1],from:+m[2],to:+m[2],title:'',tags:[],a:'',src:[],ip:[],links:[],c:[]};ANN.push(a);annById[id]=a}list.forEach(c=>a.c.push(c))});
-let lastQ='', flashBar=null;
-
-/* ---------- helpers ---------- */
-const $=s=>document.querySelector(s);
-const esc=s=>String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
-const bl=(f,t)=>f===0&&t===0?'upbeat':f===t?'m. '+f:'mm. '+f+'–'+t;
-const one=b=>b===0?'upbeat':'m. '+b;
-const annFor=(mv,b)=>ANN.filter(a=>a.mv===mv&&b>=a.from&&b<=a.to&&(a.a||a.c.length)).sort((x,y)=>y.from-x.from)[0];
-const motifsAt=(mv,b)=>MOTIFS.filter(m=>m.refs.some(r=>r[0]===mv&&b>=r[1]&&b<=r[2]));
-const secAt=(mv,b)=>{const s=FORMS[mv].secs.filter(s=>b>=s[1]&&b<=s[2]);return s[s.length-1]||FORMS[mv].secs[0]};
-const voteVal=c=>c.v+(voted.has(c.key)?1:0);
-const upSvg='<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2l4.5 6h-9z" fill="currentColor"/></svg>';
-const go=h=>{location.hash=h};
-const chip=(mv,b,col,label)=>`<button class="chip" data-go="bar-${mv}-${b}">${col?`<i style="background:${col}"></i>`:''}${label||mv+' · '+one(b)}</button>`;
-const imslp=q=>'https://imslp.org/index.php?search='+encodeURIComponent(q);
-const W=(t,q)=>`<a class="wref" href="${imslp(q||t)}" target="_blank" rel="noopener">${t}</a>`;
-const B=(mv,b,label)=>mv==='I'?chip(mv,b,null,label):'';
-function toast(t){const d=document.createElement('div');d.style.cssText='position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 14px;border-radius:10px;font-size:14px;z-index:60';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),1800)}
-function geom(mv,b){for(const pg of GEOM[mv])for(const sys of pg.systems){const i=b-sys.first;if(i>=0&&i<sys.xs.length-1)return{pg,sys,i}}return null}
-/* score excerpt of the system containing bar `from`, highlighting from..to (clipped to the system) */
-function snip(mv,from,to){
-  const g=geom(mv,from); if(!g) return '';
-  const {pg,sys,i}=g, [cx,cy,cw,ch]=CROP;
-  const x0=sys.xs[0]-8,x1=sys.xs.at(-1)+8,y0=sys.y[0],y1=sys.y[1],w=x1-x0,h=y1-y0;
-  const j=Math.min(sys.xs.length-1,i+1+Math.max(0,(to??from)-from));
-  const hx0=sys.xs[i],hx1=sys.xs[j];
-  return `<span class="snip" style="aspect-ratio:${w}/${h}"><img loading="lazy" src="score/p${String(pg.p).padStart(2,'0')}.png" alt="" style="width:${cw/w*100}%;left:${-(x0-cx)/w*100}%;top:${-(y0-cy)/h*100}%"><span class="hl" style="left:${(hx0-x0)/w*100}%;width:${(hx1-hx0)/w*100}%"></span></span>`;
-}
-
-/* ---------- router ---------- */
-window.addEventListener('hashchange',route);
-document.addEventListener('click',e=>{
-  const g=e.target.closest('[data-go]'); if(g){e.preventDefault();go(g.dataset.go);return}
-  const v=e.target.closest('.vote'); if(v){const k=v.dataset.key;voted.has(k)?voted.delete(k):voted.add(k);store.set('voted',[...voted]);const c=findC(k);document.querySelectorAll(`.vote[data-key="${CSS.escape(k)}"]`).forEach(o=>{o.classList.toggle('on',voted.has(k));o.querySelector('span').textContent=voteVal(c)})}
-});
-function findC(k){for(const a of ANN)for(const c of a.c){if(c.key===k)return c;for(const r of c.replies||[])if(r.key===k)return r}}
-function route(){
-  const h=location.hash.replace('#','');
-  if(!h||h==='home'){window.scrollTo(0,0);return home()}
-  if(h==='piece'){window.scrollTo(0,0);return shell('',pieceHome())}
-  if(h==='map'){window.scrollTo(0,0);return mapShell()}
-  let m;
-  if((m=h.match(/^bar-(I{1,3})-(\d+)$/))&&m[1]!=='I'){go('score');return}
-  if(m=h.match(/^bar-(I{1,3})-(\d+)$/)){window.scrollTo(0,0);return shell('score',barView(m[1],+m[2]),()=>bindBar(m[1],+m[2]))}
-  if(m=h.match(/^motif-(\w+)$/)){window.scrollTo(0,0);return shell('connections',motifView(m[1]))}
-  if(m=h.match(/^score(?:-(I{1,3}))?$/)){shell('score',scoreView(),()=>bindScore(m[1]));return}
-  const fns={context:contextView,structure:structureView,interpretations:interpView,connections:connView,discussion:discView,sources:sourcesView};
-  window.scrollTo(0,0);
-  if(fns[h]) return shell(h,fns[h](),binders[h]);
-  home();
-}
-
-/* ---------- home ---------- */
-function home(){
-  $('#app').innerHTML=`<div class="home"><div class="mark">Open Interpretation</div>
-    <form class="sform" id="sf" role="search"><input id="q" type="search" autocomplete="off" spellcheck="false" aria-label="Search" value="${esc(lastQ)}"><button type="submit" aria-label="Search"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8.5" cy="8.5" r="6"/><path d="M13 13l5 5"/></svg></button></form>
-    <div class="res" id="res"></div></div>`;
-  const q=$('#q'); q.focus();
-  $('#sf').onsubmit=e=>{e.preventDefault();lastQ=q.value;results()};
-  if(lastQ) results();
-}
-function results(){
-  const n=lastQ.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-  if(!n.trim()){$('#res').innerHTML='';return}
-  const p=/pro[ck]|sonat|soant|op\.? ?29/.test(n), m=/bach|beethoven|schubert|brahms|chopin|liszt|monteverdi|lament|chromatic|fourth|crucifixus|chaconne|map/.test(n);
-  let h='';
-  if(p) h+=`<button class="res-item" data-go="piece"><div><b>Piano Sonata No. 4, Op. 29 · I</b><span>Sergei Prokofiev · Allegro molto sostenuto</span></div><i>→</i></button>`;
-  if(m) h+=`<button class="res-item" data-go="map" style="margin-top:10px"><div><b>The descending chromatic fourth</b><span>Bach · Beethoven · Schubert · Chopin · Liszt · Brahms</span></div><i>→</i></button>`;
-  $('#res').innerHTML=h||`<div class="res-none">No results</div>`;
-}
-
-/* ---------- shell ---------- */
-function shell(active,html,after){
-  $('#app').innerHTML=`<header class="top"><div class="wrap"><div class="row1">
-      <button class="iconbtn" data-go="${active?'piece':'home'}" aria-label="Back"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg></button>
-      <button class="ptitle" data-go="piece"><b>Sonata No. 4 · I. Allegro molto sostenuto</b><span>Prokofiev</span></button>
-      <button class="iconbtn" data-go="home" aria-label="Search" style="margin-left:auto"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8.5" cy="8.5" r="6"/><path d="M13 13l5 5"/></svg></button></div>
-    ${active?`<nav class="tabs">${WINDOWS.map(w=>`<button class="${w[0]===active?'on':''}" data-go="${w[0]}">${w[1]}</button>`).join('')}</nav>`:''}</div></header>
-    <main class="wrap">${html}</main>`;
-  if(after) after();
-}
-function pieceHome(){
-  return `<div class="phead"><div class="comp">Sergei Prokofiev</div><h1>Piano Sonata No. 4 in C minor <em>Op. 29</em></h1><div style="font-family:var(--f-display);font-style:italic;font-size:24px;color:var(--muted);margin-top:8px">I. Allegro molto sostenuto</div></div>
-   <div class="tiles">${WINDOWS.map((w,i)=>`<button class="tile${w[0]==='score'?' big':''}" data-go="${w[0]}"><span class="num">0${i+1}</span><b>${w[1]}</b></button>`).join('')}</div><div style="height:60px"></div>`;
-}
-
-/* ---------- context: articles ---------- */
 function ARTICLES(){return [
  {id:'glance',t:'At a glance',body:`
    <div class="facts">
@@ -714,13 +680,14 @@ function ARTICLES(){return [
 
  {id:'schmidthof',t:'Maximilian Schmidthof',body:`
    <p>The sonata is dedicated to the memory of Maximilian (Max) Schmidthof, Prokofiev’s closest friend at the Conservatory. They shared a taste for argument, philosophy and chess, and Schmidthof pushed Prokofiev’s reading in new directions.</p>
-   <p>In April 1913 Schmidthof shot himself in a forest in Finland. Before he died he sent Prokofiev a farewell letter. The loss stayed with Prokofiev for years. He dedicated three works to Schmidthof:</p>
+   <p>In April 1913 Schmidthof shot himself in a forest in Finland. Before he died he sent Prokofiev a farewell letter. The loss stayed with Prokofiev for years. He dedicated four works to Schmidthof:</p>
    <ol class="tl">
     <li><span class="y">1912</span><span>${W('Sonata No. 2 in D minor, Op. 14','Prokofiev Piano Sonata No.2')}, written while his friend was alive</span></li>
+    <li><span class="y">1913</span><span>One of the ${W('Ten Pieces, Op. 12','Prokofiev 10 Pieces Op.12')}</span></li>
     <li><span class="y">1913</span><span>${W('Piano Concerto No. 2 in G minor, Op. 16','Prokofiev Piano Concerto No.2')}, to his memory</span></li>
     <li><span class="y">1917</span><span>Sonata No. 4, to his memory</span></li></ol>
    <p>This helps explain why the first two movements are so dark and inward compared with the Third and Seventh sonatas. The Andante in particular, with its low, slow theme rising out of the bass, is often heard as an elegy.</p>`,
-   rel:[W('Piano Concerto No. 2, Op. 16','Prokofiev Piano Concerto No.2'),W('Sonata No. 2, Op. 14','Prokofiev Piano Sonata No.2')],src:'Cho 2023, p. 18; Robinson 2002; programme notes on Op. 16'},
+   rel:[W('Piano Concerto No. 2, Op. 16','Prokofiev Piano Concerto No.2'),W('Sonata No. 2, Op. 14','Prokofiev Piano Sonata No.2')],src:'Cho 2023, p. 18; Robinson 2002; Wikipedia articles on Op. 14 and Op. 16'},
 
  {id:'y1917',t:'1917: the year around the sonata',body:`
    <p>Prokofiev wrote Sonata No. 4 in the year of two revolutions, in February and October 1917. While Petrograd was in turmoil, he wrote some of his best-known music:</p>
@@ -788,173 +755,432 @@ function ARTICLES(){return [
    <p>Its quietness may be one reason for its neglect. The first two movements avoid display, and the brilliance arrives only in the finale. For a student it is a rare chance to play a Prokofiev sonata whose difficulties are mainly musical: voicing, pedalling and phrasing rather than speed.</p>`,
    rel:[W('Sonata No. 3, Op. 28','Prokofiev Piano Sonata No.3'),W('Sonata No. 7, Op. 83','Prokofiev Piano Sonata No.7')],src:'Merrick 1948; Robinson 2002, p. 133; Cho 2023, pp. 3–4'}
 ];}
+
+
+/* ================= first-movement data ================= */
+ANN.splice(0,ANN.length,...ANN.filter(a=>a.mv==='I'));
+{const a7=ANN.find(a=>a.id==='I-7'),a12=ANN.find(a=>a.id==='I-12');if(a7)a7.to=10;if(a12){a12.from=11;a12.a='The last phrase of theme 1 (mm. 12–17). Prokofiev writes poco rit. in m. 11 and cancels it with a tempo pp in m. 12. The single 4/4 bar (m. 16) then stretches the final cadence before the transition.';}}
+
+const MOTIFS = [
+ {k:'murmur',name:'Opening murmur',col:'#2F5BEA',refs:[['I',0,0],['I',21,22],['I',65,67]]},
+ {k:'theme1',name:'Theme 1 returns',col:'#7A5CD6',refs:[['I',1,4],['I',71,74],['I',107,109],['I',137,140]]},
+ {k:'grace',name:'Grace-note sweep',col:'#D08A12',refs:[['I',17,18],['I',37,39],['I',40,42],['I',162,165]]},
+ {k:'cadence',name:'Ironic cadence',col:'#D2463F',refs:[['I',68,70],['I',194,197]]}
+];
+
+/* every dynamic marking, read from the first edition: [mark, bar] */
+const DYN=[['pp',0],['mf',7],['p',9],['pp',11],['pp',12],['pp',16],['mp',17],['sf',19],['sf',20],['sf',20],['p',21],
+ ['mf',25],['sf',25],['sf',26],['sf',26],['p',27],['p',29],['mp',29],['mf',32],['f',35],['mp',37],['p',38],['pp',40],['mf',44],['pp',48],
+ ['f',55],['p',59],['pp',61],['mp',65],['f',68],['f',70],['p',71],['p',75],['mf',78],['pp',78],['p',81],['p',85],
+ ['mf',87],['f',89],['f',92],['mp',96],['ff',98],['ff',103],['ff',107],['ff',111],['f',114],['f',115],
+ ['p',117],['f',123],['ff',126],['ff',129],['ff',132],['pp',133],['pp',137],
+ ['mf',144],['p',146],['pp',148],['p',149],['p',155],['pp',159],
+ ['ppp',162],['pp',169],['f',177],['p',181],['pp',183],['mp',187],['mf',190],['f',191],['ff',195],['ff',196],['ff',197]];
+/* every word marking: [term, bar, kind] */
+const WORDS=[['Allegro molto sostenuto',0,'tempo'],['poco rit.',11,'tempo'],['a tempo',12,'tempo'],['espress.',17,'character'],['pochiss. rit.',26,'tempo'],['a tempo',27,'tempo'],
+ ['dim.',36,'dynamic'],['il basso pesante',40,'character'],['cresc.',52,'dynamic'],['espress.',55,'character'],['dim.',57,'dynamic'],['cresc.',66,'dynamic'],
+ ['subito',117,'dynamic'],['cresc.',120,'dynamic'],['pesante',126,'character'],['Meno mosso',133,'tempo'],['Tempo primo',137,'tempo'],['calando',159,'tempo'],['rit.',160,'tempo'],
+ ['tranquillo',162,'character'],['cresc.',175,'dynamic'],['espress.',177,'character'],['dim.',179,'dynamic'],['poco cresc.',185,'dynamic'],['cresc.',189,'dynamic'],['cresc.',192,'dynamic']];
+const LEVEL={ppp:0,pp:1,p:2,mp:3,mf:4,f:5,ff:6};
+const marksAt=b=>[...DYN.filter(d=>d[1]===b).map(d=>d[0]),...WORDS.filter(w=>w[1]===b).map(w=>w[0])];
+
+const VIEWS=[
+ {who:'Soyoung Cho',src:'DMA thesis, 2023, p. 54',t:'The mood is gloomy and depressed, so the performer should lean on molto sostenuto rather than allegro, without letting the music drag.'},
+ {who:'Soyoung Cho',src:'DMA thesis, 2023, p. 26',t:'The development shows Prokofiev’s fine handling of Classical elements: the two themes are combined and transformed, and the music rises by thirds over a G pedal.'},
+ {who:'Boris Berman',src:'Prokofiev’s Piano Sonatas, 2008, p. 92 (via Cho)',t:'The cadences of theme 1 (mm. 4, 7, 12, 17) should be finished smoothly, and the slurred grace notes of the transition should be melodic.'},
+ {who:'Boris Berman',src:'Prokofiev’s Piano Sonatas, 2008, p. 85 (via Cho)',t:'The hemiolas of the development sound Brahmsian.'},
+ {who:'György Sándor',src:'recording, as described by Cho, pp. 55–56',t:'Plays theme 1 and the transition as two characters: theme 1 gentle and clearly phrased, the transition dramatic, with grace notes on the beat and strong sf.'},
+ {who:'Harlow Robinson',src:'Sergei Prokofiev: A Biography, 2002, p. 133 (via Cho)',t:'The sonata is less exhibitionistic than Prokofiev’s other piano music, with an impressionistic, almost shapeless quality reminiscent of Schumann.'}
+];
+const GEN=[
+ {u:'M. Hartl',r:'Teacher',v:57,t:'This movement is about patience. Students hear “Allegro” and rush. Read the whole marking: molto sostenuto is the real instruction.'},
+ {u:'Sofia R.',r:'Performer',v:43,t:'It never gets loud until the development. Save your sound. The first f only comes in m. 35.'},
+ {u:'Lena K.',r:'Student',v:31,t:'I think of it as chamber music for low strings. Almost everything sits in the middle and low register.'},
+ {u:'Ana T.',r:'Musicologist',v:22,t:'A Classical sonata form in which almost nothing is said directly: two-beat slurs against 3/4, a second theme in two keys at once, cadences with a smirk.'}
+];
+GEN.forEach((c,i)=>c.key='GEN#'+i);
+
+const OTHER=[
+ {id:'o1',sh:'Student sonata, 1908',piece:'Student sonata (1908)',q:null,bar:null,where:'Whole movement',type:'Source material',status:'Documented',why:'The subtitle “From old notebooks” is literal: Prokofiev reworked a sonata he wrote at the St. Petersburg Conservatory in 1908.',src:'Cho 2023, p. 18; Prokofiev, Autobiography, p. 27'},
+ {id:'o2',sh:'Sonata No. 3, Op. 28',piece:'Sonata No. 3 in A minor, Op. 28',q:'Prokofiev Piano Sonata No.3',bar:null,where:'Whole movement',type:'Same period',status:'Documented',why:'Written in the same year with the same subtitle, also reworked from a student sonata (1907).',src:'Cho 2023, p. 18'},
+ {id:'o3',sh:'Classical Symphony',piece:'Symphony No. 1 “Classical”, Op. 25',q:'Prokofiev Symphony No.1',bar:['I',1],where:'Form and phrasing',type:'Same period',status:'Documented',why:'Completed in 1917 and premiered in Petrograd in April 1918, the same month as this sonata. Both show Prokofiev’s Classical line.',src:'Cho 2023, ch. 2; histories of Op. 25'},
+ {id:'o4',sh:'Sonata No. 2, Op. 14',piece:'Sonata No. 2 in D minor, Op. 14',q:'Prokofiev Piano Sonata No.2',bar:null,where:'Dedication',type:'Same dedicatee',status:'Documented',why:'Also dedicated to Maximilian Schmidthof. Prokofiev dedicated four works to him: Sonata No. 2, one of the Ten Pieces Op. 12, Piano Concerto No. 2 and this sonata.',src:'Wikipedia, Piano Sonata No. 2 (Prokofiev)'},
+ {id:'o5',sh:'Piano Concerto No. 2',piece:'Piano Concerto No. 2 in G minor, Op. 16',q:'Prokofiev Piano Concerto No.2',bar:null,where:'Dedication',type:'Same dedicatee',status:'Documented',why:'Dedicated to the memory of Schmidthof, who died in April 1913.',src:'Wikipedia, Piano Concerto No. 2 (Prokofiev)'},
+ {id:'o6',sh:'Beethoven sonatas',piece:'Beethoven, piano sonatas',q:'Beethoven Piano Sonatas',bar:['I',71],where:'Sonata form',type:'Model',status:'Documented',why:'Prokofiev’s mother played Beethoven sonatas to him as a child. He names this as the root of his Classical line, which shapes this movement’s exposition, development and recapitulation.',src:'Prokofiev, Autobiography, pp. 15–16, via Cho p. 8'},
+ {id:'o7',sh:'Brahms',piece:'Brahms',q:'Brahms',bar:['I',107],where:'mm. 107–109, hemiolas',type:'Model',status:'Suggested',why:'Berman hears the hemiolas of the development, theme 1 against two-beat groups, as Brahmsian. Brahms used hemiolas extensively.',src:'Berman 2008, p. 85, via Cho p. 25'},
+ {id:'o8',sh:'Schumann',piece:'Schumann',q:'Schumann piano',bar:null,where:'Character of the sonata',type:'Model',status:'Suggested',why:'Robinson hears an impressionistic, almost shapeless quality reminiscent of Schumann.',src:'Robinson 2002, p. 133, via Cho p. 3'},
+ {id:'o9',sh:'Sonata No. 4, finale',piece:'Sonata No. 4, III. Allegro con brio',q:'Prokofiev Piano Sonata No.4',bar:['I',0],where:'Upbeat, the opening murmur',type:'Same sonata',status:'Suggested',why:'The finale’s first bridge ends on two oscillating notes (D–E♭, mm. 40–42) that seem to come from this opening figure.',src:'Cho 2023, p. 43'}
+];
+const TYPECOL={'Source material':'#2F5BEA','Same period':'#1E9A5F','Same dedicatee':'#7A5CD6','Model':'#D08A12','Same sonata':'#D2463F'};
+
+const RECS=[
+ ['György Sándor','Vox, complete solo piano music','♩ ≈ 88–90 (Cho)'],['Boris Berman','Chandos CHAN9637, 1998','♩ ≈ 88–90 (Cho)'],['Sviatoslav Richter','live recordings',''],
+ ['Yefim Bronfman','complete sonatas',''],['Frederic Chiu','complete sonatas',''],['Peter Donohoe','complete sonatas',''],['Bernd Glemser','complete sonatas',''],
+ ['Yakov Kasman','complete sonatas',''],['Oleg Marshev','complete sonatas',''],['Vladimir Ovchinnikov','complete sonatas',''],['Matti Raekallio','complete sonatas',''],
+ ['Natalia Trull','complete sonatas',''],['Nikolai Lugansky','selected sonatas',''],['Alexandra Silocea','selected sonatas','']];
+
+const WINDOWS=[['glance','At a glance'],['context','Context'],['perspectives','Perspectives'],['structure','Structure'],['score','Score'],['connections','Connections'],['other','Other pieces'],['stats','Statistics'],['listening','Listening'],['sources','Sources']];
+const GROUPS=[['Understand',['glance','context','perspectives']],['Inside the score',['structure','score','connections']],['Beyond the piece',['other','stats','listening']],['Reference',['sources']]];
+const CROP=[90,110,1005,1240];
+
+/* ---------- state ---------- */
+const store={get(k,d){try{const v=localStorage.getItem('oi4:'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('oi4:'+k,JSON.stringify(v))}catch(e){}}};
+const voted=new Set(store.get('voted',[])); const qvotes=store.get('qvotes',{}); const userC=store.get('ucmt',{});
+const annById=Object.fromEntries(ANN.map(a=>[a.id,a]));
+ANN.forEach(a=>{a.c.forEach((c,i)=>{c.key=a.id+'#'+i;(c.replies||[]).forEach((r,j)=>r.key=c.key+'r'+j)})});
+Object.entries(userC).forEach(([id,list])=>{let a=annById[id];if(!a){const m=id.match(/^I-b(\d+)$/);if(!m)return;a={id,mv:'I',from:+m[1],to:+m[1],title:'',tags:[],a:'',src:[],ip:[],links:[],c:[]};ANN.push(a);annById[id]=a}list.forEach(c=>a.c.push(c))});
+let lastQ='', flashBar=null;
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+const bl=(f,t)=>f===0&&t===0?'upbeat':f===t?'m. '+f:'mm. '+f+'–'+t;
+const one=b=>b===0?'upbeat':'m. '+b;
+const annFor=(mv,b)=>ANN.filter(a=>a.mv===mv&&b>=a.from&&b<=a.to&&(a.a||a.c.length)).sort((x,y)=>y.from-x.from)[0];
+const motifsAt=(mv,b)=>MOTIFS.filter(m=>m.refs.some(r=>r[0]===mv&&b>=r[1]&&b<=r[2]));
+const secAt=(mv,b)=>{const s=FORMS[mv].secs.filter(s=>b>=s[1]&&b<=s[2]);return s[s.length-1]||FORMS[mv].secs[0]};
+const voteVal=c=>c.v+(voted.has(c.key)?1:0);
+const upSvg='<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2l4.5 6h-9z" fill="currentColor"/></svg>';
+const go=h=>{location.hash=h};
+const chip=(mv,b,col,label)=>`<button class="chip" data-go="bar-${mv}-${b}">${col?`<i style="background:${col}"></i>`:''}${label||one(b)}</button>`;
+const imslp=q=>'https://imslp.org/index.php?search='+encodeURIComponent(q);
+const W=(t,q)=>`<a class="wref" href="${imslp(q||t)}" target="_blank" rel="noopener">${t}</a>`;
+const B=(mv,b,label)=>mv==='I'?chip(mv,b,null,(label||'').replace(/^I · /,'')):'';
+const yt=q=>'https://www.youtube.com/results?search_query='+encodeURIComponent(q);
+function geom(mv,b){for(const pg of GEOM[mv])for(const sys of pg.systems){const i=b-sys.first;if(i>=0&&i<sys.xs.length-1)return{pg,sys,i}}return null}
+function snip(mv,from,to){
+  const g=geom(mv,from); if(!g) return '';
+  const {pg,sys,i}=g, [cx,cy,cw,ch]=CROP;
+  const x0=sys.xs[0]-8,x1=sys.xs.at(-1)+8,y0=sys.y[0],y1=sys.y[1],w=x1-x0,h=y1-y0;
+  const j=Math.min(sys.xs.length-1,i+1+Math.max(0,(to??from)-from));
+  const hx0=sys.xs[i],hx1=sys.xs[j];
+  return `<span class="snip" style="aspect-ratio:${w}/${h}"><img loading="lazy" src="score/p${String(pg.p).padStart(2,'0')}.png" alt="" style="width:${cw/w*100}%;left:${-(x0-cx)/w*100}%;top:${-(y0-cy)/h*100}%"><span class="hl" style="left:${(hx0-x0)/w*100}%;width:${(hx1-hx0)/w*100}%"></span></span>`;
+}
+function cmt(c,where){return `<div class="cmt"><button class="vote${voted.has(c.key)?' on':''}" data-key="${c.key}" aria-label="Upvote">${upSvg}<span>${voteVal(c)}</span></button><div><div class="by"><b>${esc(c.u)}</b><span class="role">${esc(c.r)}</span>${where||''}</div><p>${esc(c.t)}</p>${c.replies&&c.replies.length?`<div class="replies">${c.replies.map(r=>cmt(r)).join('')}</div>`:''}</div></div>`}
+
+/* ---------- router ---------- */
+window.addEventListener('hashchange',route);
+document.addEventListener('click',e=>{
+  const g=e.target.closest('[data-go]'); if(g){e.preventDefault();go(g.dataset.go);return}
+  const v=e.target.closest('.vote'); if(v){const k=v.dataset.key;voted.has(k)?voted.delete(k):voted.add(k);store.set('voted',[...voted]);const c=findC(k);document.querySelectorAll(`.vote[data-key="${CSS.escape(k)}"]`).forEach(o=>{o.classList.toggle('on',voted.has(k));o.querySelector('span').textContent=voteVal(c)})}
+});
+function findC(k){for(const c of GEN)if(c.key===k)return c;for(const a of ANN)for(const c of a.c){if(c.key===k)return c;for(const r of c.replies||[])if(r.key===k)return r}}
+function route(){
+  const h=location.hash.replace('#','');
+  let m;
+  if(!h||h==='home'){window.scrollTo(0,0);return home()}
+  if(m=h.match(/^w-(\w+)$/)){window.scrollTo(0,0);return workPage(m[1])}
+  if(h==='piece'){window.scrollTo(0,0);return shell('',pieceHome())}
+  if(m=h.match(/^bar-I+-(\d+)$/)){window.scrollTo(0,0);return shell('score',barView('I',+m[1]),()=>bindBar('I',+m[1]))}
+  if(m=h.match(/^motif-(\w+)$/)){window.scrollTo(0,0);return shell('connections',motifView(m[1]))}
+  if(h.startsWith('score')){shell('score',scoreView(),bindScore);return}
+  const fns={glance:glanceView,context:contextView,perspectives:perspView,structure:structureView,connections:connView,other:otherView,stats:statsView,listening:listenView,sources:sourcesView};
+  window.scrollTo(0,0);
+  if(fns[h]) return shell(h,fns[h](),binders[h]);
+  home();
+}
+
+/* ---------- home ---------- */
+function home(){
+  $('#app').innerHTML=`<div class="home"><div class="mark">Open Interpretation</div>
+    <form class="sform" id="sf" role="search"><input id="q" type="search" autocomplete="off" spellcheck="false" aria-label="Search" value="${esc(lastQ)}"><button type="submit" aria-label="Search"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8.5" cy="8.5" r="6"/><path d="M13 13l5 5"/></svg></button></form>
+    <div class="res" id="res"></div></div>`;
+  const q=$('#q'); q.focus();
+  $('#sf').onsubmit=e=>{e.preventDefault();lastQ=q.value;results()};
+  if(lastQ) results();
+}
+function results(){
+  const n=lastQ.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  if(!n.trim()){$('#res').innerHTML='';return}
+  const p=/pro[ck]o?[fv]|prokof|prokov|op\.? ?29/.test(n);
+  let h='';
+  if(p) h+=`<button class="res-item" data-go="piece"><div><b>Piano Sonata No. 4, Op. 29 · I</b><span>Sergei Prokofiev · Allegro molto sostenuto</span></div><i>→</i></button>`;
+  findWorks(n).forEach(w=>{h+=`<button class="res-item" data-go="w-${w.id}" style="margin-top:10px"><div><b>${w.t}</b><span>${w.comp}</span></div><i>→</i></button>`});
+  $('#res').innerHTML=h||`<div class="res-none">No results</div>`;
+}
+
+/* ---------- shell ---------- */
+function shell(active,html,after){
+  $('#app').innerHTML=`<header class="top"><div class="wrap"><div class="row1">
+      <button class="iconbtn" data-go="${active?'piece':'home'}" aria-label="Back"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg></button>
+      <button class="ptitle" data-go="piece"><b>Sonata No. 4 · I. Allegro molto sostenuto</b><span>Prokofiev</span></button>
+      <button class="iconbtn" data-go="home" aria-label="Search" style="margin-left:auto"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8.5" cy="8.5" r="6"/><path d="M13 13l5 5"/></svg></button></div>
+    ${active?`<nav class="tabs">${WINDOWS.map(w=>`<button class="${w[0]===active?'on':''}" data-go="${w[0]}">${w[1]}</button>`).join('')}</nav>`:''}</div></header>
+    <main class="wrap">${html}</main>`;
+  if(after) after();
+  const on=document.querySelector('.tabs .on'); if(on) on.scrollIntoView({inline:'center',block:'nearest'});
+}
+function pieceHome(){
+  const nm=Object.fromEntries(WINDOWS);let n=0;
+  return `<div class="phead"><div class="comp">Sergei Prokofiev</div><h1>Piano Sonata No. 4 in C minor <em>Op. 29</em></h1><div class="mvt">I. Allegro molto sostenuto</div></div>
+   ${GROUPS.map(g=>`<div class="sec-title">${g[0]}</div><div class="tiles">${g[1].map(k=>`<button class="tile${k==='score'?' big':''}" data-go="${k}"><span class="num">${String(++n).padStart(2,'0')}</span><b>${nm[k]}</b></button>`).join('')}</div>`).join('')}<div style="height:60px"></div>`;
+}
+
+/* ---------- 1 at a glance ---------- */
+function glanceView(){
+  const rows=[['Tempo','Allegro molto sostenuto'],['Key','C minor; second theme in E♭ major, in C major in the recapitulation'],['Metre','3/4, with two single bars of 4/4 (mm. 16 and 148)'],
+   ['Length','197 bars and a two-beat upbeat'],['Form','Sonata form: exposition mm. 1–70, development 71–137, recapitulation 137–197'],['Tempo in recordings','♩ ≈ 88–90 (Sándor, Berman)'],
+   ['Duration','about 6½ minutes at that tempo (estimate)'],['Dynamics','from ppp (m. 162) to ff; no fff'],['Composed','1917, from a Conservatory sonata of 1908'],['Dedication','To the memory of Maximilian Schmidthof']];
+  return `<div class="view"><div class="vh"><h1>At a glance</h1></div>
+   <div class="card">${rows.map(r=>`<div class="kv"><div>${r[0]}</div><div>${esc(r[1])}</div></div>`).join('')}</div>
+   <div class="summary">A dark, restrained sonata movement. A low murmur opens it, theme 1 sighs in two-beat slurs against the 3/4 bar, and a second theme hovers between E♭ major and G minor. The development builds through Brahmsian hemiolas to a climax on G, falls silent, and the recapitulation returns softer, ending on a cadence with a deliberately sour edge.</div></div>`;
+}
+
+/* ---------- 2 context ---------- */
 function contextView(){
-  const A=ARTICLES();
+  const A=ARTICLES().filter(a=>a.id!=='glance');
   return `<div class="view"><div class="vh"><h1>Context</h1></div><div class="ctx">
     <nav class="toc">${A.map((a,i)=>`<a href="#context" data-art="${a.id}"><span class="n">${String(i+1).padStart(2,'0')}</span>${a.t}</a>`).join('')}</nav>
     <div>${A.map((a,i)=>`<article class="art" id="art-${a.id}"><div class="kick">${String(i+1).padStart(2,'0')}</div><h2>${a.t}</h2>${a.body}${a.rel?`<div class="rel"><span class="label">Related works</span>${a.rel.join('')}</div>`:''}<div class="srcl">${esc(a.src)}</div></article>`).join('')}</div></div></div>`;
 }
 
-/* ---------- structure ---------- */
-function structureView(){
-  return `<div class="view"><div class="vh"><h1>Structure</h1></div>${MV.map(mv=>{const f=FORMS[mv];return `<div class="card fm"><h3>${f.title}</h3><div class="bands-x"><div class="bands">${f.secs.map(s=>`<button class="band g${s[4]}" style="flex:${Math.max(s[2]-s[1]+1,4)}" data-go="bar-${mv}-${s[1]}"><b>${esc(s[0])}</b><span>${s[1]}–${s[2]}</span>${s[3]?`<small>${esc(s[3])}</small>`:''}</button>`).join('')}</div></div></div>`}).join('')}</div>`;
+/* ---------- 3 perspectives ---------- */
+function perspView(){
+  const qs=QUESTIONS.filter(q=>['Q-tempo','Q-phrasing','Q-grace'].includes(q.id));
+  return `<div class="view"><div class="vh"><h1>Perspectives</h1></div>
+   <div class="sec-title" style="margin-top:0">What they say</div>
+   <div class="views">${VIEWS.map(v=>`<figure class="vw"><blockquote>${esc(v.t)}</blockquote><figcaption><b>${esc(v.who)}</b>${esc(v.src)}</figcaption></figure>`).join('')}</div>
+   <div class="sec-title">Open questions</div>
+   ${qs.map(q=>{const my=qvotes[q.id];const n=q.pos.map((p,i)=>p[3]+(my===i?1:0));const tot=n.reduce((x,y)=>x+y,0);
+     return `<div class="card q"><div class="q-h"><b>${esc(q.title)}</b>${chip(q.bar[0],q.bar[1])}</div><div class="q-p">${q.pos.map((p,i)=>`<div class="pos"><span class="who">${esc(p[0])}</span><span class="how">${esc(p[1])}</span><p>${esc(p[2])}</p><div class="agree"><button class="${my===i?'on':''}" data-q="${q.id}" data-i="${i}" aria-label="Vote">${upSvg}</button><span class="meter"><i style="width:${Math.round(n[i]/tot*100)}%"></i></span><span class="pct">${Math.round(n[i]/tot*100)}%</span></div></div>`).join('')}</div></div>`}).join('')}
+   <div class="sec-title" style="display:flex;justify-content:space-between"><span>Musicians’ remarks</span><span style="font-weight:600;text-transform:none;letter-spacing:0">Example comments</span></div>
+   <div class="card dl">${[...GEN].sort((a,b)=>voteVal(b)-voteVal(a)).map(c=>cmt(c)).join('')}</div></div>`;
 }
 
-/* ---------- score: all pages ---------- */
-function scoreView(){
-  const [cx,cy,cw,ch]=CROP;
-  let html='';
-  MV.forEach(mv=>{
-    html+=`<span id="mv-${mv}"></span>`;
-    GEOM[mv].forEach(pg=>{
-      let m='';
-      pg.systems.forEach(sys=>{for(let i=0;i<sys.xs.length-1;i++){
-        const b=sys.first+i,x0=sys.xs[i],x1=sys.xs[i+1];
-        const l=(x0-cx)/cw*100,t=(sys.y[0]-cy)/ch*100,w=(x1-x0)/cw*100,h=(sys.y[1]-sys.y[0])/ch*100;
-        const mot=motifsAt(mv,b),has=!!annFor(mv,b);
-        m+=`<button class="bz" id="bz-${mv}-${b}" data-go="bar-${mv}-${b}" style="left:${l}%;top:${t}%;width:${w}%;height:${h}%" aria-label="${mv} ${one(b)}"></button><button class="mk${has?' has':''}" data-go="bar-${mv}-${b}" style="left:${l+.4}%;top:${t}%" tabindex="-1">${b===0?'up':b}${mot.map(x=>`<i style="background:${x.col}"></i>`).join('')}</button>`;
-      }});
-      html+=`<div class="sheet"><img loading="lazy" src="score/p${String(pg.p).padStart(2,'0')}.png" alt="Score page ${pg.p}" width="${cw}" height="${ch}">${m}</div>`;
-    });
-  });
-  return `<div class="view"><div class="vh"><h1>Score</h1></div>${html}</div>`;
+/* ---------- 4 structure ---------- */
+function structureView(){
+  const f=FORMS.I;
+  return `<div class="view"><div class="vh"><h1>Structure</h1></div>
+   <div class="card fm"><div class="bands-x"><div><div class="bands">${f.secs.map(s=>`<button class="band g${s[4]}" style="flex:${Math.max(s[2]-s[1]+1,4)}" data-go="bar-I-${s[1]}"><b>${esc(s[0])}</b><span>${s[1]}–${s[2]}</span>${s[3]?`<small>${esc(s[3])}</small>`:''}</button>`).join('')}</div>
+   <div class="groups">${f.groups.map(g=>`<div style="flex:${g[2]-g[1]+1}">${g[0]} · ${g[1]}–${g[2]}</div>`).join('')}</div></div></div></div>
+   <div class="card" style="margin-top:16px">${f.secs.map(s=>`<div class="kv"><div>${esc(s[0])}</div><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><span>mm. ${s[1]}–${s[2]}${s[3]?' · '+esc(s[3]):''}</span>${chip('I',s[1])}</div></div>`).join('')}</div>
+   <div class="srcl">Cho 2023, Table 4.1</div></div>`;
 }
-function bindScore(mv){
-  document.querySelectorAll('.seg [data-mv]').forEach(b=>b.onclick=()=>document.getElementById('mv-'+b.dataset.mv).scrollIntoView());
-  if(flashBar){const el=document.getElementById(`bz-${flashBar[0]}-${flashBar[1]}`);if(el){el.scrollIntoView({block:'center'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),1800)}flashBar=null}
-  else if(mv){document.getElementById('mv-'+mv).scrollIntoView()} else window.scrollTo(0,0);
+
+/* ---------- 5 score ---------- */
+function scoreView(){
+  const [cx,cy,cw,ch]=CROP; let html='';
+  GEOM.I.forEach(pg=>{
+    let m='';
+    pg.systems.forEach(sys=>{for(let i=0;i<sys.xs.length-1;i++){
+      const b=sys.first+i,x0=sys.xs[i],x1=sys.xs[i+1];
+      const l=(x0-cx)/cw*100,t=(sys.y[0]-cy)/ch*100,w=(x1-x0)/cw*100,h=(sys.y[1]-sys.y[0])/ch*100;
+      const mot=motifsAt('I',b),has=!!annFor('I',b);
+      m+=`<button class="bz" id="bz-${b}" data-go="bar-I-${b}" style="left:${l}%;top:${t}%;width:${w}%;height:${h}%" aria-label="${one(b)}"></button><button class="mk${has?' has':''}" data-go="bar-I-${b}" style="left:${l+.4}%;top:${t}%" tabindex="-1">${b===0?'up':b}${mot.map(x=>`<i style="background:${x.col}"></i>`).join('')}</button>`;
+    }});
+    html+=`<div class="sheet"><img loading="lazy" src="score/p${String(pg.p).padStart(2,'0')}.png" alt="Score page ${pg.p}" width="${cw}" height="${ch}">${m}</div>`;
+  });
+  return `<div class="view"><div class="vh"><h1>Score</h1><div class="legend2"><span><i class="lg-has"></i>has notes</span>${MOTIFS.map(m=>`<span><i style="background:${m.col};border-radius:50%"></i>${m.name}</span>`).join('')}</div></div>${html}</div>`;
+}
+function bindScore(){
+  if(flashBar!==null){const el=document.getElementById('bz-'+flashBar);if(el){el.scrollIntoView({block:'center'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),1800)}flashBar=null}
+  else window.scrollTo(0,0);
 }
 
 /* ---------- bar window ---------- */
 function barView(mv,b){
-  const total=TOTAL[mv], min=mv==='I'?0:1; b=Math.max(min,Math.min(total,b));
-  const a=annFor(mv,b), sec=secAt(mv,b), mot=motifsAt(mv,b);
-  const prev=b>min?`bar-${mv}-${b-1}`:null, next=b<total?`bar-${mv}-${b+1}`:null;
-  const conn=mot.map(m=>{const others=m.refs.filter(r=>!(r[0]===mv&&b>=r[1]&&b<=r[2]));
+  b=Math.max(0,Math.min(TOTAL.I,b));
+  const a=annFor(mv,b), sec=secAt(mv,b), mot=motifsAt(mv,b), mk=marksAt(b);
+  const prev=b>0?`bar-I-${b-1}`:null, next=b<TOTAL.I?`bar-I-${b+1}`:null;
+  const conn=mot.map(m=>{const others=m.refs.filter(r=>!(b>=r[1]&&b<=r[2]));
     return `<div class="mot"><div class="mot-h"><b><i style="background:${m.col}"></i>${m.name}</b><button data-go="motif-${m.k}">Compare all →</button></div>
-      <div class="thumbs">${others.map(r=>`<button class="snipbtn" data-go="bar-${r[0]}-${r[1]}">${snip(r[0],r[1],r[2])}<div class="cap">${r[0]} · ${bl(r[1],r[2])}</div></button>`).join('')}</div></div>`}).join('');
-  const seeAlso='',_unused=a?a.links.filter(l=>annById[l]).map(l=>{const t=annById[l];return `<button class="snipbtn" data-go="bar-${t.mv}-${t.from}">${snip(t.mv,t.from,t.to)}<div class="cap">${t.mv} · ${bl(t.from,t.to)} · ${esc(t.title)}</div></button>`}).join(''):'';
+      <div class="thumbs">${others.map(r=>`<button class="snipbtn" data-go="bar-I-${r[1]}">${snip('I',r[1],r[2])}<div class="cap">${bl(r[1],r[2])}</div></button>`).join('')}</div></div>`}).join('');
+  const oth=OTHER.filter(o=>o.bar&&a&&o.bar[1]>=a.from&&o.bar[1]<=a.to||o.bar&&o.bar[1]===b);
   const qs=a?a.links.filter(l=>l.startsWith('Q-')).map(l=>QUESTIONS.find(q=>q.id===l)).filter(Boolean):[];
   const sorted=a?[...a.c].sort((x,y)=>voteVal(y)-voteVal(x)):[];
   return `<div class="view">
-   <div class="vh bhead"><div><div class="label">Movement ${mv}</div><h1>${b===0?'Upbeat':'Bar '+b}</h1><div class="sub">${esc(sec[0])}${sec[3]?' · '+esc(sec[3]):''}</div></div>
+   <div class="vh bhead"><div><div class="label">${esc(sec[0])}${sec[3]?' · '+esc(sec[3]):''}</div><h1>${b===0?'Upbeat':'Bar '+b}</h1></div>
      <div class="bnav"><button class="iconbtn" ${prev?`data-go="${prev}"`:'disabled'} aria-label="Previous bar"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg></button>
        <button class="btn line" id="onScore">Score</button>
        <button class="iconbtn" ${next?`data-go="${next}"`:'disabled'} aria-label="Next bar"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l5 5-5 5"/></svg></button></div></div>
    ${snip(mv,b,b)}
-   ${a&&a.a?`<div class="box"><h3><span>Analysis</span><span style="font-family:var(--f-mono)">${bl(a.from,a.to)}</span></h3><h4>${esc(a.title)}</h4><p>${esc(a.a)}</p><div class="src">${a.src.map(esc).join(' · ')}</div></div>`:''}
-   ${a&&a.ip.length?`<div class="box"><h3>Interpretations</h3>${a.ip.map(p=>`<div class="ip"><div><b>${esc(p.who)}</b><small>${esc(p.how)}</small></div><p>${esc(p.t)}</p></div>`).join('')}</div>`:''}
+   ${mk.length?`<div class="marks">${mk.map(x=>`<span>${esc(x)}</span>`).join('')}</div>`:''}
+   ${a&&a.a?`<div class="box"><h3><span>Analysis</span><span class="mono">${bl(a.from,a.to)}</span></h3><h4>${esc(a.title)}</h4><p>${esc(a.a)}</p><div class="src">${a.src.map(esc).join(' · ')}</div></div>`:''}
+   ${a&&a.ip.length?`<div class="box"><h3>Interpretations</h3>${a.ip.map(p=>`<div class="ip"><div><b>${esc(p.who)}</b><small>${esc(p.how)}</small></div><p>${esc(p.t)}</p></div>`).join('')}${qs.length?`<div class="chips" style="margin-top:12px">${qs.map(q=>`<button class="chip" data-go="perspectives">${esc(q.title)}</button>`).join('')}</div>`:''}</div>`:''}
    ${conn?`<div class="box"><h3>Connected bars</h3>${conn}</div>`:''}
-   <div class="box"><h3><span>Discussion</span><span style="font-family:var(--f-mono)">${sorted.length}</span></h3><div>${sorted.map(cmt).join('')}</div>
+   ${oth.length?`<div class="box"><h3>Other pieces</h3>${oth.map(o=>`<div class="ip"><div><b>${esc(o.type)}</b><small>${esc(o.status)}</small></div><p>${o.q?W(esc(o.piece),o.q):esc(o.piece)}: ${esc(o.why)}</p></div>`).join('')}</div>`:''}
+   <div class="box"><h3><span>Discussion</span><span class="mono">${sorted.length}</span></h3><div>${sorted.map(c=>cmt(c)).join('')}</div>
      <div class="compose"><textarea id="nc" aria-label="Comment"></textarea><button class="btn" id="post">Post</button></div></div>
   </div>`;
 }
-function cmt(c){return `<div class="cmt"><button class="vote${voted.has(c.key)?' on':''}" data-key="${c.key}" aria-label="Upvote">${upSvg}<span>${voteVal(c)}</span></button><div><div class="by"><b>${esc(c.u)}</b><span class="role">${esc(c.r)}</span></div><p>${esc(c.t)}</p>${c.replies&&c.replies.length?`<div class="replies">${c.replies.map(cmt).join('')}</div>`:''}</div></div>`}
 function bindBar(mv,b){
-  $('#onScore').onclick=()=>{flashBar=[mv,b];go('score')};
+  $('#onScore').onclick=()=>{flashBar=b;go('score')};
   $('#post').onclick=()=>{const t=$('#nc').value.trim();if(!t)return;
-    let a=annFor(mv,b); if(!a){const id=`${mv}-b${b}`;a=annById[id]||{id,mv,from:b,to:b,title:'',tags:[],a:'',src:[],ip:[],links:[],c:[]};if(!annById[id]){ANN.push(a);annById[id]=a}}
+    let a=annFor(mv,b); if(!a){const id=`I-b${b}`;a=annById[id]||{id,mv:'I',from:b,to:b,title:'',tags:[],a:'',src:[],ip:[],links:[],c:[]};if(!annById[id]){ANN.push(a);annById[id]=a}}
     const c={u:'You',r:'You',v:1,t,replies:[],key:a.id+'#u'+Date.now()};a.c.push(c);(userC[a.id]=userC[a.id]||[]).push(c);store.set('ucmt',userC);route()};
 }
 
-/* ---------- compare: one motif, all places ---------- */
-function motifView(k){
-  const m=MOTIFS.find(x=>x.k===k); if(!m) return '';
-  return `<div class="view"><div class="vh"><div><div class="label" style="display:flex;gap:8px;align-items:center"><i style="width:10px;height:10px;border-radius:50%;background:${m.col};display:inline-block"></i>Compare</div><h1>${m.name}</h1></div></div>
-   <div class="cmp">${m.refs.map(r=>`<div class="cmp-item"><div class="cap"><b>${r[0]} · ${bl(r[1],r[2])}</b><span>${esc(secAt(r[0],r[1])[0])}</span></div><button class="snipbtn" data-go="bar-${r[0]}-${r[1]}">${snip(r[0],r[1],r[2])}</button></div>`).join('')}</div></div>`;
-}
-
-/* ---------- interpretations ---------- */
-function interpView(){
-  return `<div class="view"><div class="vh"><h1>Interpretations</h1></div>${QUESTIONS.filter(q=>['Q-tempo','Q-phrasing','Q-grace'].includes(q.id)).map(q=>{const my=qvotes[q.id];const n=q.pos.map((p,i)=>p[3]+(my===i?1:0));const tot=n.reduce((x,y)=>x+y,0);
-   return `<div class="card q"><div class="q-h"><b>${esc(q.title)}</b>${chip(q.bar[0],q.bar[1])}</div><div class="q-p">${q.pos.map((p,i)=>`<div class="pos"><span class="who">${esc(p[0])}</span><span class="how">${esc(p[1])}</span><p>${esc(p[2])}</p><div class="agree"><button class="${my===i?'on':''}" data-q="${q.id}" data-i="${i}" aria-label="Vote">${upSvg}</button><span class="meter"><i style="width:${Math.round(n[i]/tot*100)}%"></i></span><span class="pct">${Math.round(n[i]/tot*100)}%</span></div></div>`).join('')}</div></div>`}).join('')}</div>`;
-}
-const binders={
-  interpretations(){document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{const id=b.dataset.q,i=+b.dataset.i;qvotes[id]=qvotes[id]===i?undefined:i;store.set('qvotes',qvotes);const y=window.scrollY;route();window.scrollTo(0,y)})},
-  context(){document.querySelectorAll('[data-art]').forEach(a=>a.onclick=e=>{e.preventDefault();document.getElementById('art-'+a.dataset.art).scrollIntoView({behavior:'smooth'})})}
-};
-
-/* ---------- connections ---------- */
+/* ---------- 6 connections inside ---------- */
 function connView(){
-  const Wd=1000,H=300,base=240,pad=30,k=(Wd-2*pad)/(TOTAL.I+1);
-  const X=(mv,b)=>pad+b*k;
+  const Wd=1000,H=280,base=220,pad=30,k=(Wd-2*pad)/(TOTAL.I+1),X=b=>pad+b*k;
   let s=`<svg viewBox="0 0 ${Wd} ${H}" role="img" aria-label="Connections between bars">`;
-  MOTIFS.forEach(m=>{for(let i=0;i<m.refs.length-1;i++){const r1=m.refs[i],r2=m.refs[i+1],x1=X(r1[0],r1[1]),x2=X(r2[0],r2[1]),h=Math.min(220,Math.abs(x2-x1)*.6+16);
-    s+=`<path class="arc" stroke="${m.col}" d="M${x1},${base} C${x1},${base-h} ${x2},${base-h} ${x2},${base}"/>`}});
-  s+=`<line x1="${X('I',0)}" y1="${base}" x2="${X('I',TOTAL.I)}" y2="${base}" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>`;
-  FORMS.I.groups.forEach(g=>{s+=`<text x="${X('I',g[1])}" y="${base+28}" fill="var(--muted)" font-family="var(--f-body)" font-size="13">${g[0]} · ${g[1]}–${g[2]}</text>`});
-  MOTIFS.forEach(m=>m.refs.forEach(r=>{s+=`<circle class="node" data-go="bar-${r[0]}-${r[1]}" cx="${X(r[0],r[1])}" cy="${base}" r="5" fill="${m.col}" stroke="var(--surface)" stroke-width="1.5"><title>${m.name} · ${r[0]} ${bl(r[1],r[2])}</title></circle>`}));
+  FORMS.I.groups.forEach((g,i)=>{s+=`<rect x="${X(g[1])}" y="${base+8}" width="${X(g[2])-X(g[1])}" height="6" rx="3" fill="${['var(--pencil-soft)','var(--heat-soft)','var(--pencil-soft)'][i]}"/><text x="${X(g[1])}" y="${base+34}" fill="var(--muted)" font-family="var(--f-body)" font-size="13">${g[0]} · ${g[1]}–${g[2]}</text>`});
+  MOTIFS.forEach(m=>{for(let i=0;i<m.refs.length-1;i++){const x1=X(m.refs[i][1]),x2=X(m.refs[i+1][1]),h=Math.min(200,Math.abs(x2-x1)*.6+16);
+    s+=`<path class="arc" data-m="${m.k}" stroke="${m.col}" d="M${x1},${base} C${x1},${base-h} ${x2},${base-h} ${x2},${base}"/>`}});
+  s+=`<line x1="${X(0)}" y1="${base}" x2="${X(TOTAL.I)}" y2="${base}" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>`;
+  MOTIFS.forEach(m=>m.refs.forEach(r=>{s+=`<circle class="node" data-go="bar-I-${r[1]}" cx="${X(r[1])}" cy="${base}" r="6" fill="${m.col}" stroke="var(--surface)" stroke-width="2"><title>${m.name} · ${bl(r[1],r[2])}</title></circle>`}));
   s+='</svg>';
   return `<div class="view"><div class="vh"><h1>Connections</h1></div>
    <div class="card"><div class="arcs">${s}</div></div>
-   <div class="sec-title">Motifs</div>
-   <div class="card">${MOTIFS.map(m=>`<button class="mrow" data-go="motif-${m.k}"><span class="mn"><i style="background:${m.col}"></i>${m.name}</span><span class="refs">${m.refs.map(r=>r[0]+' '+bl(r[1],r[2])).join(' · ')}</span></button>`).join('')}</div>
-   <div class="sec-title">Between pieces</div>
-   <button class="res-item" data-go="map"><div><b>The descending chromatic fourth</b><span>Example of the map of music: one bass line through Bach, Beethoven, Schubert, Chopin, Liszt and Brahms</span></div><i>→</i></button></div>`;
+   <div class="card" style="margin-top:16px">${MOTIFS.map(m=>`<button class="mrow" data-go="motif-${m.k}"><span class="mn"><i style="background:${m.col}"></i>${m.name}</span><span class="refs">${m.refs.map(r=>bl(r[1],r[2])).join(' → ')}</span></button>`).join('')}</div></div>`;
+}
+function motifView(k){
+  const m=MOTIFS.find(x=>x.k===k); if(!m) return '';
+  return `<div class="view"><div class="vh"><div><div class="label" style="display:flex;gap:8px;align-items:center"><i style="width:10px;height:10px;border-radius:50%;background:${m.col};display:inline-block"></i>Compare</div><h1>${m.name}</h1></div></div>
+   <div class="cmp">${m.refs.map(r=>`<div class="cmp-item"><div class="cap"><b>${bl(r[1],r[2])}</b><span>${esc(secAt('I',r[1])[0])}</span></div><button class="snipbtn" data-go="bar-I-${r[1]}">${snip('I',r[1],r[2])}</button></div>`).join('')}</div></div>`;
 }
 
-/* ---------- discussion ---------- */
-function discView(){
-  const all=[];ANN.forEach(a=>a.c.forEach(c=>all.push({a,c})));all.sort((x,y)=>voteVal(y.c)-voteVal(x.c));
-  return `<div class="view"><div class="vh"><h1>Discussion</h1><span class="label">Example data</span></div><div class="card dl">${all.map(({a,c})=>`<div class="cmt"><button class="vote${voted.has(c.key)?' on':''}" data-key="${c.key}" aria-label="Upvote">${upSvg}<span>${voteVal(c)}</span></button><div><div class="by"><b>${esc(c.u)}</b><span class="role">${esc(c.r)}</span>${chip(a.mv,a.from)}</div><p>${esc(c.t)}</p></div></div>`).join('')}</div></div>`;
+/* ---------- 7 other pieces ---------- */
+function otherView(){
+  const Wd=760,H=460,cx=380,cy=230,R=[175,195];
+  const n=OTHER.length;
+  let s=`<svg viewBox="0 0 ${Wd} ${H}" role="img" aria-label="Map of connections to other pieces">`;
+  const pos=OTHER.map((o,i)=>{const ang=-Math.PI/2+i*2*Math.PI/n;return [cx+Math.cos(ang)*R[i%2]*1.45,cy+Math.sin(ang)*R[i%2]*.95]});
+  OTHER.forEach((o,i)=>{const [x,y]=pos[i];s+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="${TYPECOL[o.type]}" stroke-width="2" ${o.status==='Suggested'?'stroke-dasharray="6 5"':''} opacity=".7"/>`});
+  s+=`<g><rect x="${cx-95}" y="${cy-28}" width="190" height="56" rx="10" fill="var(--ink)"/><text x="${cx}" y="${cy-4}" text-anchor="middle" fill="var(--paper)" font-family="var(--f-display)" font-size="16" font-weight="600">Sonata No. 4 · I</text><text x="${cx}" y="${cy+15}" text-anchor="middle" fill="var(--paper)" opacity=".7" font-family="var(--f-body)" font-size="12">Allegro molto sostenuto</text></g>`;
+  OTHER.forEach((o,i)=>{const [x,y]=pos[i];const label=o.sh;const w=Math.max(label.length*7+26,90);
+    s+=`<g class="onode" data-o="${o.id}" tabindex="0" role="button" aria-label="${esc(o.piece)}"><rect x="${x-w/2}" y="${y-17}" width="${w}" height="34" rx="8" fill="var(--surface)" stroke="${TYPECOL[o.type]}" stroke-width="1.5"/><text x="${x}" y="${y+4}" text-anchor="middle" fill="var(--ink)" font-family="var(--f-body)" font-size="12">${esc(label)}</text></g>`});
+  s+='</svg>';
+  return `<div class="view"><div class="vh"><h1>Other pieces</h1></div>
+   <div class="card"><div class="arcs net">${s}</div>
+   <div class="legend">${Object.entries(TYPECOL).map(([t,c])=>`<span class="lg"><i style="background:${c}"></i>${t}</span>`).join('')}<span class="lg"><i style="background:none;border:1.5px dashed var(--muted)"></i>Suggested, not documented</span></div></div>
+   <div class="olist">${OTHER.map(o=>`<div class="ocard" id="o-${o.id}"><div class="o-top"><span class="tbadge" style="color:${TYPECOL[o.type]};border-color:${TYPECOL[o.type]}">${o.type}</span><span class="sbadge ${o.status==='Documented'?'doc':''}">${o.status}</span></div>
+     <h3>${o.q?W(esc(o.piece),o.q):esc(o.piece)}</h3><div class="o-where">${esc(o.where)} ${o.bar?chip(o.bar[0],o.bar[1]):''}</div><p>${esc(o.why)}</p><div class="srcl">${esc(o.src)}</div></div>`).join('')}</div></div>`;
 }
 
-/* ---------- sources ---------- */
+/* ---------- 8 statistics ---------- */
+function statsView(){
+  const order=['ppp','pp','p','mp','mf','f','ff','sf'];
+  const cnt=Object.fromEntries(order.map(k=>[k,DYN.filter(d=>d[0]===k).length]));
+  const max=Math.max(...Object.values(cnt));
+  const most=order.filter(k=>cnt[k]===max), least=order.filter(k=>cnt[k]===Math.min(...order.map(k=>cnt[k])));
+  // dynamic curve
+  const Wd=1000,H=200,pad=34,k=(Wd-2*pad)/(TOTAL.I+1),X=b=>pad+b*k,Y=l=>170-l*24;
+  let lv=null,pts=[];
+  for(let b=0;b<=TOTAL.I;b++){const ds=DYN.filter(d=>d[1]===b&&d[0]!=='sf');if(ds.length)lv=LEVEL[ds.at(-1)[0]];if(lv!==null)pts.push([b,lv])}
+  let path='';pts.forEach(([b,l],i)=>{path+=(i?`H${X(b)}V${Y(l)}`:`M${X(b)},${Y(l)}`)});path+=`H${X(TOTAL.I+1)}`;
+  let curve=`<svg viewBox="0 0 ${Wd} ${H}" role="img" aria-label="Dynamic level across the movement">`;
+  ['ppp','pp','p','mp','mf','f','ff'].forEach((d,i)=>{curve+=`<line x1="${pad}" x2="${Wd-pad}" y1="${Y(i)}" y2="${Y(i)}" stroke="var(--line)" stroke-width="1"/><text x="${pad-8}" y="${Y(i)+4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="var(--f-display)" font-style="italic">${d}</text>`});
+  FORMS.I.groups.forEach(g=>{curve+=`<line x1="${X(g[1])}" x2="${X(g[1])}" y1="20" y2="175" stroke="var(--faint)" stroke-dasharray="3 4"/><text x="${X(g[1])+4}" y="192" font-size="11" fill="var(--muted)" font-family="var(--f-body)">${g[0]}</text>`});
+  curve+=`<path d="${path}" fill="none" stroke="var(--pencil)" stroke-width="2.5"/>`;
+  DYN.filter(d=>d[0]==='sf').forEach(d=>{curve+=`<circle cx="${X(d[1])}" cy="${Y(5)}" r="3.5" fill="var(--heat)"/>`});
+  DYN.forEach(d=>{if(d[0]!=='sf')curve+=`<circle class="node" data-go="bar-I-${d[1]}" cx="${X(d[1])}" cy="${Y(LEVEL[d[0]])}" r="4" fill="var(--surface)" stroke="var(--pencil)" stroke-width="2"><title>${d[0]} · ${one(d[1])}</title></circle>`});
+  curve+='</svg>';
+  // words
+  const terms={};WORDS.forEach(w=>{(terms[w[0]]=terms[w[0]]||{k:w[2],b:[]}).b.push(w[1])});
+  const termRows=Object.entries(terms).sort((a,b)=>b[1].b.length-a[1].b.length||a[1].b[0]-b[1].b[0]);
+  const f=FORMS.I.groups;
+  return `<div class="view"><div class="vh"><h1>Statistics</h1></div>
+   <div class="kpis">
+     <div><span>Bars</span><b>197</b><small>+ upbeat</small></div>
+     <div><span>Dynamic markings</span><b>${DYN.length}</b><small>incl. ${cnt.sf} sf</small></div>
+     <div><span>Most written</span><b><i>${most.join(', ')}</i></b><small>${max} times</small></div>
+     <div><span>Least written</span><b><i>${least.join(', ')}</i></b><small>${cnt[least[0]]} time${cnt[least[0]]>1?'s':''}</small></div>
+     <div><span>Loudest</span><b><i>ff</i></b><small>${cnt.ff} times, no fff</small></div>
+     <div><span>Softest</span><b><i>ppp</i></b><small>once, ${one(162)}</small></div>
+   </div>
+   <div class="sec-title">Dynamics</div>
+   <div class="card statc"><div class="bars">${order.map(k2=>`<div class="bcol"><span class="bn">${cnt[k2]}</span><span class="bb" style="height:${cnt[k2]/max*100}%"></span><span class="bl">${k2}</span></div>`).join('')}</div>
+     <div class="where">${order.map(k2=>`<div class="wrow"><b>${k2}</b><div class="chips">${DYN.filter(d=>d[0]===k2).map(d=>chip('I',d[1])).join('')}</div></div>`).join('')}</div></div>
+   <div class="sec-title">Dynamic level, bar by bar</div>
+   <div class="card"><div class="arcs">${curve}</div></div>
+   <div class="sec-title">Words written in the score</div>
+   <div class="card wtab">${termRows.map(([t,o])=>`<div class="wt"><i>${esc(t)}</i><span class="kind">${o.k}</span><b class="mono">${o.b.length}×</b><div class="chips">${o.b.map(b=>chip('I',b)).join('')}</div></div>`).join('')}</div>
+   <div class="sec-title">Form, keys and metre</div>
+   <div class="card">
+     <div class="kv"><div>Proportions</div><div><div class="prop">${f.map((g,i)=>`<span style="flex:${g[2]-g[1]+1};background:${['var(--pencil-soft)','var(--heat-soft)','var(--pencil-soft)'][i]}">${g[0]}<b>${g[2]-g[1]+1}</b></span>`).join('')}</div></div></div>
+     <div class="kv"><div>Key signature</div><div>Three flats (C minor) in mm. 1–161 · none (C major) in 162–182 · three flats again from ${chip('I',183)}</div></div>
+     <div class="kv"><div>Metre</div><div>3/4 throughout, except two bars of 4/4 at ${chip('I',16)} and ${chip('I',148)}</div></div>
+     <div class="kv"><div>Harmonic landmarks</div><div class="lm">
+       <span>${chip('I',3)} cadence, inner voice B♭–A♭–G</span><span>${chip('I',6)} cadence, inner voice A♯–B–C</span><span>${chip('I',40)} E♭ major against G minor</span>
+       <span>${chip('I',61)} ii–V7 over V–I</span><span>${chip('I',117)} C minor → E♭ minor → F♯ minor over G</span><span>${chip('I',135)} Neapolitan colour</span><span>${chip('I',194)} C♯ and F♯ inside the final V–I</span></div></div>
+   </div>
+   <div class="sec-title">Needs a digital score</div>
+   <div class="pending">${['Most common notes','Most common intervals','Chord types','Note values','Notes per bar'].map(x=>`<div>${x}</div>`).join('')}</div>
+   <div class="srcl">Dynamics and words counted from the first edition (Gutheil / Breitkopf &amp; Härtel). Hairpins, accents and slurs not yet counted.</div></div>`;
+}
+
+/* ---------- 9 listening ---------- */
+function listenView(){
+  return `<div class="view"><div class="vh"><h1>Listening</h1></div>
+   <div class="card">${RECS.map(r=>`<div class="kv"><div>${esc(r[0])}</div><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><span>${esc(r[1])}${r[2]?` · <b>${esc(r[2])}</b>`:''}</span><a class="chip" href="${yt(r[0]+' Prokofiev Sonata No. 4')}" target="_blank" rel="noopener">Search ↗</a></div></div>`).join('')}</div>
+   <div class="srcl">Cho 2023, pp. 2, 54</div></div>`;
+}
+
+/* ---------- 10 sources ---------- */
 function sourcesView(){
   return `<div class="view"><div class="vh"><h1>Sources</h1></div>${Object.entries(SOURCES).map(([g,l])=>`<div class="sec-title">${g}</div><div class="card srcg">${l.map(s=>`<div class="s"><div>${s[0]}<small>${esc(s[1])}</small></div>${s[3]?`<a class="chip" href="${s[3]}" target="_blank" rel="noopener">Open ↗</a>`:'<span></span>'}</div>`).join('')}</div>`).join('')}</div>`;
 }
 
-/* ---------- example 2: map of music ---------- */
-const LAMENT=[
- {id:'mon',y:1638,c:'Claudio Monteverdi',t:'Lamento della ninfa',k:'A minor',q:'Monteverdi Madrigals Book 8',how:'A lament sung over a bass that falls by step from the tonic to the dominant, repeated again and again.',ros:'Ellen Rosand, cited by Rosen, traced this falling bass as an emblem of lament from Monteverdi to Cavalli.',to:[['b12','the lament bass passes to Bach']]},
- {id:'b12',y:1714,c:'J. S. Bach',t:'Weinen, Klagen, Sorgen, Zagen, BWV 12',k:'F minor',q:'Bach Weinen Klagen BWV 12',how:'The opening chorus is built on a chromatic bass falling a fourth, repeated as an ostinato.',ros:null,to:[['cru','Bach reworks the chorus'],['lis','Liszt writes variations on it']]},
- {id:'cha',y:1720,c:'J. S. Bach',t:'Chaconne, Partita No. 2 in D minor, BWV 1004',k:'D minor',q:'Bach Violin Partita No.2 BWV 1004',how:'A set of variations over a short repeating bass that descends from tonic to dominant.',ros:'One of Rosen’s examples of the formula.',to:[['bra','chaconne on a repeating bass']]},
- {id:'cru',y:1749,c:'J. S. Bach',t:'Crucifixus, Mass in B minor, BWV 232',k:'E minor',q:'Bach Mass in B minor BWV 232',how:'The chorus of BWV 12 reworked: thirteen statements of the falling chromatic bass.',ros:'Daniel Heartz’s main example for calling the figure a “symbol of death”, a claim Rosen rejects.',to:[]},
- {id:'bee',y:1806,c:'Ludwig van Beethoven',t:'32 Variations in C minor, WoO 80',k:'C minor',q:'Beethoven 32 Variations WoO 80',how:'The theme’s bass falls C–B–B♭–A–A♭–G, and every variation keeps it.',ros:'Rosen quotes the theme as a classic case.',to:[['sch','Schubert may echo its rhythm']]},
- {id:'sch',y:1828,c:'Franz Schubert',t:'Piano Sonata in C minor, D. 958, I',k:'C minor',q:'Schubert Piano Sonata D.958',how:'The descent C–B♭–A–A♭–G is hidden in the tenor, not the bass.',ros:'Rosen suggests Schubert may have had Beethoven’s variations in mind, though the figure was common enough to come from anywhere.',to:[]},
- {id:'cho',y:1831,c:'Frédéric Chopin',t:'Étude in C minor, Op. 10 No. 12 “Revolutionary”',k:'C minor',q:'Chopin Etude Op.10 No.12',how:'The bass of the main theme falls chromatically from C to G.',ros:'Rosen’s counter-example: the same descent, and nothing funereal about it.',to:[]},
- {id:'lis',y:1862,c:'Franz Liszt',t:'Variations on “Weinen, Klagen, Sorgen, Zagen”, S. 180',k:'F minor',q:'Liszt Variations Weinen Klagen S.180',how:'Liszt takes Bach’s chromatic ostinato from BWV 12 as the basis for a large set of variations.',ros:'Here, Rosen agrees, the figure does carry a sense of mortality.',to:[]},
- {id:'bra',y:1885,c:'Johannes Brahms',t:'Symphony No. 4 in E minor, Op. 98, finale',k:'E minor',q:'Brahms Symphony No.4',how:'A chaconne finale. The chromatic descent is no longer kept in the bass but shared among the other voices.',ros:'Rosen’s latest example of how long the formula survived.',to:[]}
+const binders={
+  perspectives(){document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{const id=b.dataset.q,i=+b.dataset.i;qvotes[id]=qvotes[id]===i?undefined:i;store.set('qvotes',qvotes);const y=window.scrollY;route();window.scrollTo(0,y)})},
+  context(){document.querySelectorAll('[data-art]').forEach(a=>a.onclick=e=>{e.preventDefault();document.getElementById('art-'+a.dataset.art).scrollIntoView({behavior:'smooth'})})},
+  other(){document.querySelectorAll('.onode').forEach(g=>{const f=()=>{const el=document.getElementById('o-'+g.dataset.o);el.scrollIntoView({behavior:'smooth',block:'center'});document.querySelectorAll('.ocard').forEach(x=>x.classList.remove('hl'));el.classList.add('hl')};g.addEventListener('click',f);g.addEventListener('keydown',e=>{if(e.key==='Enter')f()})})}
+};
+
+/* ---------- example 2: individual pieces, linked through one idea (Rosen, Music and Sentiment, pp. 24–27) ---------- */
+const WORKS=[
+ {id:'cha',comp:'J. S. Bach',t:'Chaconne',al:'chaconne partita violin bwv 1004 d minor',q:'Bach Violin Partita No.2 BWV 1004',
+  ctx:'Rosen quotes the opening of the Chaconne as an example of a bass that descends from the tonic to the dominant. This kind of short, repeating bass was a useful formula for serious music built on an ostinato, and it survived for a long time.',
+  links:[['cru','the same formula, used by Bach as an ostinato bass'],['pas','Bach’s other option: a bass that goes up a fifth instead'],['bee','the formula a century later, as the theme of a set of variations'],['sch','the descent moved into the tenor'],['lis','the formula in Liszt’s variations'],['bra','a chaconne-style finale where the formula still lingers'],['cho','the same descent with no funereal meaning at all']]},
+ {id:'cru',comp:'J. S. Bach',t:'Crucifixus, Mass in B minor',al:'crucifixus mass b minor bwv 232',q:'Bach Mass in B minor BWV 232',
+  ctx:'Over a descending chromatic fourth in the bass, repeated as an ostinato. Daniel Heartz used it as his main example to argue that this bass was a symbol of death throughout the 18th century. Rosen disagrees: every such fourth starts on the tonic and goes to the dominant, simply because an 18th-century ostinato bass could hardly do anything else. The Crucifixus version is just the most succinct and economical one.',
+  links:[['cha','the same formula, quoted by Rosen'],['pas','the only real alternative'],['cho','Rosen’s counter-example to the “death” reading']]},
+ {id:'pas',comp:'J. S. Bach',t:'Passacaglia',al:'passacaglia bwv 582 organ c minor',q:'Bach Passacaglia BWV 582',
+  ctx:'Rosen names the Passacaglia as the only possible variant of the formula: its ostinato goes straight up a fifth to the dominant and then back to the tonic, instead of falling a fourth. He adds that the Crucifixus version is more succinct, but not essentially different.',
+  links:[['cru','the falling version'],['cha','the falling version, as a chaconne']]},
+ {id:'bee',comp:'Ludwig van Beethoven',t:'Variations in C minor',al:'variations c minor woo 80 32',q:'Beethoven 32 Variations WoO 80',
+  ctx:'Rosen quotes the theme of the Variations in C minor as another case of the formula: serious, in the minor mode, built on a bass that falls chromatically from tonic to dominant.',
+  links:[['sch','Schubert may have had its rhythm in mind'],['cha','the same formula in Bach']]},
+ {id:'sch',comp:'Franz Schubert',t:'Sonata in C minor',al:'sonata c minor d 958 d958',q:'Schubert Piano Sonata D.958',
+  ctx:'Here the chromatic descent sits in the tenor: C, B♭, A natural, A♭, G. Rosen suggests Schubert may have been thinking of the rhythm of Beethoven’s Variations in C minor, but adds that the motif was enough of a cliché that he could have found it elsewhere.',
+  links:[['bee','the possible model'],['cha','the same formula in Bach']]},
+ {id:'lis',comp:'Franz Liszt',t:'Variations on “Weinen, Klagen”',al:'weinen klagen sorgen zagen variations',q:'Liszt Variations Weinen Klagen',
+  ctx:'Liszt used the formula in his variations on Weinen, Klagen. Here, Rosen agrees, it does carry a sense of mortality.',
+  links:[['cru','the piece Heartz read as a symbol of death'],['cha','the same formula in Bach']]},
+ {id:'bra',comp:'Johannes Brahms',t:'Symphony No. 4, finale',al:'symphony 4 fourth finale chaconne e minor',q:'Brahms Symphony No.4',
+  ctx:'Rosen’s latest example of how long the formula lingered: the chaconne-style finale of the Fourth Symphony. The chromatic descent is no longer kept in the bass but parcelled out to the other voices.',
+  links:[['cha','another chaconne on the formula'],['bee','the formula as a theme for variations']]},
+ {id:'cho',comp:'Frédéric Chopin',t:'Étude in C minor, Op. 10 No. 12 “Revolutionary”',al:'revolutionary etude op 10 no 12 c minor',q:'Chopin Etude Op.10 No.12',
+  ctx:'The bass of the main theme descends chromatically a fourth, from C to G. Rosen’s point: there is nothing lugubrious or funereal about this piece. The same descent does not carry a fixed meaning.',
+  links:[['cru','the piece read as a symbol of death'],['cha','the same formula in Bach']]}
 ];
-function motifSvg(){
-  const names=['C','B','B♭','A','A♭','G'], steps=[3,2,2,1,1,0];
-  let s=`<svg viewBox="0 0 300 110" role="img" aria-label="The descending chromatic fourth in C minor: C, B, B flat, A, A flat, G">`;
-  for(let i=0;i<5;i++) s+=`<line x1="10" x2="290" y1="${20+i*10}" y2="${20+i*10}" stroke="var(--muted)" stroke-width="1"/>`;
-  s+=`<text x="14" y="44" font-size="30" fill="var(--ink)" font-family="serif">𝄢</text>`;
-  const xs=[70,108,146,184,222,260];
-  s+=`<polyline points="${xs.map((x,i)=>x+','+(60-steps[i]*5)).join(' ')}" fill="none" stroke="var(--pencil)" stroke-width="2" stroke-dasharray="3 3"/>`;
-  xs.forEach((x,i)=>{const y=60-steps[i]*5;
+const wById=Object.fromEntries(WORKS.map(w=>[w.id,w]));
+const STOP=new Set(['in','minor','major','no','op','the','of','on','a','c','d','e','b','s','j','and','sonata','variations','symphony']);
+function lev(a,b){const m=a.length,n=b.length,d=Array.from({length:m+1},(_,i)=>[i]);for(let j=1;j<=n;j++)d[0][j]=j;for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n]}
+function findWorks(n){
+  const toks=n.split(/[^a-z0-9]+/).filter(t=>t&&!STOP.has(t));
+  if(!toks.length) return [];
+  return WORKS.filter(w=>{const words=(w.comp+' '+w.t+' '+w.al).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').split(/[^a-z0-9]+/).filter(Boolean);
+    return toks.every(t=>words.some(x=>x===t||(t.length>=4&&(x.startsWith(t)||lev(t,x)<=2))))});
+}
+function formulaSvg(){
+  const names=['C','B','B♭','A','A♭','G'], steps=[3,2,2,1,1,0], xs=[60,100,140,180,220,260];
+  let s=`<svg viewBox="0 0 290 100" role="img" aria-label="A bass falling by semitones from C to G">`;
+  for(let i=0;i<5;i++) s+=`<line x1="10" x2="285" y1="${16+i*10}" y2="${16+i*10}" stroke="var(--muted)" stroke-width="1"/>`;
+  s+=`<text x="14" y="40" font-size="30" fill="var(--ink)" font-family="serif">𝄢</text>`;
+  xs.forEach((x,i)=>{const y=56-steps[i]*5;
     if(names[i].includes('♭')) s+=`<text x="${x-17}" y="${y+5}" font-size="16" fill="var(--ink)" font-family="serif">♭</text>`;
-    if(y>=60) s+=`<line x1="${x-10}" x2="${x+10}" y1="70" y2="70" stroke="var(--muted)"/>`;
-    s+=`<ellipse cx="${x}" cy="${y}" rx="6.5" ry="5" transform="rotate(-20 ${x} ${y})" fill="var(--ink)"/>`;
-    s+=`<text x="${x}" y="98" font-size="12" text-anchor="middle" fill="var(--muted)" font-family="var(--f-mono)">${names[i]}</text>`});
+    if(y>=56) s+=`<line x1="${x-10}" x2="${x+10}" y1="66" y2="66" stroke="var(--muted)"/>`;
+    s+=`<ellipse cx="${x}" cy="${y}" rx="6.5" ry="5" transform="rotate(-20 ${x} ${y})" fill="var(--ink)"/><text x="${x}" y="92" font-size="12" text-anchor="middle" fill="var(--muted)" font-family="var(--f-mono)">${names[i]}</text>`});
   return s+'</svg>';
 }
-function timelineSvg(){
-  const W=860,H=150,y0=1620,y1=1900,X=y=>30+(y-y0)/(y1-y0)*(W-60),base=100;
-  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Timeline of the works">`;
-  s+=`<line x1="20" x2="${W-20}" y1="${base}" y2="${base}" stroke="var(--line)" stroke-width="2"/>`;
-  [1650,1700,1750,1800,1850].forEach(y=>{s+=`<text x="${X(y)}" y="${base-6}" text-anchor="middle" font-size="10" fill="var(--faint)" font-family="var(--f-mono)">${y}</text>`});
-  const byId=Object.fromEntries(LAMENT.map(w=>[w.id,w]));
-  LAMENT.forEach(w=>w.to.forEach(([id])=>{const a=X(w.y),b=X(byId[id].y),h=Math.min(90,Math.abs(b-a)*.5+20);
-    s+=`<path d="M${a},${base} C${a},${base-h} ${b},${base-h} ${b},${base}" fill="none" stroke="var(--pencil)" stroke-width="1.6" opacity=".55"/>`}));
-  LAMENT.forEach((w,i)=>{const x=X(w.y);s+=`<g class="dot" data-w="${w.id}"><circle cx="${x}" cy="${base}" r="7" fill="var(--pencil)" stroke="var(--surface)" stroke-width="2"/><text x="${x}" y="${base+22+(i%2)*15}" text-anchor="middle" font-size="11.5" fill="var(--ink)" font-family="var(--f-body)" font-weight="600">${w.c.split(' ').pop()}</text></g>`});
-  return s+'</svg>';
-}
-function mapShell(){
-  const byId=Object.fromEntries(LAMENT.map(w=>[w.id,w]));
+function workPage(id){
+  const w=wById[id]; if(!w) return home();
   $('#app').innerHTML=`<header class="top"><div class="wrap"><div class="row1">
       <button class="iconbtn" data-go="home" aria-label="Back"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg></button>
-      <button class="ptitle" data-go="map"><b>The descending chromatic fourth</b><span>Map of music</span></button>
+      <button class="ptitle" data-go="w-${w.id}"><b>${w.t}</b><span>${w.comp}</span></button>
       <button class="iconbtn" data-go="home" aria-label="Search" style="margin-left:auto"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8.5" cy="8.5" r="6"/><path d="M13 13l5 5"/></svg></button></div></div></header>
-   <main class="wrap"><div class="view mapwrap">
-    <div class="vh"><h1>The descending chromatic fourth</h1></div>
-    <div class="card motif-card"><p>A bass line that falls by semitones from the tonic to the dominant. One of the most used formulas in tonal music, from the 17th century to the late 19th.</p>${motifSvg()}</div>
-    <div class="point">Same notes, different meanings. Rosen argues the figure is a shared tool of the tonal language, not a fixed symbol of death or grief: what it expresses depends on the harmony, rhythm and tempo around it.<small>Charles Rosen, Music and Sentiment (Yale, 2010), pp. 24–27</small></div>
-    <div class="tline">${timelineSvg()}</div>
-    <ol class="works">${LAMENT.map(w=>`<li class="work2" id="w-${w.id}"><span class="yr">${w.y}</span><div class="c"><div class="who">${w.c}</div><h3><a href="${imslp(w.q)}" target="_blank" rel="noopener">${w.t}</a><span class="keyb">${w.k}</span></h3><p>${w.how}</p>${w.ros?`<p class="ros">${w.ros}</p>`:''}${w.to.length?`<div class="to">${w.to.map(([id,l])=>`<button data-w="${id}">→ ${byId[id].c.split(' ').pop()}: ${l}</button>`).join('')}</div>`:''}</div></li>`).join('')}</ol>
+   <main class="wrap"><div class="view wpage">
+    <div class="phead" style="padding-top:12px"><div class="comp">${w.comp}</div><h1>${w.t}</h1><a class="chip" style="margin-top:12px" href="${imslp(w.q)}" target="_blank" rel="noopener">Score on IMSLP ↗</a></div>
+    <div class="sec-title">Context</div>
+    <div class="card wbox"><p>${w.ctx}</p></div>
+    <div class="sec-title">The idea it shares</div>
+    <div class="card wbox idea"><div><h3>The descending chromatic fourth</h3><p>A bass that falls by semitones from the tonic to the dominant. For Rosen it is a common tool of tonal music, not a symbol with a fixed meaning: it sounds serious in many pieces, but what it expresses depends on the music around it.</p></div>${formulaSvg()}</div>
+    <div class="sec-title">Linked pieces</div>
+    <div class="card">${w.links.map(([id,why])=>`<button class="mrow" data-go="w-${id}"><span class="mn">${wById[id].comp.split(' ').pop()} · ${wById[id].t}</span><span class="refs" style="font-family:var(--f-body);font-size:14px">${why}</span></button>`).join('')}</div>
+    <div class="srcl">Charles Rosen, Music and Sentiment (Yale University Press, 2010), pp. 24–27</div>
    </div></main>`;
-  document.querySelectorAll('[data-w]').forEach(b=>b.addEventListener('click',()=>{const el=document.getElementById('w-'+b.dataset.w);el.scrollIntoView({behavior:'smooth',block:'center'});document.querySelectorAll('.work2').forEach(x=>x.classList.remove('hl'));el.classList.add('hl')}));
 }
 
 route();
