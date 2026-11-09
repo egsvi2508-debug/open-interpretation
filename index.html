@@ -752,10 +752,8 @@ function ARTICLES(){return [
    <p>The sonata is full of references to the keyboard tradition Prokofiev grew up with.</p>
    <ol class="tl">
     <li><span class="y">III · m. 1</span><span>The opening flourish resembles written-out improvisation in ${W('Haydn, Sonata in C, Hob. XVI:50','Haydn Piano Sonata Hob.XVI:50')}, ${W('Mozart, Fantasia in C minor, K. 396','Mozart Fantasia K.396')} and ${W('Bach, Chromatic Fantasia and Fugue, BWV 903','Bach Chromatic Fantasia BWV 903')} ${B('III',1,'open')}</span></li>
-    <li><span class="y">I · m. 107</span><span>Berman hears the hemiolas of the development as Brahmsian ${B('I',107,'open')}</span></li>
-    <li><span class="y">II</span><span>Robinson hears an impressionistic, almost shapeless quality reminiscent of Schumann</span></li>
     <li><span class="y">III</span><span>The motoric second bridge follows the Toccata line that Prokofiev traced back to ${W('Schumann’s Toccata','Schumann Toccata Op.7')} ${B('III',153,'open')}</span></li></ol>`,
-   rel:[W('Haydn, Hob. XVI:50','Haydn Piano Sonata Hob.XVI:50'),W('Mozart, K. 396','Mozart Fantasia K.396'),W('Bach, BWV 903','Bach Chromatic Fantasia BWV 903')],src:'Cho 2023, pp. 25, 41; Berman 2008, p. 85; Robinson 2002, p. 133'},
+   rel:[W('Haydn, Hob. XVI:50','Haydn Piano Sonata Hob.XVI:50'),W('Mozart, K. 396','Mozart Fantasia K.396'),W('Bach, BWV 903','Bach Chromatic Fantasia BWV 903')],src:'Cho 2023, p. 41'},
 
  {id:'performers',t:'Performers and recordings',body:`
    <h3>Three schools on this page</h3>
@@ -829,7 +827,7 @@ const OTHER_ALL=[
  {id:'o8',sh:'Schumann',piece:'Schumann',q:'Schumann piano',bar:null,where:'Character of the sonata',type:'Model',status:'Suggested',why:'Robinson hears an impressionistic, almost shapeless quality reminiscent of Schumann.',src:'Robinson 2002, p. 133, via Cho p. 3'},
  {id:'o9',sh:'Sonata No. 4, finale',piece:'Sonata No. 4, III. Allegro con brio',q:'Prokofiev Piano Sonata No.4',bar:['I',0],where:'Upbeat, the opening murmur',type:'Same sonata',status:'Suggested',why:'The finale’s first bridge ends on two oscillating notes (D–E♭, mm. 40–42) that seem to come from this opening figure.',src:'Cho 2023, p. 43'}
 ];
-const OTHER=OTHER_ALL.filter(o=>['o2','o3','o5','o7'].includes(o.id));
+const OTHER=OTHER_ALL.filter(o=>['o2','o3','o4','o5'].includes(o.id));
 const TYPECOL={'Source material':'#2F5BEA','Same period':'#1E9A5F','Same dedicatee':'#7A5CD6','Model':'#D08A12','Same sonata':'#D2463F'};
 
 const RECS=[
@@ -1050,7 +1048,7 @@ function motifView(k){
 
 /* ---------- 7 other pieces ---------- */
 function otherView(){
-  const keep=['o2','o3','o5','o7'];
+  const keep=['o2','o3','o4','o5'];
   return `<div class="view"><div class="vh"><h1>Other pieces</h1></div>
    <div class="card">${OTHER.filter(o=>keep.includes(o.id)).map(o=>`<div class="oitem"><h3>${o.q?W(esc(o.piece),o.q):esc(o.piece)}</h3><p>${esc(o.why)}</p>${o.bar?`<div style="margin-top:8px">${chip(o.bar[0],o.bar[1])}</div>`:''}<div class="srcl">${esc(o.src)}</div></div>`).join('')}</div></div>`;
 }
