@@ -582,13 +582,14 @@ const SOURCES = {
 
 
 const MOTIFS = [
- {k:'murmur',name:'Opening murmur',col:'#2F5BEA',refs:[['I',0,0],['I',21,22],['I',65,70],['III',40,42]]},
- {k:'thirds',name:'Repeated thirds',col:'#1E9A5F',refs:[['II',1,4],['II',33,35],['III',84,88]]},
- {k:'andAB',name:'Andante: two themes meet',col:'#D2463F',refs:[['II',1,4],['II',39,42],['II',71,74]]},
- {k:'flourish',name:'Finale flourish',col:'#D04F9A',refs:[['III',1,1],['III',201,207]]}
+ {k:'murmur',name:'Opening murmur',col:'#2F5BEA',refs:[['I',0,0],['I',21,22],['I',65,67]]},
+ {k:'theme1',name:'Theme 1 returns',col:'#7A5CD6',refs:[['I',1,4],['I',71,74],['I',107,109],['I',137,140]]},
+ {k:'grace',name:'Grace-note sweep',col:'#D08A12',refs:[['I',17,18],['I',37,39],['I',40,42],['I',162,165]]},
+ {k:'cadence',name:'Ironic cadence',col:'#D2463F',refs:[['I',68,70],['I',194,197]]}
 ];
+ANN.splice(0,ANN.length,...ANN.filter(a=>a.mv==='I'));
 const WINDOWS=[['context','Context'],['structure','Structure'],['score','Score'],['interpretations','Interpretations'],['connections','Connections'],['sources','Sources']];
-const MV=['I','II','III'];
+const MV=['I'];
 const CROP=[90,110,1005,1240];
 
 /* ---------- state ---------- */
@@ -613,7 +614,7 @@ const go=h=>{location.hash=h};
 const chip=(mv,b,col,label)=>`<button class="chip" data-go="bar-${mv}-${b}">${col?`<i style="background:${col}"></i>`:''}${label||mv+' · '+one(b)}</button>`;
 const imslp=q=>'https://imslp.org/index.php?search='+encodeURIComponent(q);
 const W=(t,q)=>`<a class="wref" href="${imslp(q||t)}" target="_blank" rel="noopener">${t}</a>`;
-const B=(mv,b,label)=>chip(mv,b,null,label);
+const B=(mv,b,label)=>mv==='I'?chip(mv,b,null,label):'';
 function toast(t){const d=document.createElement('div');d.style.cssText='position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 14px;border-radius:10px;font-size:14px;z-index:60';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),1800)}
 function geom(mv,b){for(const pg of GEOM[mv])for(const sys of pg.systems){const i=b-sys.first;if(i>=0&&i<sys.xs.length-1)return{pg,sys,i}}return null}
 /* score excerpt of the system containing bar `from`, highlighting from..to (clipped to the system) */
@@ -639,6 +640,7 @@ function route(){
   if(h==='piece'){window.scrollTo(0,0);return shell('',pieceHome())}
   if(h==='map'){window.scrollTo(0,0);return mapShell()}
   let m;
+  if((m=h.match(/^bar-(I{1,3})-(\d+)$/))&&m[1]!=='I'){go('score');return}
   if(m=h.match(/^bar-(I{1,3})-(\d+)$/)){window.scrollTo(0,0);return shell('score',barView(m[1],+m[2]),()=>bindBar(m[1],+m[2]))}
   if(m=h.match(/^motif-(\w+)$/)){window.scrollTo(0,0);return shell('connections',motifView(m[1]))}
   if(m=h.match(/^score(?:-(I{1,3}))?$/)){shell('score',scoreView(),()=>bindScore(m[1]));return}
@@ -662,7 +664,7 @@ function results(){
   if(!n.trim()){$('#res').innerHTML='';return}
   const p=/pro[ck]|sonat|soant|op\.? ?29/.test(n), m=/bach|beethoven|schubert|brahms|chopin|liszt|monteverdi|lament|chromatic|fourth|crucifixus|chaconne|map/.test(n);
   let h='';
-  if(p) h+=`<button class="res-item" data-go="piece"><div><b>Piano Sonata No. 4 in C minor, Op. 29</b><span>Sergei Prokofiev</span></div><i>→</i></button>`;
+  if(p) h+=`<button class="res-item" data-go="piece"><div><b>Piano Sonata No. 4, Op. 29 · I</b><span>Sergei Prokofiev · Allegro molto sostenuto</span></div><i>→</i></button>`;
   if(m) h+=`<button class="res-item" data-go="map" style="margin-top:10px"><div><b>The descending chromatic fourth</b><span>Bach · Beethoven · Schubert · Chopin · Liszt · Brahms</span></div><i>→</i></button>`;
   $('#res').innerHTML=h||`<div class="res-none">No results</div>`;
 }
@@ -671,14 +673,14 @@ function results(){
 function shell(active,html,after){
   $('#app').innerHTML=`<header class="top"><div class="wrap"><div class="row1">
       <button class="iconbtn" data-go="${active?'piece':'home'}" aria-label="Back"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg></button>
-      <button class="ptitle" data-go="piece"><b>Piano Sonata No. 4, Op. 29</b><span>Prokofiev</span></button>
+      <button class="ptitle" data-go="piece"><b>Sonata No. 4 · I. Allegro molto sostenuto</b><span>Prokofiev</span></button>
       <button class="iconbtn" data-go="home" aria-label="Search" style="margin-left:auto"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8.5" cy="8.5" r="6"/><path d="M13 13l5 5"/></svg></button></div>
     ${active?`<nav class="tabs">${WINDOWS.map(w=>`<button class="${w[0]===active?'on':''}" data-go="${w[0]}">${w[1]}</button>`).join('')}</nav>`:''}</div></header>
     <main class="wrap">${html}</main>`;
   if(after) after();
 }
 function pieceHome(){
-  return `<div class="phead"><div class="comp">Sergei Prokofiev</div><h1>Piano Sonata No. 4 in C minor <em>Op. 29</em></h1></div>
+  return `<div class="phead"><div class="comp">Sergei Prokofiev</div><h1>Piano Sonata No. 4 in C minor <em>Op. 29</em></h1><div style="font-family:var(--f-display);font-style:italic;font-size:24px;color:var(--muted);margin-top:8px">I. Allegro molto sostenuto</div></div>
    <div class="tiles">${WINDOWS.map((w,i)=>`<button class="tile${w[0]==='score'?' big':''}" data-go="${w[0]}"><span class="num">0${i+1}</span><b>${w[1]}</b></button>`).join('')}</div><div style="height:60px"></div>`;
 }
 
@@ -707,7 +709,7 @@ function ARTICLES(){return [
  {id:'notebooks',t:'From old notebooks',body:`
    <p>The French subtitle, <i>d’après des vieux cahiers</i>, is literal. As a student at the St. Petersburg Conservatory, Prokofiev filled notebooks with sonatas and sketches. In 1917, already a recognised composer, he went back to them. Two finished works came out of that search: the one-movement ${W('Sonata No. 3, Op. 28','Prokofiev Piano Sonata No.3')}, built on a student sonata of 1907, and the three-movement Sonata No. 4, built on a student sonata of 1908 and on the slow movement of an abandoned ${W('Symphony in E minor','Prokofiev Symphony E minor 1908')} from the same year.</p>
    <p>He did the same thing in other works of these years, for example the ${W('Ballade for cello and piano, Op. 15','Prokofiev Ballade Op.15')}. Reworking old material was not a sign of running out of ideas. 1917 was one of the most productive years of his life, and the notebooks gave him themes he still believed in, which he now set with an adult technique.</p>
-   <p>You can hear the student origins in the Classical frame: an exposition with two clear themes in the first movement, a stretto in the Andante (${B('II',5,'II · m. 5')}), an Alberti bass in the finale (${B('III',10,'III · m. 10')}). You can hear the 1917 composer in what happens inside that frame: the bitonal pull of the second theme (${B('I',40,'I · m. 40')}) and the “wrong notes” of the finale (${B('III',2,'III · m. 2')}).</p>`,
+   <p>You can hear the student origins in the Classical frame: an exposition with two clear themes in the first movement, a stretto in the Andante, an Alberti bass in the finale. You can hear the 1917 composer in what happens inside that frame: the bitonal pull of the second theme (${B('I',40,'I · m. 40')}) and the “wrong notes” of the finale.</p>`,
    rel:[W('Sonata No. 3, Op. 28','Prokofiev Piano Sonata No.3'),W('Ballade, Op. 15','Prokofiev Ballade Op.15'),W('Sonata No. 1, Op. 1','Prokofiev Piano Sonata No.1')],src:'Cho 2023, pp. 18–19; Prokofiev, Autobiography, p. 27'},
 
  {id:'schmidthof',t:'Maximilian Schmidthof',body:`
@@ -717,7 +719,7 @@ function ARTICLES(){return [
     <li><span class="y">1912</span><span>${W('Sonata No. 2 in D minor, Op. 14','Prokofiev Piano Sonata No.2')}, written while his friend was alive</span></li>
     <li><span class="y">1913</span><span>${W('Piano Concerto No. 2 in G minor, Op. 16','Prokofiev Piano Concerto No.2')}, to his memory</span></li>
     <li><span class="y">1917</span><span>Sonata No. 4, to his memory</span></li></ol>
-   <p>This helps explain why the first two movements are so dark and inward compared with the Third and Seventh sonatas. The Andante in particular, with its low, slow theme rising out of the bass (${B('II',1,'II · m. 1')}), is often heard as an elegy.</p>`,
+   <p>This helps explain why the first two movements are so dark and inward compared with the Third and Seventh sonatas. The Andante in particular, with its low, slow theme rising out of the bass, is often heard as an elegy.</p>`,
    rel:[W('Piano Concerto No. 2, Op. 16','Prokofiev Piano Concerto No.2'),W('Sonata No. 2, Op. 14','Prokofiev Piano Sonata No.2')],src:'Cho 2023, p. 18; Robinson 2002; programme notes on Op. 16'},
 
  {id:'y1917',t:'1917: the year around the sonata',body:`
@@ -803,7 +805,7 @@ function scoreView(){
   const [cx,cy,cw,ch]=CROP;
   let html='';
   MV.forEach(mv=>{
-    html+=`<h2 class="mvhead" id="mv-${mv}">${FORMS[mv].title}</h2>`;
+    html+=`<span id="mv-${mv}"></span>`;
     GEOM[mv].forEach(pg=>{
       let m='';
       pg.systems.forEach(sys=>{for(let i=0;i<sys.xs.length-1;i++){
@@ -815,7 +817,7 @@ function scoreView(){
       html+=`<div class="sheet"><img loading="lazy" src="score/p${String(pg.p).padStart(2,'0')}.png" alt="Score page ${pg.p}" width="${cw}" height="${ch}">${m}</div>`;
     });
   });
-  return `<div class="view"><div class="vh"><h1>Score</h1><div class="seg">${MV.map(v=>`<button data-mv="${v}">${v}</button>`).join('')}</div></div>${html}</div>`;
+  return `<div class="view"><div class="vh"><h1>Score</h1></div>${html}</div>`;
 }
 function bindScore(mv){
   document.querySelectorAll('.seg [data-mv]').forEach(b=>b.onclick=()=>document.getElementById('mv-'+b.dataset.mv).scrollIntoView());
@@ -864,7 +866,7 @@ function motifView(k){
 
 /* ---------- interpretations ---------- */
 function interpView(){
-  return `<div class="view"><div class="vh"><h1>Interpretations</h1></div>${QUESTIONS.filter(q=>['Q-grace','Q-thirds','Q-cadenza','Q-coda'].includes(q.id)).map(q=>{const my=qvotes[q.id];const n=q.pos.map((p,i)=>p[3]+(my===i?1:0));const tot=n.reduce((x,y)=>x+y,0);
+  return `<div class="view"><div class="vh"><h1>Interpretations</h1></div>${QUESTIONS.filter(q=>['Q-tempo','Q-phrasing','Q-grace'].includes(q.id)).map(q=>{const my=qvotes[q.id];const n=q.pos.map((p,i)=>p[3]+(my===i?1:0));const tot=n.reduce((x,y)=>x+y,0);
    return `<div class="card q"><div class="q-h"><b>${esc(q.title)}</b>${chip(q.bar[0],q.bar[1])}</div><div class="q-p">${q.pos.map((p,i)=>`<div class="pos"><span class="who">${esc(p[0])}</span><span class="how">${esc(p[1])}</span><p>${esc(p[2])}</p><div class="agree"><button class="${my===i?'on':''}" data-q="${q.id}" data-i="${i}" aria-label="Vote">${upSvg}</button><span class="meter"><i style="width:${Math.round(n[i]/tot*100)}%"></i></span><span class="pct">${Math.round(n[i]/tot*100)}%</span></div></div>`).join('')}</div></div>`}).join('')}</div>`;
 }
 const binders={
@@ -874,14 +876,13 @@ const binders={
 
 /* ---------- connections ---------- */
 function connView(){
-  const Wd=1000,H=300,base=240,pad=24,gap=26,tot=TOTAL.I+1+TOTAL.II+TOTAL.III,k=(Wd-2*pad-2*gap)/tot;
-  const off={I:pad,II:pad+(TOTAL.I+1)*k+gap,III:pad+(TOTAL.I+1+TOTAL.II)*k+2*gap};
-  const X=(mv,b)=>off[mv]+(mv==='I'?b:b-1)*k;
+  const Wd=1000,H=300,base=240,pad=30,k=(Wd-2*pad)/(TOTAL.I+1);
+  const X=(mv,b)=>pad+b*k;
   let s=`<svg viewBox="0 0 ${Wd} ${H}" role="img" aria-label="Connections between bars">`;
   MOTIFS.forEach(m=>{for(let i=0;i<m.refs.length-1;i++){const r1=m.refs[i],r2=m.refs[i+1],x1=X(r1[0],r1[1]),x2=X(r2[0],r2[1]),h=Math.min(220,Math.abs(x2-x1)*.6+16);
     s+=`<path class="arc" stroke="${m.col}" d="M${x1},${base} C${x1},${base-h} ${x2},${base-h} ${x2},${base}"/>`}});
-  MV.forEach(mv=>{const x0=X(mv,mv==='I'?0:1),x1=X(mv,TOTAL[mv]);
-    s+=`<line x1="${x0}" y1="${base}" x2="${x1}" y2="${base}" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/><text x="${x0}" y="${base+28}" fill="var(--ink)" font-family="var(--f-display)" font-size="18" font-weight="600">${mv}</text>`});
+  s+=`<line x1="${X('I',0)}" y1="${base}" x2="${X('I',TOTAL.I)}" y2="${base}" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>`;
+  FORMS.I.groups.forEach(g=>{s+=`<text x="${X('I',g[1])}" y="${base+28}" fill="var(--muted)" font-family="var(--f-body)" font-size="13">${g[0]} · ${g[1]}–${g[2]}</text>`});
   MOTIFS.forEach(m=>m.refs.forEach(r=>{s+=`<circle class="node" data-go="bar-${r[0]}-${r[1]}" cx="${X(r[0],r[1])}" cy="${base}" r="5" fill="${m.col}" stroke="var(--surface)" stroke-width="1.5"><title>${m.name} · ${r[0]} ${bl(r[1],r[2])}</title></circle>`}));
   s+='</svg>';
   return `<div class="view"><div class="vh"><h1>Connections</h1></div>
