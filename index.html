@@ -278,6 +278,11 @@ article.art p+p{margin-top:12px}
 .work2 .to button:hover{border-color:var(--pencil)}
 .keyb{font-family:var(--f-mono);font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:2px}
 /* v4 additions */
+.kv{display:grid;grid-template-columns:180px minmax(0,1fr);border-top:1px solid var(--line)}
+.kv:first-child{border-top:0}
+.kv>div{padding:13px 18px;min-width:0}
+.kv>div:first-child{color:var(--muted);font-size:14px;font-weight:600}
+@media (max-width:600px){.kv{grid-template-columns:1fr}.kv>div:first-child{padding-bottom:0}}
 .wt{display:grid;grid-template-columns:minmax(0,190px) 80px 34px minmax(0,1fr);gap:10px;align-items:center;padding:10px 18px;border-top:1px solid var(--line)}
 .wt:first-child{border-top:0}
 .wt i{font-family:var(--f-display);font-size:16px}
@@ -953,7 +958,6 @@ function structureView(){
   return `<div class="view"><div class="vh"><h1>Structure</h1></div>
    <div class="card fm"><div class="bands-x"><div><div class="bands">${f.secs.map(s=>`<button class="band g${s[4]}" style="flex:${Math.max(s[2]-s[1]+1,4)}" data-go="bar-I-${s[1]}"><b>${esc(s[0])}</b><span>${s[1]}–${s[2]}</span>${s[3]?`<small>${esc(s[3])}</small>`:''}</button>`).join('')}</div>
    <div class="groups">${f.groups.map(g=>`<div style="flex:${g[2]-g[1]+1}">${g[0]} · ${g[1]}–${g[2]}</div>`).join('')}</div></div></div></div>
-   <div class="card" style="margin-top:16px">${f.secs.map(s=>`<div class="kv"><div>${esc(s[0])}</div><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><span>mm. ${s[1]}–${s[2]}${s[3]?' · '+esc(s[3]):''}</span>${chip('I',s[1])}</div></div>`).join('')}</div>
    <div class="srcl">Cho 2023, Table 4.1</div></div>`;
 }
 
