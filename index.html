@@ -1,0 +1,1299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Open Interpretation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..800;1,6..96,400..700&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a reference library for performers. Search first, then one long piece page with a sticky section bar;
+   the score explorer is the centre of gravity (score left, bar notes right). Accent = a teacher's blue pencil. */
+:root{
+  --paper:#F3F4F6; --surface:#FFFFFF; --sunk:#E9EBEF;
+  --ink:#15171C; --muted:#5A6070; --faint:#8A90A0; --line:#D9DCE3;
+  --pencil:#2347C8; --pencil-ink:#1B3AA8; --pencil-soft:rgba(35,71,200,.10); --pencil-mid:rgba(35,71,200,.22);
+  --heat:#D9A21B; --heat-soft:rgba(217,162,27,.18);
+  --ok:#1C7A4C; --ok-soft:rgba(28,122,76,.10);
+  --ai:#6A5A9E; --ai-soft:rgba(106,90,158,.12);
+  --f-display:"Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
+  --f-body:"Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --score-filter:none;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#101217; --surface:#171A21; --sunk:#1E222B;
+    --ink:#E8EAF0; --muted:#A1A7B6; --faint:#727889; --line:#2A2F3B;
+    --pencil:#8AA4FF; --pencil-ink:#A9BCFF; --pencil-soft:rgba(138,164,255,.12); --pencil-mid:rgba(138,164,255,.26);
+    --heat:#E2B23C; --heat-soft:rgba(226,178,60,.18);
+    --ok:#5CC491; --ok-soft:rgba(92,196,145,.12);
+    --ai:#B3A4E8; --ai-soft:rgba(179,164,232,.14);
+    --score-filter:invert(1) hue-rotate(180deg) brightness(.86) contrast(.95);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#101217; --surface:#171A21; --sunk:#1E222B;
+  --ink:#E8EAF0; --muted:#A1A7B6; --faint:#727889; --line:#2A2F3B;
+  --pencil:#8AA4FF; --pencil-ink:#A9BCFF; --pencil-soft:rgba(138,164,255,.12); --pencil-mid:rgba(138,164,255,.26);
+  --heat:#E2B23C; --heat-soft:rgba(226,178,60,.18);
+  --ok:#5CC491; --ok-soft:rgba(92,196,145,.12);
+  --ai:#B3A4E8; --ai-soft:rgba(179,164,232,.14);
+  --score-filter:invert(1) hue-rotate(180deg) brightness(.86) contrast(.95);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--pencil-ink)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--pencil);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1220px;margin:0 auto;padding-inline:clamp(16px,3vw,32px)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1,h2,h3{text-wrap:balance;margin:0}
+p{margin:0}
+
+/* demo ribbon */
+.ribbon{background:var(--ink);color:var(--paper);font-size:13px;text-align:center;padding:6px 16px}
+.ribbon b{font-weight:600}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .wrap{display:flex;align-items:center;gap:20px;padding-block:10px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);background:none;border:0;cursor:pointer;padding:0;flex:none}
+.brand svg{width:30px;height:30px}
+.brand span{font-family:var(--f-display);font-size:20px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.topsearch{flex:1;max-width:520px;position:relative}
+.topnav{margin-left:auto;display:flex;gap:18px;font-size:14px;color:var(--muted)}
+.topnav span{white-space:nowrap}
+@media (max-width:820px){.topnav{display:none}.brand span{display:none}}
+
+/* ---------- search input ---------- */
+.search{position:relative}
+.search input{width:100%;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:12px 18px 12px 44px;font:inherit;font-size:16px;outline:none;transition:border-color .15s,box-shadow .15s}
+.search input:focus{border-color:var(--pencil);box-shadow:0 0 0 4px var(--pencil-soft)}
+.search .icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--muted);pointer-events:none}
+.search.big input{font-size:19px;padding:18px 24px 18px 54px;box-shadow:0 1px 0 var(--line),0 10px 30px -18px rgba(20,25,40,.35)}
+.search.big .icon{left:22px;width:20px;height:20px}
+.suggest{position:absolute;left:0;right:0;top:calc(100% + 6px);background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 40px -20px rgba(10,15,30,.4);overflow:hidden;z-index:40}
+.suggest button{display:flex;width:100%;text-align:left;gap:12px;align-items:center;background:none;border:0;padding:10px 16px;cursor:pointer}
+.suggest button:hover,.suggest button.on{background:var(--pencil-soft)}
+.suggest .t{flex:1;min-width:0}
+.suggest .t b{font-weight:600}
+.suggest .t small{display:block;color:var(--muted);font-size:13px}
+
+.status{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;border-radius:999px;padding:3px 10px;white-space:nowrap}
+.status::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.st-ready{color:var(--ok);background:var(--ok-soft)}
+.st-draft{color:var(--ai);background:var(--ai-soft)}
+.st-collect{color:var(--heat);background:var(--heat-soft)}
+.st-none{color:var(--muted);background:var(--sunk)}
+
+/* ---------- home ---------- */
+#home{padding-block:clamp(40px,9vh,110px) 60px}
+.home-inner{max-width:760px;margin:0 auto;text-align:left}
+.home-mark{display:flex;align-items:center;gap:14px;margin-bottom:28px}
+.home-mark svg{width:48px;height:48px}
+.home-mark .label{color:var(--pencil-ink)}
+.home h1{font-family:var(--f-display);font-weight:500;font-size:clamp(40px,7vw,76px);line-height:1.02;letter-spacing:-.02em}
+.home h1 em{font-style:italic;color:var(--pencil-ink)}
+.home .lede{font-size:19px;color:var(--muted);max-width:56ch;margin-top:18px}
+.home .search{margin-top:34px}
+.tryrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;align-items:center;font-size:14px;color:var(--muted)}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:14px;cursor:pointer;color:var(--ink)}
+.chip:hover{border-color:var(--pencil);color:var(--pencil-ink)}
+.home-cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-top:64px}
+.home-cols>div{background:var(--surface);padding:20px}
+.home-cols h3{font-size:16px;font-weight:700;margin-bottom:6px}
+.home-cols p{font-size:15px;color:var(--muted)}
+@media (max-width:720px){.home-cols{grid-template-columns:1fr}}
+
+/* ---------- results ---------- */
+#results{padding-block:28px 80px}
+.res-meta{color:var(--muted);font-size:14px;margin-bottom:18px}
+.res-meta b{color:var(--ink)}
+.res-meta button{background:none;border:0;color:var(--pencil-ink);text-decoration:underline;cursor:pointer;padding:0}
+.res-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:28px;align-items:start}
+@media (max-width:900px){.res-grid{grid-template-columns:1fr}}
+.topcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:26px;cursor:pointer;transition:border-color .15s,transform .15s;display:block;width:100%;text-align:left}
+.topcard:hover{border-color:var(--pencil)}
+.topcard .kicker{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.topcard h2{font-family:var(--f-display);font-weight:500;font-size:clamp(28px,4vw,40px);line-height:1.08}
+.topcard .sub{color:var(--muted);margin-top:6px;font-size:16px}
+.topcard .facts{display:flex;flex-wrap:wrap;gap:22px;margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+.fact b{display:block;font-family:var(--f-mono);font-size:20px;font-weight:500}
+.fact span{font-size:13px;color:var(--muted)}
+.topcard .open{margin-top:20px;display:inline-flex;gap:8px;align-items:center;font-weight:600;color:var(--pencil-ink)}
+.secthits{margin-top:24px}
+.secthits h3{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.hit{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);align-items:flex-start;background:none;border-left:0;border-right:0;border-top:0;width:100%;text-align:left;cursor:pointer}
+.hit:hover .ht b{color:var(--pencil-ink)}
+.hit .type{flex:none;width:88px;font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;padding-top:3px}
+.hit .ht{min-width:0;flex:1}
+.hit .ht b{font-weight:600}
+.hit .ht small{display:block;color:var(--muted);font-size:14px}
+.side-box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px}
+.side-box+.side-box{margin-top:16px}
+.side-box h3{font-size:15px;font-weight:700;margin-bottom:10px}
+.side-box p{font-size:14px;color:var(--muted)}
+.pipeline-mini{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.pipeline-mini li{display:flex;gap:10px;font-size:14px}
+.pipeline-mini li i{flex:none;width:22px;height:22px;border-radius:50%;background:var(--pencil-soft);color:var(--pencil-ink);font-style:normal;font-family:var(--f-mono);font-size:12px;display:grid;place-items:center}
+
+/* ---------- piece page ---------- */
+.hero{padding-block:36px 26px;border-bottom:1px solid var(--line)}
+.crumbs{font-size:14px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
+.crumbs button{background:none;border:0;padding:0;color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:36px;margin-top:18px;align-items:end}
+@media (max-width:900px){.hero-grid{grid-template-columns:1fr}}
+.composer{font-size:15px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--pencil-ink)}
+.hero h1{font-family:var(--f-display);font-weight:500;font-size:clamp(40px,6.4vw,74px);line-height:1;letter-spacing:-.02em;margin-top:10px}
+.hero h1 .op{font-style:italic;font-weight:400;color:var(--muted);font-size:.5em;letter-spacing:0;white-space:nowrap}
+.hero .subtitle{font-family:var(--f-display);font-style:italic;font-size:22px;color:var(--muted);margin-top:12px}
+.hero .meta{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:20px;font-size:15px;color:var(--muted)}
+.hero .meta b{color:var(--ink);font-weight:600}
+.prov{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.prov .row{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.prov .row:last-child{border-bottom:0}
+.prov .row span{color:var(--muted)}
+.prov .row b{font-family:var(--f-mono);font-weight:500}
+.prov .head{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+
+.secnav{position:sticky;top:calc(env(safe-area-inset-top,0px) + 57px);z-index:20;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.secnav .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-block:6px}
+.secnav .wrap::-webkit-scrollbar{display:none}
+.secnav a{flex:none;text-decoration:none;color:var(--muted);font-size:14px;font-weight:600;padding:8px 12px;border-radius:8px}
+.secnav a:hover{color:var(--ink);background:var(--sunk)}
+.secnav a.on{color:var(--pencil-ink);background:var(--pencil-soft)}
+
+section.block{padding-block:56px 8px;scroll-margin-top:120px}
+.block-head{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;margin-bottom:24px}
+.block-head h2{font-family:var(--f-display);font-weight:500;font-size:clamp(30px,4vw,42px);line-height:1.05;letter-spacing:-.01em}
+.block-head p{color:var(--muted);max-width:60ch;margin-top:8px}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:6px;white-space:nowrap}
+.b-ai{background:var(--ai-soft);color:var(--ai)}
+.b-ok{background:var(--ok-soft);color:var(--ok)}
+.b-src{background:var(--sunk);color:var(--muted);font-family:var(--f-mono);font-weight:500}
+.b-pencil{background:var(--pencil-soft);color:var(--pencil-ink)}
+
+/* context */
+.ctx-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:36px}
+@media (max-width:900px){.ctx-grid{grid-template-columns:1fr}}
+.prose p{font-size:17px;line-height:1.65;max-width:64ch}
+.prose p+p{margin-top:14px}
+.quote{margin:22px 0 0;padding:16px 20px;border-left:3px solid var(--pencil);background:var(--surface);border-radius:0 10px 10px 0;font-family:var(--f-display);font-style:italic;font-size:19px;line-height:1.45}
+.quote cite{display:block;font-family:var(--f-body);font-style:normal;font-size:13px;color:var(--muted);margin-top:8px}
+.timeline{list-style:none;margin:0;padding:0;position:relative}
+.timeline::before{content:"";position:absolute;left:58px;top:8px;bottom:8px;width:1px;background:var(--line)}
+.timeline li{display:grid;grid-template-columns:50px 1fr;gap:24px;padding:8px 0;position:relative}
+.timeline li::after{content:"";position:absolute;left:54px;top:15px;width:9px;height:9px;border-radius:50%;background:var(--surface);border:2px solid var(--faint)}
+.timeline li.key::after{border-color:var(--pencil);background:var(--pencil)}
+.timeline .y{font-family:var(--f-mono);font-size:14px;color:var(--muted);text-align:right;padding-top:1px}
+.timeline .e{font-size:15px}
+.timeline .e small{display:block;color:var(--muted);font-size:13px}
+.lines{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-top:40px}
+@media (max-width:1000px){.lines{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.lines{grid-template-columns:1fr}}
+.line-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.line-card h4{margin:0;font-family:var(--f-display);font-size:20px;font-weight:600}
+.line-card p{font-size:14px;color:var(--muted);margin-top:6px}
+.line-card .where{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+.barlink{font-family:var(--f-mono);font-size:12px;border:1px solid var(--line);background:var(--paper);border-radius:6px;padding:2px 7px;cursor:pointer;color:var(--pencil-ink)}
+.barlink:hover{border-color:var(--pencil);background:var(--pencil-soft)}
+
+/* structure */
+.form-wrap{display:grid;gap:22px}
+.form-mv{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 18px 14px}
+.form-mv header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.form-mv header h3{font-family:var(--f-display);font-size:22px;font-weight:600}
+.form-mv header span{color:var(--muted);font-size:14px}
+.bands{display:flex;gap:2px;height:54px}
+.band{min-width:0;border-radius:4px;padding:6px 7px;font-size:12px;line-height:1.2;overflow:hidden;cursor:pointer;border:0;text-align:left;color:var(--ink);background:var(--sunk);transition:filter .15s}
+.band:hover{filter:brightness(.95);outline:1px solid var(--pencil)}
+.band b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.band span{font-family:var(--f-mono);color:var(--muted);font-size:11px;white-space:nowrap}
+.band.g1{background:var(--pencil-soft)}
+.band.g2{background:var(--heat-soft)}
+.band.g3{background:var(--ai-soft)}
+.groups{display:flex;gap:2px;margin-top:6px}
+.groups div{font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;border-top:2px solid var(--line);padding-top:4px;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.form-key{font-size:13px;color:var(--muted);margin-top:10px}
+.bands-scroll{overflow-x:auto}
+.bands-scroll>div{min-width:640px}
+
+/* interpretations */
+.people{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:34px}
+@media (max-width:860px){.people{grid-template-columns:1fr}}
+.person{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:grid;grid-template-columns:44px 1fr;gap:14px}
+.av{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-display);font-weight:600;font-size:17px;background:var(--pencil-soft);color:var(--pencil-ink)}
+.person h4{margin:0;font-size:17px}
+.person .school{font-size:13px;color:var(--pencil-ink);font-weight:600}
+.person p{font-size:14px;color:var(--muted);margin-top:6px}
+.qs{display:grid;gap:16px}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.q-head{padding:18px 20px;display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+.q-head h3{font-size:19px;font-weight:700}
+.q-head p{color:var(--muted);font-size:15px;margin-top:4px;max-width:70ch}
+.q-pos{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.pos{padding:16px 20px;border-right:1px solid var(--line);border-top:1px solid var(--line);margin-top:-1px;margin-right:-1px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.pos .who{font-weight:700;font-size:15px}
+.pos .how{font-size:12px;color:var(--muted);font-family:var(--f-mono)}
+.pos p{font-size:15px;flex:1}
+.agree{display:flex;align-items:center;gap:10px;margin-top:4px}
+.agree button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:4px 12px;font-size:13px;cursor:pointer;font-weight:600;white-space:nowrap}
+.agree button:hover{border-color:var(--pencil)}
+.agree button.on{background:var(--pencil);border-color:var(--pencil);color:var(--surface)}
+.agree .meter{flex:1;height:6px;border-radius:3px;background:var(--sunk);overflow:hidden}
+.agree .meter i{display:block;height:100%;background:var(--pencil);border-radius:3px;transition:width .3s}
+.agree .pct{font-family:var(--f-mono);font-size:12px;color:var(--muted);width:34px;text-align:right}
+.q-foot{padding:10px 20px;font-size:13px;color:var(--muted);background:var(--paper);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+/* score explorer */
+.mvtabs{display:flex;gap:6px;flex-wrap:wrap}
+.mvtabs button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600;font-size:14px}
+.mvtabs button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.heat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px 10px;margin-bottom:16px}
+.heat-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-bottom:8px}
+.heat-legend{display:flex;gap:14px;flex-wrap:wrap}
+.heat-legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.heat-bars{display:flex;align-items:flex-end;gap:1px;height:56px;position:relative;cursor:pointer}
+.heat-bars .hb{flex:1;min-width:0;background:var(--line);height:2px;border-radius:1px 1px 0 0;transition:background .15s}
+.heat-bars .hb.a{background:var(--heat)}
+.heat-bars .hb.p{box-shadow:inset 0 -2px 0 var(--pencil)}
+.heat-bars .hb.sel{background:var(--pencil)}
+.heat-bars .hb:hover{background:var(--pencil)}
+.heat-page{position:absolute;bottom:-6px;height:3px;background:var(--pencil);border-radius:2px}
+.heat-axis{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:11px;color:var(--faint);margin-top:10px}
+.heat-tip{position:absolute;bottom:64px;transform:translateX(-50%);background:var(--ink);color:var(--paper);font-size:12px;padding:4px 8px;border-radius:6px;white-space:nowrap;pointer-events:none;font-family:var(--f-mono)}
+
+.explorer{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:960px){.explorer{grid-template-columns:1fr}}
+.score-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;position:sticky;top:130px}
+@media (max-width:960px){.score-card{position:static}}
+.score-img{position:relative;line-height:0;border-radius:6px;overflow:hidden;background:#fff}
+.score-img img{width:100%;height:auto;display:block;filter:var(--score-filter)}
+.barbox{position:absolute;border:0;padding:0;background:transparent;cursor:pointer;border-radius:3px;transition:background .12s}
+.barbox:hover{background:var(--pencil-soft);box-shadow:inset 0 0 0 1.5px var(--pencil)}
+.barbox.ann{background:linear-gradient(to top,var(--heat-soft),transparent 60%);box-shadow:inset 0 -3px 0 var(--heat)}
+.barbox.ann:hover{background:var(--pencil-soft)}
+.barbox.sel{background:var(--pencil-mid)!important;box-shadow:inset 0 0 0 2px var(--pencil)!important}
+.barbox .n{position:absolute;left:3px;top:3px;font-family:var(--f-mono);font-size:10px;line-height:1;padding:2px 4px;border-radius:3px;background:var(--ink);color:var(--paper);opacity:0;transition:opacity .12s}
+.barbox.ann .n,.barbox.sel .n,.barbox:hover .n{opacity:.85}
+.score-cap{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted);padding:10px 4px 2px}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;min-width:0}
+.panel-head{padding:20px 22px 16px;border-bottom:1px solid var(--line)}
+.panel-head .loc{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.panel-head h3{font-family:var(--f-display);font-size:26px;font-weight:600;line-height:1.15}
+.panel-head .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.tag{font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 9px}
+.pblock{padding:18px 22px;border-bottom:1px solid var(--line)}
+.pblock:last-child{border-bottom:0}
+.pblock h4{margin:0 0 10px;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.pblock h4 .label{font-size:12px}
+.pblock>p{font-size:16px;line-height:1.6}
+.prov-line{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.interp{display:grid;gap:10px}
+.ip{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start}
+.ip .av{width:34px;height:34px;font-size:13px}
+.ip .av.comp{background:var(--heat-soft);color:var(--ink)}
+.ip .av.orch{background:var(--ai-soft);color:var(--ai)}
+.ip .av.syn{background:var(--ok-soft);color:var(--ok)}
+.ip b{font-size:15px}
+.ip small{color:var(--muted);font-family:var(--f-mono);font-size:11px;margin-left:6px}
+.ip p{font-size:15px;margin-top:2px}
+.links{display:flex;flex-wrap:wrap;gap:8px}
+.linkc{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:14px;background:var(--paper);cursor:pointer;text-decoration:none;color:var(--ink)}
+.linkc:hover{border-color:var(--pencil);color:var(--pencil-ink)}
+.linkc .mono{font-size:11px;color:var(--muted)}
+.cmt{display:grid;grid-template-columns:44px 1fr;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.cmt:first-of-type{border-top:0;padding-top:4px}
+.vote{display:flex;flex-direction:column;align-items:center;gap:0;border:1px solid var(--line);border-radius:8px;background:var(--paper);cursor:pointer;padding:5px 0 4px;height:fit-content}
+.vote svg{width:12px;height:12px}
+.vote span{font-family:var(--f-mono);font-size:13px;font-weight:500}
+.vote:hover{border-color:var(--pencil)}
+.vote.on{background:var(--pencil);border-color:var(--pencil);color:var(--surface)}
+.cmt .by{font-size:13px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.cmt .by b{color:var(--ink);font-weight:600}
+.role{font-size:11px;font-weight:600;padding:1px 7px;border-radius:999px;background:var(--sunk);color:var(--muted)}
+.role.teacher{background:var(--pencil-soft);color:var(--pencil-ink)}
+.role.performer{background:var(--heat-soft);color:var(--ink)}
+.role.musicologist{background:var(--ai-soft);color:var(--ai)}
+.role.imported{background:transparent;border:1px dashed var(--faint)}
+.role.you{background:var(--ok-soft);color:var(--ok)}
+.cmt p{font-size:15px;margin-top:3px}
+.replies{margin-top:8px;padding-left:12px;border-left:2px solid var(--line)}
+.replies .cmt{grid-template-columns:38px 1fr;padding:8px 0}
+.compose{display:grid;gap:8px;margin-top:12px}
+.compose textarea{width:100%;min-height:74px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;font-size:15px;background:var(--paper);color:var(--ink)}
+.compose textarea:focus{outline:none;border-color:var(--pencil);box-shadow:0 0 0 3px var(--pencil-soft)}
+.compose .row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.compose .row small{color:var(--muted);font-size:12px}
+.btn{border:0;border-radius:8px;background:var(--pencil);color:var(--surface);font-weight:600;padding:8px 14px;cursor:pointer;font-size:14px}
+.btn:hover{background:var(--pencil-ink)}
+.btn.ghost{background:transparent;color:var(--pencil-ink);border:1px solid var(--line)}
+.empty{padding:28px 22px}
+.empty h3{font-family:var(--f-display);font-size:24px;font-weight:600}
+.empty p{color:var(--muted);margin-top:6px}
+.offpage{margin-top:10px;font-size:13px;color:var(--muted);background:var(--paper);border:1px dashed var(--line);border-radius:8px;padding:8px 10px}
+
+/* connections */
+.conn-grid{display:grid;gap:22px}
+.arcs-card,.net-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.arcs-card h3,.net-card h3{font-size:18px;font-weight:700}
+.arcs-card>p,.net-card>p{font-size:14px;color:var(--muted);margin-top:4px}
+.svgwrap{overflow-x:auto;margin-top:12px}
+.svgwrap svg{display:block;min-width:720px;width:100%;height:auto}
+.arc{fill:none;stroke-width:2;cursor:pointer;opacity:.75;transition:opacity .15s,stroke-width .15s}
+.arc:hover,.arc.on{opacity:1;stroke-width:3.5}
+.arcs-dim .arc:not(.on){opacity:.18}
+.arc-cap{margin-top:12px;display:flex;gap:14px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;background:var(--paper);border-radius:10px;padding:12px 14px;min-height:64px}
+.arc-cap p{font-size:15px;max-width:72ch}
+.arc-cap b{display:block;font-size:15px}
+.thread-legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:10px;font-size:13px;color:var(--muted)}
+.thread-legend button{background:none;border:0;padding:0;cursor:pointer;color:var(--muted);display:inline-flex;gap:6px;align-items:center;font-size:13px}
+.thread-legend button:hover{color:var(--ink)}
+.thread-legend i{width:16px;height:3px;border-radius:2px;display:inline-block}
+.node{cursor:pointer}
+.node rect{fill:var(--surface);stroke:var(--line);stroke-width:1}
+.node:hover rect,.node.on rect{stroke:var(--pencil);stroke-width:2}
+.node text{fill:var(--ink);font-family:var(--f-body);font-size:13px}
+.node text.s{fill:var(--muted);font-size:11px;font-family:var(--f-mono)}
+.edge{stroke:var(--line);stroke-width:1.5;fill:none}
+.edge.on{stroke:var(--pencil);stroke-width:2.5}
+.center-node rect{fill:var(--ink)}
+.center-node text{fill:var(--paper);font-family:var(--f-display);font-size:16px;font-weight:600}
+.center-node text.s{fill:var(--paper);opacity:.7}
+
+/* voices */
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.filters button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:14px;cursor:pointer}
+.filters button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.voices{columns:2 340px;column-gap:16px}
+.vcard{break-inside:avoid;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px;display:grid;grid-template-columns:44px 1fr;gap:12px}
+.vcard p{font-size:16px;line-height:1.55}
+.vcard .by{font-size:13px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+.vcard .by b{color:var(--ink)}
+.vcard .where{margin-top:10px}
+
+/* sources */
+.pipeline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-bottom:28px;overflow:hidden}
+@media (max-width:860px){.pipeline{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.pipeline{grid-template-columns:1fr}}
+.pipeline>div{padding:18px;border-right:1px solid var(--line);position:relative}
+.pipeline>div:last-child{border-right:0}
+.pipeline .step{font-family:var(--f-mono);font-size:12px;color:var(--pencil-ink)}
+.pipeline b{display:block;font-size:24px;font-family:var(--f-mono);font-weight:500;margin-top:6px}
+.pipeline h4{margin:2px 0 4px;font-size:15px}
+.pipeline p{font-size:13px;color:var(--muted)}
+.srcs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+@media (max-width:860px){.srcs{grid-template-columns:1fr}}
+.srcgroup h3{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:flex;justify-content:space-between}
+.src{padding:12px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start}
+.src .t{font-size:15px}
+.src .t i{font-style:italic}
+.src .t small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.src .r{display:flex;flex-direction:column;gap:4px;align-items:flex-end}
+.thesis-call{background:var(--ink);color:var(--paper);border-radius:14px;padding:22px 24px;display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;margin-bottom:28px}
+.thesis-call h3{font-family:var(--f-display);font-size:24px;font-weight:500}
+.thesis-call p{opacity:.8;font-size:15px;margin-top:4px;max-width:70ch}
+.thesis-call .btn{background:var(--paper);color:var(--ink)}
+@media (max-width:640px){.thesis-call{grid-template-columns:1fr}}
+
+footer.foot{margin-top:70px;border-top:1px solid var(--line);padding-block:26px 50px;color:var(--muted);font-size:14px}
+footer.foot .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:10px;font-size:14px;z-index:60;box-shadow:0 10px 30px -10px rgba(0,0,0,.4)}
+.flash{animation:flash 1.2s ease}
+@keyframes flash{0%{box-shadow:0 0 0 0 var(--pencil-mid)}30%{box-shadow:0 0 0 8px var(--pencil-soft)}100%{box-shadow:0 0 0 0 transparent}}
+</style>
+</head>
+<body>
+
+
+<div class="ribbon"><b>Prototype.</b> Analysis is summarised from real sources (credited). All user names, comments and vote counts are invented examples.</div>
+
+<header class="topbar" id="topbar" hidden>
+  <div class="wrap">
+    <button class="brand" id="brandBtn" aria-label="Open Interpretation home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><g stroke="currentColor" stroke-width="1.4"><line x1="2" y1="10" x2="30" y2="10"/><line x1="2" y1="16" x2="30" y2="16"/><line x1="2" y1="22" x2="30" y2="22"/></g><ellipse cx="16" cy="16" rx="7.2" ry="5.2" transform="rotate(-20 16 16)" fill="var(--paper)" stroke="var(--pencil)" stroke-width="2.6"/></svg>
+      <span>Open Interpretation</span>
+    </button>
+    <div class="topsearch search">
+      <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8.5" cy="8.5" r="6"/><path d="M13 13l5 5"/></svg>
+      <input id="q2" type="search" autocomplete="off" placeholder="Search a piece, composer or bar" aria-label="Search">
+    </div>
+    <nav class="topnav"><span>20 pilot pieces</span><span>Contribute</span><span>About</span></nav>
+  </div>
+</header>
+
+<main>
+<!-- ================= HOME ================= -->
+<section id="home" class="home wrap">
+  <div class="home-inner">
+    <div class="home-mark">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><g stroke="currentColor" stroke-width="1.2"><line x1="2" y1="10" x2="30" y2="10"/><line x1="2" y1="16" x2="30" y2="16"/><line x1="2" y1="22" x2="30" y2="22"/></g><ellipse cx="16" cy="16" rx="7.2" ry="5.2" transform="rotate(-20 16 16)" fill="var(--paper)" stroke="var(--pencil)" stroke-width="2.6"/></svg>
+      <div class="label">Open Interpretation · pilot with mdw piano students</div>
+    </div>
+    <h1>Every way to play a piece, <em>in one open page.</em></h1>
+    <p class="lede">Context, analysis, editions, recordings, masterclass notes and student theses, pinned to the bars they talk about. Built by AI agents that find and credit sources, checked and extended by musicians.</p>
+    <div class="search big" id="homeSearch">
+      <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8.5" cy="8.5" r="6"/><path d="M13 13l5 5"/></svg>
+      <input id="q1" type="search" autocomplete="off" placeholder="Try “prokofiev sonata 4”" aria-label="Search a piece">
+    </div>
+    <div class="tryrow">Try:
+      <button class="chip" data-try="prokoviev soanta 4">prokoviev soanta 4</button>
+      <button class="chip" data-try="Prokofiev op. 29">Prokofiev op. 29</button>
+      <button class="chip" data-try="Rachmaninoff Paganini Rhapsody">Rachmaninoff Paganini Rhapsody</button>
+    </div>
+    <div class="home-cols">
+      <div><h3>Bar by bar</h3><p>Every insight is attached to the measures it is about, on the score itself.</p></div>
+      <div><h3>Many schools, side by side</h3><p>Sándor next to Berman next to the composer’s own recording. You decide.</p></div>
+      <div><h3>Nothing gets lost</h3><p>Theses, masterclass notes and the best comment-section wisdom get a permanent, credited home.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RESULTS ================= -->
+<section id="results" class="wrap" hidden></section>
+
+<!-- ================= PIECE ================= -->
+<div id="piece" hidden>
+  <div class="hero">
+    <div class="wrap">
+      <div class="crumbs"><button data-go="home">Library</button><span>/</span><span>Prokofiev</span><span>/</span><span>Piano sonatas</span></div>
+      <div class="hero-grid">
+        <div>
+          <div class="composer">Sergei Prokofiev · 1891–1953</div>
+          <h1>Piano Sonata No. 4 in C minor <span class="op">Op. 29</span></h1>
+          <div class="subtitle">“D’après des vieux cahiers” · From old notebooks</div>
+          <div class="meta">
+            <span><b>1917</b> (material from 1908)</span>
+            <span><b>3</b> movements</span>
+            <span>Premiere <b>17 Apr 1918</b>, Petrograd, the composer</span>
+            <span>Dedicated to the memory of <b>Maximilian Schmidthof</b></span>
+          </div>
+        </div>
+        <aside class="prov" aria-label="Page status">
+          <div class="head"><span class="status st-ready">Page reviewed</span><span class="badge b-ai">AI-drafted</span><span class="badge b-ok">✓ musician-checked</span></div>
+          <div class="row"><span>Sources cited</span><b id="statSources">–</b></div>
+          <div class="row"><span>Annotated passages</span><b id="statAnn">–</b></div>
+          <div class="row"><span>Community notes</span><b id="statCmt">–</b></div>
+          <div class="row"><span>Reviewed by</span><b>6 musicians</b></div>
+          <div class="row"><span>Last edit</span><b>2 days ago</b></div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <nav class="secnav" aria-label="Sections"><div class="wrap" id="secnav">
+    <a href="#context">Context</a><a href="#structure">Structure</a><a href="#interpretations">Interpretations</a><a href="#score">Score, bar by bar</a><a href="#connections">Connections</a><a href="#voices">Voices</a><a href="#sources">Sources</a>
+  </div></nav>
+
+  <div class="wrap">
+    <!-- CONTEXT -->
+    <section class="block" id="context">
+      <div class="block-head"><div><div class="label">01 · Context</div><h2>Where this sonata comes from</h2></div>
+        <span class="badge b-ai">AI summary · 6 sources · ✓ checked by 2 musicians</span></div>
+      <div class="ctx-grid">
+        <div class="prose">
+          <p>The subtitle is literal. Prokofiev built the Fourth Sonata out of student work: a piano sonata from his St. Petersburg Conservatory years (1908) and an abandoned Symphony in E minor. He rewrote it in 1917, premiered it himself in Petrograd on 17 April 1918, and A. Gutheil published it the same year. The Third Sonata, Op. 28, carries the same subtitle.</p>
+          <p>The slow movement has the most interesting story. In his diary of April 1917, Prokofiev describes looking for a new Andante, failing to find a lost manuscript, and then remembering the Andante of the E-minor Symphony, which he judged would work just as well on the piano. In 1934 he turned it back into an orchestral piece, the <i>Andante, Op. 29 bis</i>. That orchestral version later becomes one of the best clues for how to play the piano version.</p>
+          <p>The sonata is dedicated to Maximilian Schmidthof, Prokofiev’s close friend from the Conservatory, who took his own life in 1913. Compared with the brilliant Third and Seventh, the Fourth is inward and dark in its first two movements. Harlow Robinson hears something almost Schumannesque in it. It is played far less often than Nos. 3 and 7, yet some consider it the finest of the nine.</p>
+          <blockquote class="quote">Frank Merrick in 1948 already counted Prokofiev’s sonatas among “true sonatas” in the line of Haydn, Mozart and Beethoven.<cite>Merrick, Proceedings of the Royal Musical Association 75 (1948), via Cho 2023, p. 3</cite></blockquote>
+        </div>
+        <div>
+          <div class="label" style="margin-bottom:12px">Timeline</div>
+          <ol class="timeline">
+            <li class="key"><span class="y">1908</span><span class="e">Conservatory sonata and Symphony in E minor<small>The raw material of Op. 29</small></span></li>
+            <li><span class="y">1913</span><span class="e">Death of Maximilian Schmidthof<small>Dedicatee; Piano Concerto No. 2 is also dedicated to him</small></span></li>
+            <li class="key"><span class="y">1917</span><span class="e">Revision into Sonata No. 4<small>Diary, April 1917: the Andante rescued from the symphony</small></span></li>
+            <li class="key"><span class="y">1918</span><span class="e">Premiere by the composer, Petrograd<small>Published by A. Gutheil</small></span></li>
+            <li><span class="y">1934</span><span class="e">Andante for orchestra, Op. 29 bis</span></li>
+            <li class="key"><span class="y">1935</span><span class="e">Prokofiev records the Andante<small>Naxos Historical 8.110670</small></span></li>
+            <li><span class="y">1967</span><span class="e">György Sándor’s edition (MCA)</span></li>
+            <li><span class="y">1998</span><span class="e">Boris Berman’s complete recording (Chandos)</span></li>
+            <li><span class="y">2008</span><span class="e">Berman, <i>Prokofiev’s Piano Sonatas</i> (Yale)</span></li>
+            <li class="key"><span class="y">2023</span><span class="e">Soyoung Cho, DMA dissertation, UNT<small>Performance guide comparing Sándor and Berman</small></span></li>
+          </ol>
+        </div>
+      </div>
+      <div class="lines" id="lines"></div>
+    </section>
+
+    <!-- STRUCTURE -->
+    <section class="block" id="structure">
+      <div class="block-head"><div><div class="label">02 · Structure</div><h2>The form at a glance</h2><p>Bar numbers and keys from Cho (2023), Tables 4.1–4.4. Click a section to open its notes on the score.</p></div></div>
+      <div class="form-wrap" id="forms"></div>
+    </section>
+
+    <!-- INTERPRETATIONS -->
+    <section class="block" id="interpretations">
+      <div class="block-head"><div><div class="label">03 · Interpretations</div><h2>Open questions, different answers</h2><p>Where the score leaves a decision to the performer, this is what the main interpreters chose. Mark the answer that convinces you.</p></div></div>
+      <div class="people" id="people"></div>
+      <div class="qs" id="questions"></div>
+    </section>
+
+    <!-- SCORE -->
+    <section class="block" id="score">
+      <div class="block-head"><div><div class="label">04 · Score, bar by bar</div><h2>Click any bar</h2><p>Yellow bars have notes. The strip shows where the discussion concentrates across the whole movement; bars beyond the first page open their notes without the score.</p></div>
+        <div class="mvtabs" id="mvtabs"></div></div>
+      <div class="heat" id="heat"></div>
+      <div class="explorer">
+        <div class="score-card">
+          <div class="score-img" id="scoreImg"></div>
+          <div class="score-cap"><span id="scoreCap"></span><a href="https://imslp.org/wiki/Piano_Sonata_No.4,_Op.29_(Prokofiev,_Sergey)" target="_blank" rel="noopener">Full score on IMSLP ↗</a></div>
+        </div>
+        <div class="panel" id="panel" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- CONNECTIONS -->
+    <section class="block" id="connections">
+      <div class="block-head"><div><div class="label">05 · Connections</div><h2>A map, not a list</h2><p>Ideas that travel inside the sonata, and the works it talks to.</p></div></div>
+      <div class="conn-grid">
+        <div class="arcs-card">
+          <h3>Threads inside the sonata</h3>
+          <p>Each arc joins two places where the same idea appears. Click an arc to read why.</p>
+          <div class="svgwrap" id="arcs"></div>
+          <div class="thread-legend" id="threadLegend"></div>
+          <div class="arc-cap" id="arcCap"><p>Hover or click an arc.</p></div>
+        </div>
+        <div class="net-card">
+          <h3>Related works and people</h3>
+          <p>Click a node.</p>
+          <div class="svgwrap" id="net"></div>
+          <div class="arc-cap" id="netCap"><p>Sonata No. 4 sits between Prokofiev’s student years and his own later music, and leans on older models.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VOICES -->
+    <section class="block" id="voices">
+      <div class="block-head"><div><div class="label">06 · Voices</div><h2>What musicians say about it</h2><p>Teachers, students, performers and imported comments, ranked by votes. The best ideas rise.</p></div>
+        <div class="filters" id="vfilters"></div></div>
+      <div class="voices" id="voiceList"></div>
+    </section>
+
+    <!-- SOURCES -->
+    <section class="block" id="sources">
+      <div class="block-head"><div><div class="label">07 · Sources</div><h2>Everything this page stands on</h2><p>Every summary links back to a source. Nothing is copied; everything is credited.</p></div></div>
+      <div class="pipeline">
+        <div><div class="step">Step 1 · AI agents</div><b>214</b><h4>documents scanned</h4><p>Libraries, theses, edition prefaces, interviews, video comments.</p></div>
+        <div><div class="step">Step 2 · Summaries</div><b id="pSrc">31</b><h4>sources kept and cited</h4><p>Each claim is pinned to a page number and a bar.</p></div>
+        <div><div class="step">Step 3 · Musicians</div><b>6</b><h4>reviewers</h4><p>2 teachers, 3 students, 1 musicologist corrected and approved.</p></div>
+        <div><div class="step">Step 4 · Community</div><b id="pCmt">–</b><h4>notes and replies</h4><p>Ranked by votes. Imported comments keep their origin.</p></div>
+      </div>
+      <div class="thesis-call">
+        <div><h3>This page is built largely on one doctoral thesis.</h3><p>Soyoung Cho’s 2023 dissertation (University of North Texas) compares the editions and recordings of György Sándor and Boris Berman bar by bar. Here, its findings sit on the score where performers need them, credited to the author.</p></div>
+        <a class="btn" href="https://digital.library.unt.edu/search/?q=Prokofiev+Piano+Sonata+No.+4+Cho&t=fulltext" target="_blank" rel="noopener">Find the thesis ↗</a>
+      </div>
+      <div class="srcs" id="srcs"></div>
+    </section>
+  </div>
+</div>
+</main>
+
+<footer class="foot"><div class="wrap"><span>Open Interpretation · prototype for Project Slam, mdw Vienna</span><span>Score: Gutheil / Breitkopf &amp; Härtel first edition, public domain, via IMSLP</span></div></footer>
+
+<script>
+/* ======================== DATA ======================== */
+const SCORE = {
+  I:{img:'score/mvt1-p2.png',crop:[110,230,960,1040],page:'p. 2',total:197,label:'I. Allegro molto sostenuto',
+     systems:[{y:[300,462],first:0,xs:[232,423,572,739,906,1050]},{y:[485,665],first:5,xs:[140,396,542,733,919,1048]},{y:[688,862],first:10,xs:[140,416,600,774,938,1049]},{y:[885,1062],first:15,xs:[140,413,660,852,1048]},{y:[1088,1258],first:19,xs:[140,420,600,805,1048]}]},
+  II:{img:'score/mvt2-p9.png',crop:[110,190,920,1060],page:'p. 9',total:88,label:'II. Andante assai',
+     systems:[{y:[225,380],first:1,xs:[140,400,600,810,1003]},{y:[385,552],first:5,xs:[140,385,590,790,1003]},{y:[570,778],first:9,xs:[140,360,565,785,1003]},{y:[790,1032],first:13,xs:[140,565,1003]},{y:[1045,1240],first:15,xs:[130,445,730,1009]}]},
+  III:{img:'score/mvt3-p16.png',crop:[110,180,960,1105],page:'p. 16',total:223,label:'III. Allegro con brio, ma non leggiere',
+     systems:[{y:[225,425],first:1,xs:[235,574,828,1044]},{y:[440,632],first:4,xs:[145,390,605,830,1045]},{y:[665,857],first:8,xs:[145,366,546,713,876,1047]},{y:[865,1068],first:13,xs:[145,360,525,705,870,1045]},{y:[1085,1268],first:18,xs:[145,360,525,715,870,1045]}]}
+};
+
+const FORMS = {
+  I:{title:'I. Allegro molto sostenuto',sub:'Sonata form · 3/4 · C minor → C',total:197,groups:[['Exposition',1,70],['Development',71,137],['Recapitulation',137,197]],
+     secs:[['First theme',1,17,'C minor',1],['Transition',17,40,'→ E♭',0],['Second theme',40,61,'E♭ major',2],['Closing',61,70,'E♭ major',0],['Dev. A',71,87,'E♭ m → F m',3],['B1',88,98,'',3],['B2',99,106,'',3],['B3',107,116,'hemiolas',3],['C',117,137,'G pedal',3],['First theme',137,149,'C minor',1],['Transition',149,162,'',0],['Second theme',162,183,'C major',2],['Closing',183,197,'C',0]]},
+  II:{title:'II. Andante assai',sub:'Hybrid of ABA, variations and sonata form · A minor',total:88,groups:[['A and variations',1,35],['Bridge and B',36,53],['Return',54,88]],
+     secs:[['Theme A',1,12,'A minor',1],['Var. 1',13,24,'A minor',1],['Var. 2',25,32,'G♯ minor',1],['Quasi cadenza',33,35,'12/8',0],['Bridge',36,38,'bitonal',0],['Theme B',39,53,'C major',2],['Var. 2′',54,61,'G♯ minor',1],['Quasi cad.′',62,70,'',0],['A + B',71,80,'A minor',3],['Coda',81,88,'A minor',0]]},
+  III:{title:'III. Allegro con brio',sub:'Sonata-rondo A–B–A′–C–A″–B′–A‴ · 2/4 · C major',total:223,groups:[['A B A′',1,82],['C',83,133],['A″ B′ A‴',134,223]],
+     secs:[['A',1,25,'C (I)',1],['Bridge 1',25,42,'',0],['B',43,66,'G (V)',2],['A′',67,82,'C',1],['C',83,133,'A♭ Lydian (VI)',3],['A″',134,153,'C',1],['Bridge 2',153,177,'',0],['B′',178,201,'C',2],['A‴',201,223,'C',1]]}
+};
+
+const C = (u,r,v,t,replies) => ({u,r,v,t,replies:replies||[]});
+const IP = (who,how,t,kind) => ({who,how,t,kind:kind||''});
+const ANN = [
+ // ---------- MOVEMENT I ----------
+ {id:'I-up',mv:'I',from:0,to:0,title:'The opening murmur',sec:'Introduction',tags:['texture','motif'],
+  a:'Two beats of low, oscillating sixteenths before the theme begins. They make the ground feel unsteady and plant a motif that keeps returning: in the transition, in the closing section (m. 65), and transformed in the finale’s first bridge (mm. 40–42).',
+  src:['Cho 2023, pp. 19–20, 43'],ip:[IP('Cho','thesis, 2023','Read the marking as molto sostenuto first and allegro second: the mood is dark and reflective.','syn')],
+  links:['I-1','I-61','III-40'],
+  c:[C('Lena K.','Student',61,'I think of it as a cello section tuning in the dark, not a piano figure. Fingers stay on the keys, no accent on the first note.'),
+     C('M. Hartl','Teacher',44,'Count the upbeat as two real beats. Students rush it because it looks like an ornament, and then the theme starts in the wrong place.',[C('Jonas W.','Student',9,'This fixed my entry. I was treating it as a pickup flourish.')]),
+     C('Imported · comment under a live recording','Imported',23,'My teacher studied in Moscow and called this opening “the floorboards creaking”. It has stuck with me for twenty years.')]},
+ {id:'I-1',mv:'I',from:1,to:3,title:'Theme 1, first phrase',sec:'First theme · antecedent 1',tags:['phrasing','metre','tempo'],
+  a:'Theme 1 is built from two pairs of question-and-answer phrases (mm. 1–4, 4–7, 7–12, 12–17). Every phrase is made of two-beat slurs written against a 3/4 bar, so the metre is constantly blurred. The first cadence (mm. 3–4) puts its accent on the second-to-last chord, while the inner voice falls B♭–A♭–G.',
+  src:['Cho 2023, pp. 19–21, 54–55'],
+  ip:[IP('Sándor','recording, Vox 1993','Separates every phrase: ritenuto and diminuendo into each cadence, then a clear breath.'),
+      IP('Berman','recording, Chandos 1998; book 2008','Hardly separates the phrases in sound, but his book asks for the cadences in mm. 4, 7, 12 and 17 to be finished smoothly.'),
+      IP('Both','tempo','Play the movement at about ♩ = 88–90.','syn'),
+      IP('Cho','synthesis','Keep the two-beat slurs legato, let the four phrases breathe, and make each one sound different.','syn')],
+  links:['I-4','I-107','Q-phrasing'],
+  c:[C('Sofia R.','Performer',52,'The two-beat slurs are a trap. If you lift after every slur it turns into hiccups. I play the slurs with the fingers and the phrase with the arm.'),
+     C('Daniel P.','Student',31,'Listening to Sándor and Berman back to back is the best lesson for this bar. Same notes, a completely different idea of where the phrase ends.'),
+     C('Ana T.','Musicologist',18,'The 2-against-3 writing prepares the hemiolas in the development (mm. 107–109), which Berman calls Brahmsian. You can hear the seed here.')]},
+ {id:'I-4',mv:'I',from:4,to:6,title:'Theme 1, the answer',sec:'First theme · consequent 1',tags:['voicing','cadence'],
+  a:'The same melody as the first phrase with a different ending. Now the accent falls on the last chord and the inner voice climbs A♯–B–C, so the cadence leans forward into the next phrase instead of settling.',
+  src:['Cho 2023, p. 21'],ip:[IP('Cho','thesis','Make the difference audible: the first cadence sinks, the second lifts.','syn')],links:['I-1'],
+  c:[C('M. Hartl','Teacher',27,'Play only the inner voice of mm. 3–4 and then of mm. 6–7. Falling, then rising. Then put the melody back on top.'),
+     C('Felix B.','Student',6,'Is the accent on the last chord a real accent or just weight? In my edition it looks almost like a tenuto.')]},
+ {id:'I-7',mv:'I',from:7,to:11,title:'Theme 1, second pair',sec:'First theme · antecedent 2',tags:['phrasing'],
+  a:'The second question phrase stretches to five bars (mm. 7–12). The risk here is losing the long line: the two-beat slurs should never break the larger shape.',
+  src:['Cho 2023, pp. 20, 55'],ip:[IP('Sándor','recording','A clear breath before m. 7.'),IP('Berman','recording','Lets m. 7 grow out of the previous cadence without a gap.')],links:['I-1','I-12'],
+  c:[C('Lena K.','Student',12,'Colour-coding the four phrases, like Cho does in her Example 5.1, was the first thing that helped me memorise this page.')]},
+ {id:'I-12',mv:'I',from:12,to:16,title:'Last phrase, poco rit. and the 4/4 bar',sec:'First theme · consequent 2',tags:['tempo','metre'],
+  a:'The last phrase of the theme (mm. 12–17). Watch the written poco rit. and the a tempo pp right after it, and the single 4/4 bar (m. 16) that stretches the final cadence before the transition.',
+  src:['Score, Gutheil 1918','Cho 2023, p. 20'],ip:[],links:['I-7','I-17'],
+  c:[C('Jonas W.','Student',14,'The 4/4 bar is the strangest moment on the page. One extra beat and the music seems to hold its breath.'),
+     C('Sofia R.','Performer',9,'Don’t make the poco rit. too big. Prokofiev writes it and cancels it one bar later.')]},
+ {id:'I-17',mv:'I',from:17,to:18,title:'Transition: the grace notes',sec:'Transition',tags:['ornaments','character'],
+  a:'The transition combines three ideas: stepwise lines decorated with slurred grace notes, a two-note sigh turned upside down (the second note rises and takes the stress), and the oscillating sixteenths from the opening, now leaning on G.',
+  src:['Cho 2023, pp. 21, 55–56','Sándor, On Piano Playing, p. 207'],
+  ip:[IP('Sándor','edition 1967; book 1981','Slurred grace notes belong to the main note, so they go on the beat. His recording makes the transition dramatic.'),
+      IP('Berman','book 2008','The slurred grace notes should be melodic. He plays the whole transition softly.'),
+      IP('Cho','synthesis','Melodic, but let the sf and the articulation mark the change of character.','syn')],
+  links:['Q-grace','I-19','I-37'],
+  c:[C('Daniel P.','Student',38,'I tried Sándor’s on-the-beat grace notes and the passage suddenly sounded like Bartók. Makes sense, given who his teacher was.'),
+     C('Ana T.','Musicologist',21,'Worth knowing: the rule “slurred = on the beat, unslurred = before the beat” comes from Sándor’s own book, not from Prokofiev.'),
+     C('Mira S.','Student',4,'espress. and mp in m. 17 feel closer to Berman’s reading to me.')]},
+ {id:'I-19',mv:'I',from:19,to:20,title:'The sf accents',sec:'Transition',tags:['dynamics','character'],
+  a:'Two sf marks in a row (mm. 19 and 20, again in 25–26), inside an mp, espressivo passage. How hard should they be? Note also that the bass staff is empty here: the right hand alone carries the texture.',
+  src:['Cho 2023, p. 56'],ip:[IP('Sándor','recording','Stresses the sf strongly, to set the transition apart from the gentle first theme.'),IP('Berman','recording','Keeps them inside a soft, melodic transition.')],
+  links:['I-17','Q-grace'],
+  c:[C('M. Hartl','Teacher',33,'An sf in mp is not an sf in f. Think of a sudden pang, not a hit.',[C('Daniel P.','Student',11,'I disagree a bit. Prokofiev wrote sf, not sfp. I think he wanted the shock.')])]},
+ {id:'I-21',mv:'I',from:21,to:22,title:'Transition continues',sec:'Transition',tags:['tempo'],
+  a:'Still no left hand. The sixteenth-note groups in the right hand begin to drive the music toward G, the dominant, where the oscillating figure of the opening returns.',
+  src:['Cho 2023, p. 21'],ip:[],links:['I-up','I-37'],
+  c:[C('Jonas W.','Student',7,'Without the left hand this is where it’s easiest to rush. I practise with the metronome on beats 2 and 3 only.')]},
+ {id:'I-37',mv:'I',from:37,to:39,title:'Arriving in E-flat',sec:'Transition → second theme',tags:['tempo','harmony'],
+  a:'The transition wanders through unstable keys before the second theme lands in E♭ major. Both pianists prepare the arrival.',
+  src:['Cho 2023, pp. 21, 57'],ip:[IP('Sándor','recording','Slows down from m. 37 and plants the bass E♭ clearly.'),IP('Berman','recording; edition 2011','Calms tempo and dynamics and places the E♭ carefully.')],links:['I-40'],
+  c:[C('Sofia R.','Performer',15,'The E♭ in the bass is the whole point. Everything before it should sound like searching.')]},
+ {id:'I-40',mv:'I',from:40,to:60,title:'Second theme: two keys pulling',sec:'Second theme',tags:['harmony','ornaments','bitonality'],
+  a:'Over an E♭ bass, the sweeping grace notes lead to D, so the music pulls between E♭ major and G minor at once. The chromatic left hand, marked il basso pesante, blurs the key further.',
+  src:['Cho 2023, pp. 21, 56'],ip:[IP('Sándor','book 1981','These grace notes connect two notes and go before the beat.'),IP('Cho','synthesis','Relaxed fingers, attention in the fingertips, so the three or four grace notes sound even and brisk.','syn')],links:['I-37','I-162'],
+  c:[C('Lena K.','Student',29,'Bitonal, but it shouldn’t sound “modern”. My teacher said: two memories playing at once.')]},
+ {id:'I-61',mv:'I',from:61,to:70,title:'Closing section with a smirk',sec:'Closing',tags:['rhythm','humour'],
+  a:'Ascending pairs of chords stress the third beat (rhythmic displacement). The left hand moves V–I while the right hand plays ii–V7 pairs. From m. 65 the opening murmur joins in. The final tonic chord gets a tiny neighbour grace note (D): a tongue-in-cheek ending.',
+  src:['Cho 2023, p. 22'],ip:[],links:['I-up','I-194'],
+  c:[C('Ana T.','Musicologist',19,'This is Prokofiev’s “scherzo-ish” line in miniature: a perfectly correct cadence with a smirk on it.')]},
+ {id:'I-107',mv:'I',from:107,to:116,title:'Brahmsian hemiolas',sec:'Development B3',tags:['metre','voicing'],
+  a:'Theme 1 appears twice in the left hand while the right hand plays its opening in hemiolas. In mm. 109–110 the transition idea sounds in both hands, the left hand crossing over the right.',
+  src:['Cho 2023, p. 25','Berman 2008, p. 85'],ip:[IP('Berman','book 2008','Hears this passage as Brahmsian, because of the hemiolas.')],links:['I-1'],
+  c:[C('Daniel P.','Student',17,'Play Brahms Op. 118 No. 1 the same week. You’ll hear exactly what Berman means.')]},
+ {id:'I-117',mv:'I',from:117,to:125,title:'Three steps to the climax',sec:'Development C',tags:['dynamics','pedal point'],
+  a:'Subito piano, then three statements of themes 1 and 2 combined, rising C minor → E♭ minor → F♯ minor over a G pedal point.',
+  src:['Cho 2023, pp. 26, 57–58'],ip:[IP('Berman','edition 2011','Adds dotted slurs to mark every motif derived from theme 1.'),IP('Sándor','edition 1967','No slurs added.')],links:['I-132'],
+  c:[C('M. Hartl','Teacher',22,'Save the forte. Three steps up means three levels, not three times loud.')]},
+ {id:'I-132',mv:'I',from:132,to:137,title:'Climax, silence, Neapolitan',sec:'Development C → recapitulation',tags:['silence','harmony'],
+  a:'A grand climax on the dominant G (m. 132), two beats of silence, then four calmer bars. The first chord of m. 135 has a Neapolitan colour in C minor: a surprise that also prepares the final dominant.',
+  src:['Cho 2023, pp. 27–28'],ip:[],links:['I-117','I-1'],
+  c:[C('Sofia R.','Performer',41,'Count the silence. Every performer I admire holds it a little longer than written, but they all count it.')]},
+ {id:'I-162',mv:'I',from:162,to:183,title:'Second theme, now in C major',sec:'Recapitulation',tags:['harmony','dynamics'],
+  a:'The second theme returns in a clear C major, the grace notes now sweeping up to B, the leading tone. The dynamics are softer than in the exposition.',src:['Cho 2023, p. 28'],ip:[],links:['I-40'],c:[]},
+ {id:'I-194',mv:'I',from:194,to:197,title:'An ironic last cadence',sec:'Closing',tags:['harmony','humour'],
+  a:'A plain V–I with chromatic neighbour notes (C♯ and F♯) inside the chords. A dissonance in a consonant chord gives the ending an ironic edge.',src:['Cho 2023, p. 28'],ip:[],links:['I-61','III-222'],
+  c:[C('Felix B.','Student',8,'Do you voice the C♯ or hide it? I’ve heard both.')]},
+ // ---------- MOVEMENT II ----------
+ {id:'II-1',mv:'II',from:1,to:4,title:'Theme A: how to play the left-hand thirds',sec:'Theme A',tags:['articulation','pedal','orchestration'],
+  a:'A dark theme in A minor rises slowly from the bass. Under it, repeated thirds climb a step every bar. There are no articulation or pedal marks, so every pianist has to decide how the thirds sound. The composer left two clues: his own recording, and his orchestral version.',
+  src:['Cho 2023, pp. 29, 58–59','Berman 2008, pp. 94–95'],
+  ip:[IP('Prokofiev','own recording, 1935','Detached and short, no pedal.','comp'),
+      IP('Op. 29 bis','orchestral version, 1934','Bassoons and contrabassoon, tenuto over staccato; double basses pizzicato.','orch'),
+      IP('Sándor','recording','Short and without pedal, but not staccatissimo.'),
+      IP('Berman','recording; edition','Detached but a bit longer. His edition suggests short, shallow pedal.'),
+      IP('Cho','synthesis','Longer than staccato, clearly detached. If you pedal, change on every eighth.','syn')],
+  links:['Q-thirds','II-5','III-83','N-andante'],
+  c:[C('M. Hartl','Teacher',72,'Before you decide on pedal, listen to Prokofiev’s own 1935 recording. It is completely dry, like bassoons. Then decide.'),
+     C('Lena K.','Student',40,'Thinking “bassoons” changed my touch completely. Less finger, more weight, then release.'),
+     C('Imported · comment under the composer’s recording','Imported',26,'He starts around ♩ = 48 and then moves the tempo from section to section. It sounds more like speech than a fixed pulse.'),
+     C('Jonas W.','Student',5,'Shallow pedal on a dry Bösendorfer and on a big Steinway are two different things. Try both in the hall.')]},
+ {id:'II-5',mv:'II',from:5,to:9,title:'Stretto',sec:'Theme A',tags:['counterpoint','voicing'],
+  a:'Before the theme has finished, a second statement enters in the left hand (m. 5), moving against it in contrary motion. It passes to the right hand at the high D (m. 7), and a third, incomplete statement begins in m. 8: a fugal device inside a lyrical melody.',
+  src:['Cho 2023, pp. 29–30'],ip:[],links:['II-1','II-25'],
+  c:[C('Ana T.','Musicologist',24,'Mark each entry with a different coloured pencil. You need to know who has the theme at every moment.'),C('Mira S.','Student',6,'The hand-over at m. 7 is so hard to make seamless.')]},
+ {id:'II-10',mv:'II',from:10,to:12,title:'First arrival',sec:'Theme A',tags:['harmony','dynamics'],
+  a:'The stretto ends in a dissonant chord that resolves to a G major triad in m. 10, repeated in m. 12: the dominant of C major, the relative major. Note the ff > p inside a single bar.',
+  src:['Cho 2023, p. 30'],ip:[],links:['II-5'],
+  c:[C('Sofia R.','Performer',11,'ff > p within one bar. The decay matters more than the attack.')]},
+ {id:'II-13',mv:'II',from:13,to:14,title:'Variation 1: four layers',sec:'Variation 1',tags:['texture','pedal','fingering'],
+  a:'Four layers at once: the melody on top, broken-chord sixteenths in the alto, staccato leaping octaves in the tenor, and a half-note bass.',
+  src:['Cho 2023, pp. 30–31, 59–60'],
+  ip:[IP('Sándor & Berman','recordings','Both connect melody and bass with the pedal while keeping each voice’s articulation clear.'),
+      IP('Berman','edition 2011','Fingering for the alto that keeps it even and quiet.'),
+      IP('Cho','synthesis','Pedal on each half note of the bass, half-change on the alto’s last eighth; connect the melody with the fingers.','syn')],
+  links:['II-15'],
+  c:[C('M. Hartl','Teacher',35,'Practise soprano and bass alone until they sing. Then add the alto at a whisper. The tenor comes last.'),C('Felix B.','Student',9,'This is the bar where I finally understood what half pedal is for.')]},
+ {id:'II-15',mv:'II',from:15,to:17,title:'Theme in the left-hand octaves',sec:'Variation 1',tags:['voicing','pedal'],
+  a:'The second statement moves into left-hand octaves (m. 16). The broken chords thicken and the leaping eighths change direction. Tension builds toward the climax in mm. 22–23.',
+  src:['Cho 2023, p. 31'],ip:[],links:['II-13','II-22'],
+  c:[C('Daniel P.','Student',7,'Hard to keep the octaves legato without a heavy sound. I change the pedal only with the bass.')]},
+ {id:'II-22',mv:'II',from:22,to:23,title:'Climax: black keys against white',sec:'Variation 1',tags:['harmony'],
+  a:'The tension peaks on D♭ major and bursts into D minor 9 (ii9 of C). Cho describes it as a contrast between black keys and white keys.',src:['Cho 2023, p. 32'],ip:[],links:['II-15'],c:[]},
+ {id:'II-25',mv:'II',from:25,to:32,title:'Variation 2: a mirror',sec:'Variation 2',tags:['counterpoint','inversion'],
+  a:'In G♯ minor the theme appears twice at once in contrary motion: once in the tenor, once inverted in the soprano. The lines approach, cross, and meet on G♯ (m. 29).',src:['Cho 2023, pp. 32–33'],ip:[],links:['II-5','II-33'],c:[]},
+ {id:'II-33',mv:'II',from:33,to:35,title:'Quasi cadenza: the 12/8 question',sec:'Quasi cadenza',tags:['tempo','hand crossing'],
+  a:'Forte octaves, trills, arpeggios and accented minor triads descending in the left hand. The metre suddenly changes to 12/8. How does the new pulse relate to the old one?',
+  src:['Cho 2023, pp. 33, 60–61'],
+  ip:[IP('Berman','edition 2011','♩ in 4/4 = ♩. in 12/8. Also marks sopra/sotto for the hand crossing in mm. 34–35.'),
+      IP('Sándor','edition; recording','No indication in the edition; plays it much like Berman.'),
+      IP('Prokofiev','own recording, 1935','Slower and heavier: about ♩. = 46 here, against ♩ ≈ 72 just before.','comp'),
+      IP('Op. 29 bis','orchestral score','♩ = ♩., the same relation as Berman.','orch')],
+  links:['Q-cadenza','II-1'],
+  c:[C('Sofia R.','Performer',58,'The composer’s recording and the composer’s score disagree. To me that’s the most freeing fact on this whole page.'),
+     C('M. Hartl','Teacher',31,'Berman’s sopra/sotto marks for the hand crossing save a lot of practice time.')]},
+ {id:'II-36',mv:'II',from:36,to:38,title:'Bridge: two keys, very calm',sec:'Bridge',tags:['bitonality'],
+  a:'molto tranquillo. The right hand plays a D minor chord (F–A–D) while the left hand plays G major (G–B–D), crossing over and back.',src:['Cho 2023, p. 34'],ip:[],links:['II-39'],c:[]},
+ {id:'II-39',mv:'II',from:39,to:53,title:'Theme B: white keys, fairy tale',sec:'Theme B',tags:['tone','pedal'],
+  a:'A long, contemplative melody over the broken chords of the bridge, almost entirely on white keys. Berman hears a Russian fairy-tale character. The closing chord in m. 53 (D♭ minor-major 7) leans into C major from a half step above.',
+  src:['Cho 2023, pp. 34–35, 62–63','Berman 2008, p. 89'],
+  ip:[IP('Sándor','edition 1967','Release the pedal after the third broken chord in m. 39, so the low F lingers without blurring.'),
+      IP('Cho','synthesis','Slow pedal release or frequent half pedal; a large surface of the fingertip and a flexible wrist.','syn')],
+  links:['II-71'],
+  c:[C('Lena K.','Student',37,'Fairy tale is exactly it. My teacher made me read Afanasyev before this lesson.')]},
+ {id:'II-71',mv:'II',from:71,to:80,title:'Themes A and B together',sec:'A + B combined',tags:['polymeter','pedal'],
+  a:'Theme A in the left hand, theme B in the right, with 12/8 written for the right hand only against 4/4 in the left. Poco meno mosso, pp, tranquillissimo. For the first time Prokofiev writes a pedal mark.',
+  src:['Cho 2023, pp. 37–38, 63–64','Berman 2008, p. 97'],
+  ip:[IP('Sándor','edition','Half pedal.'),IP('Berman','edition; book','Writes non troppo legato; the low notes must not get heavy from continuous pedal.'),IP('Prokofiev','own recording','Sounds pedalled, yet every articulation stays clear: probably partial pedal.','comp')],
+  links:['II-1','II-39'],c:[C('Mira S.','Student',13,'Practise the right hand’s leaps alone at the very end of the practice session, when the arm is warm.')]},
+ {id:'II-81',mv:'II',from:81,to:88,title:'Coda: A minor or A minor 7?',sec:'Coda',tags:['text question','voicing'],
+  a:'The coda reduces theme A to rolled seventh chords: FM7–G7–Am7, then F♯m7♭5–G♯m7♭5–Am(7). Does the last chord include the G?',
+  src:['Cho 2023, pp. 39, 64–65'],
+  ip:[IP('Sándor','edition 1967','Last chord: A minor, no G. Rolls the chords slowly and lights up the C♯ in m. 86.'),
+      IP('Op. 29 bis','orchestral score','A minor, no G.','orch'),
+      IP('Prokofiev','own recording, 1935','Plays A minor 7, with the G.','comp'),
+      IP('Berman','edition 2011','Adds the G.')],
+  links:['Q-coda'],
+  c:[C('Ana T.','Musicologist',46,'A misprint that survived a hundred years, or a performer’s liberty? The recording is the only witness. This is why recordings belong next to editions.')]},
+ // ---------- MOVEMENT III ----------
+ {id:'III-1',mv:'III',from:1,to:1,title:'The opening flourish',sec:'A',tags:['gesture','history'],
+  a:'A glissando-like run over almost three octaves, hands alternating. It recalls written-out improvisation in older keyboard music: Haydn’s Sonata Hob. XVI:50 (II), Mozart’s Fantasy K. 396, Bach’s Chromatic Fantasy BWV 903.',
+  src:['Cho 2023, p. 41'],ip:[],links:['III-201','N-haydn'],
+  c:[C('Sofia R.','Performer',34,'Curtain up. It’s not a scale, it’s a gesture. Practise it slowly with the arm only, then forget about the notes.'),C('Jonas W.','Student',12,'Hand alternation: I let the left hand start a hair early so the join never shows.')]},
+ {id:'III-2',mv:'III',from:2,to:9,title:'Theme A: correct, with wrong notes',sec:'A · antecedent',tags:['harmony','fingering'],
+  a:'A broken-chord accompaniment and a textbook I–N6–V–I progression, but appoggiaturas on the first beats produce “wrong notes”. In mm. 7–8 the wide arpeggios raise a fingering question.',
+  src:['Cho 2023, pp. 41, 66','Berman 2008, p. 91'],
+  ip:[IP('Sándor','edition 1967','Thumb on A♭ in m. 8: helps connect to the next chord.'),IP('Berman','edition 2011','Thumb earlier, on F: a smoother arpeggio.'),IP('Cho','synthesis','Choose by your hand; just avoid an accent where the thumb goes under.','syn')],
+  links:['III-10'],
+  c:[C('M. Hartl','Teacher',28,'The wrong notes must sound intentional. Play them as if you were proud of them.'),C('Mira S.','Student',10,'Small hands: Berman’s fingering worked for me, Sándor’s didn’t.')]},
+ {id:'III-10',mv:'III',from:10,to:17,title:'Alberti bass in tenths',sec:'A · consequent',tags:['technique','left hand'],
+  a:'A Classical Alberti bass, stretched to tenths. It has to stay even, with no accents caused by the distance the hand travels.',
+  src:['Cho 2023, pp. 41, 66–67','Lhevinne, Basic Principles, pp. 34–35'],
+  ip:[IP('Lhevinne','via Cho','Accuracy at speed comes from fingering and hand position. Practise the left hand alone.')],links:['III-18'],
+  c:[C('Felix B.','Student',15,'Rotate, don’t stretch. Thinking of the tenth as a forearm rotation saved my wrist.')]},
+ {id:'III-18',mv:'III',from:18,to:22,title:'Subito p, with grace notes',sec:'A · consequent repeated',tags:['dynamics','fingering'],
+  a:'The consequent returns subito piano. Three grace notes are added on the second beat (mm. 18 and 20) and the Alberti pattern is spread an octave apart.',
+  src:['Cho 2023, pp. 41, 67'],ip:[IP('Berman','edition 2011','A left-hand fingering that makes the leaps manageable.')],links:['III-10'],
+  c:[C('Daniel P.','Student',9,'The subito p is the joke. Don’t prepare it.')]},
+ {id:'III-25',mv:'III',from:25,to:39,title:'Bridge 1: a hidden pattern',sec:'Bridge 1',tags:['memory','harmony'],
+  a:'The right hand’s groups of four rising sixteenths look irregular, but the first beats trace a whole-tone line (E–F♯–G♯–A♯–B♯–D…), every other arpeggio is a diminished chord, and the bass rises in major thirds (C–E–G♯). Knowing this makes the passage much easier to memorise.',
+  src:['Cho 2023, p. 43'],ip:[],links:['III-153'],
+  c:[C('Lena K.','Student',49,'This one paragraph saved me a week of memory work. Exactly the kind of thing a teacher tells you once and you never forget.')]},
+ {id:'III-40',mv:'III',from:40,to:42,title:'An echo of the first movement',sec:'Bridge 1 → B',tags:['motif'],
+  a:'Two oscillating notes in the left hand (D and E♭) lead into theme B. They seem to come from the opening murmur of the first movement.',src:['Cho 2023, p. 43'],ip:[],links:['I-up','III-43'],c:[]},
+ {id:'III-43',mv:'III',from:43,to:66,title:'Theme B: uneasy',sec:'B',tags:['fingering','relaxation'],
+  a:'An oscillating accompaniment and grace notes a ninth away from their main notes make this theme uneasy and anxious.',
+  src:['Cho 2023, pp. 44, 67–68'],ip:[IP('Sándor & Berman','editions','Different fingerings for the oscillating left hand (mm. 45–46). Try both and combine them if needed.')],links:['III-40','III-178'],
+  c:[C('Jonas W.','Student',6,'Relax the arm first, then worry about fingers.')]},
+ {id:'III-83',mv:'III',from:83,to:95,title:'Theme C: A-flat Lydian',sec:'C',tags:['tempo','tone','mode'],
+  a:'A simple, naive melody in four-bar phrases. The key signature says E♭ major, but it sounds like A♭ Lydian (there is no D♭). The repeated thirds of the accompaniment recall the slow movement.',
+  src:['Cho 2023, pp. 46, 68'],ip:[IP('Sándor','edition 1967','Writes L’istesso tempo: don’t slow down for the lyrical theme.'),IP('Cho','synthesis','Legato with a large finger surface; a loose wrist for the repeated thirds.','syn')],
+  links:['Q-ctheme','II-1','III-161'],
+  c:[C('M. Hartl','Teacher',30,'Sándor’s L’istesso tempo is the best two words on this page. Everyone slows down here.')]},
+ {id:'III-96',mv:'III',from:96,to:99,title:'Two lines in one hand',sec:'C',tags:['hand crossing','redistribution'],
+  a:'The right hand plays two chromatic lines at once, one of them crossing over the left hand. Big hands can follow Berman’s fingering. Cho suggests redistributing instead: after the first C, the right hand takes the accompaniment and the left hand takes the lower melody.',
+  src:['Cho 2023, pp. 68–69'],ip:[IP('Berman','edition 2011','Fingering for a true legato in both lines (for large hands).'),IP('Cho','thesis','Redistribute between the hands.','syn')],links:['III-83'],
+  c:[C('Mira S.','Student',22,'Cho’s redistribution is the only version that works with my hand. Thank you, whoever put this here.')]},
+ {id:'III-153',mv:'III',from:153,to:160,title:'Bridge 2: precipitato',sec:'Bridge 2',tags:['toccata','pedal'],
+  a:'Fifteen groups of rising sixteenths (seven in bridge 1), marked precipitato and senza Pedale: Prokofiev’s Toccata line.',src:['Cho 2023, p. 50'],ip:[],links:['III-25','III-161','N-toccata'],c:[]},
+ {id:'III-161',mv:'III',from:161,to:166,title:'A memory of theme C',sec:'Bridge 2',tags:['motif','humour'],
+  a:'The rush is interrupted, whimsically, by theme C: the melody in the left hand, its inversion in the right.',src:['Cho 2023, p. 50'],ip:[],links:['III-83','III-153'],c:[]},
+ {id:'III-178',mv:'III',from:178,to:201,title:'B′: the composer’s own fingerings',sec:'B′',tags:['fingering','power'],
+  a:'The right hand takes the octave-leap accompaniment high up; the left hand has the ff melody. Prokofiev wrote his own fingerings here.',
+  src:['Cho 2023, pp. 51, 70'],ip:[IP('Berman','edition 2011','Circles the fingerings that come from Prokofiev himself.'),IP('Cho','synthesis','Thumb on the first accented note, fifth finger for the octaves.','syn')],links:['III-43'],c:[]},
+ {id:'III-201',mv:'III',from:201,to:207,title:'Five flourishes',sec:'A‴',tags:['pedal','tempo'],
+  a:'The opening flourish returns five times, each one higher (C–D–E–F), delaying the theme until a fff top C.',
+  src:['Cho 2023, pp. 51–52, 70–71'],ip:[IP('Sándor','edition 1967','Pedal on the flourishes and the octaves, for a fuller sound and a real crescendo.'),IP('Berman','recording','A surprisingly constant tempo.')],links:['III-1','III-222'],c:[]},
+ {id:'III-222',mv:'III',from:222,to:223,title:'The stuttering ending',sec:'Final cadence',tags:['humour','tempo'],
+  a:'V–I with a few added dissonances. The octave C arrives early, right after the V chord, so the ending seems to stutter in its hurry to finish.',
+  src:['Cho 2023, pp. 53, 71–72'],ip:[IP('Berman','edition 2011','senza rit.')],links:['Q-ending','I-194'],
+  c:[C('Sofia R.','Performer',27,'No ritardando. If you slow down, you lose the joke.')]}
+];
+
+const QUESTIONS = [
+ {id:'Q-tempo',bar:['I',1],title:'Allegro or sostenuto?',where:'I, opening',text:'The marking is Allegro molto sostenuto. Which half of the instruction leads?',
+  pos:[['Sándor','recording','About ♩ = 88–90, with clear rubato at the cadences.',41],['Berman','recording','About ♩ = 88–90, with a more continuous flow.',38],['Cho','thesis','Lean on sostenuto, but never let the music drag.',57]]},
+ {id:'Q-phrasing',bar:['I',1],title:'Separate the phrases, or let them flow?',where:'I, mm. 1–17',text:'Four phrases, each built from two-beat slurs against 3/4.',
+  pos:[['Sándor','recording','Clear breaths: ritenuto and diminuendo at every cadence.',64],['Berman','recording; book','Little separation in sound; cadences finished smoothly.',49]]},
+ {id:'Q-grace',bar:['I',17],title:'Grace notes: on the beat or before it?',where:'I, mm. 17–26',text:'The slurred grace notes of the transition.',
+  pos:[['Sándor','edition; book','On the beat. A dramatic transition with strong sf.',52],['Berman','book','Melodic and soft.',47]]},
+ {id:'Q-thirds',bar:['II',1],title:'The left-hand thirds: dry or pedalled?',where:'II, mm. 1–12',text:'No articulation or pedal marks in the score.',
+  pos:[['Prokofiev','own recording, 1935','Short, detached, no pedal.',88],['Sándor','recording','Short, no pedal, not staccatissimo.',35],['Berman','edition','A bit longer, with short shallow pedal.',44]]},
+ {id:'Q-cadenza',bar:['II',33],title:'What happens to the pulse at 12/8?',where:'II, m. 33',text:'The time signature changes from 4/4 to 12/8 in the Quasi cadenza.',
+  pos:[['Berman','edition; = orchestral score','♩ = ♩. — the beat stays the same.',61],['Prokofiev','own recording, 1935','Slower and heavier: ♩. ≈ 46 after ♩ ≈ 72.',53]]},
+ {id:'Q-coda',bar:['II',81],title:'Is the final chord A minor or A minor 7?',where:'II, mm. 83–84',text:'The printed editions and the composer’s recording disagree.',
+  pos:[['Sándor & orchestral score','editions','A minor, without G.',29],['Prokofiev & Berman','recording 1935; edition 2011','A minor 7, with G.',67]]},
+ {id:'Q-ctheme',bar:['III',83],title:'Slow down for theme C?',where:'III, m. 83',text:'The finale suddenly turns lyrical.',
+  pos:[['Sándor','edition','L’istesso tempo: keep the tempo.',70],['Common practice','many recordings','A noticeably calmer tempo.',22]]},
+ {id:'Q-ending',bar:['III',222],title:'Broaden the last two bars?',where:'III, mm. 222–223',text:'The final V–I cadence.',
+  pos:[['Berman','edition','senza rit. — full energy to the end.',74],['Some performers','recordings','A slight broadening for weight.',18]]}
+];
+
+const PEOPLE = [
+ {i:'GS',n:'György Sándor',s:'Budapest · pupil of Bartók and Kodály',p:'1912–2005. Edited the complete sonatas (MCA, 1967, now out of print) and recorded all of Prokofiev’s solo piano music for Vox. Author of On Piano Playing (1981).'},
+ {i:'BB',n:'Boris Berman',s:'Moscow · pupil of Lev Oborin',p:'b. 1948. Yale. Recorded the complete solo works (Chandos), edited the sonatas (Shanghai, 2011) and wrote Prokofiev’s Piano Sonatas (Yale, 2008), with a master-class chapter per sonata.'},
+ {i:'SP',n:'Sergei Prokofiev',s:'The composer at the piano',p:'Premiered the sonata in 1918 and recorded the Andante in 1935. His recording and his orchestral version (Op. 29 bis) are the closest thing to his own performing instructions.'}
+];
+
+const LINES = [
+ ['Classical','Forms, textures and cadences of Haydn, Mozart, Beethoven.','Sonata form in I, stretto in II, sonata-rondo and Alberti bass in III.',[['I',1],['II',5],['III',10]]],
+ ['Modern','Bitonality, “wrong notes”, abrupt modulations.','The E♭/G pull of I’s second theme; the bitonal bridge in II; appoggiaturas in III.',[['I',40],['II',36],['III',2]]],
+ ['Toccata','Motoric, repeated, percussive patterns.','The precipitato second bridge of the finale.',[['III',153]]],
+ ['Lyrical','Long contemplative melodies, or naive simple ones.','Both themes of the Andante; theme C of the finale (the naive type).',[['II',39],['III',83]]],
+ ['Scherzo-ish','Prokofiev preferred this to “grotesque”: whimsy, laughter, mockery.','The smirking cadence in I, the extended endings and the stuttering last bars of III.',[['I',61],['III',222]]]
+];
+
+const THREADS = [
+ {k:'murmur',name:'Opening murmur',col:'#2347C8',arcs:[[['I',0],['I',21],'The oscillating sixteenths of the upbeat return in the transition, now leaning on G.'],[['I',0],['I',65],'From m. 65 the closing section incorporates the opening murmur.'],[['I',0],['III',40],'The finale’s first bridge ends on two oscillating notes (D–E♭) that seem to come from the first movement’s opening.']]},
+ {k:'grace',name:'Grace-note sweep',col:'#C7871A',arcs:[[['I',37],['I',40],'Grace notes that appear in mm. 37–39 become the main character of the second theme.'],[['I',40],['I',88],'In development B1 accented octaves rise chromatically, mirroring the grace notes of the second theme.'],[['I',40],['I',162],'The second theme returns in C major; now the grace notes sweep to the leading tone B.']]},
+ {k:'thirds',name:'Repeated-third pulse',col:'#1C7A4C',arcs:[[['II',1],['II',33],'The left-hand pattern of the Quasi cadenza recalls the repeated thirds of the opening.'],[['II',1],['II',71],'Theme A’s accompaniment returns under the combined themes, now with a pedal mark.'],[['II',1],['III',88],'The eighth-note thirds of theme C in the finale recall the accompaniment of the slow movement’s opening.']]},
+ {k:'themes',name:'Themes combined',col:'#6A5A9E',arcs:[[['II',39],['II',71],'Theme B returns in the right hand, against theme A in the left: two metres at once.'],[['I',1],['I',137],'Sonata form: theme 1 returns in the recapitulation.']]},
+ {k:'finale',name:'Finale returns',col:'#B0413E',arcs:[[['III',1],['III',201],'The opening flourish comes back five times, each one higher, before the last statement of A.'],[['III',83],['III',161],'Theme C interrupts the rushing second bridge, melody in the left hand, inversion in the right.'],[['III',25],['III',153],'Bridge 2 is bridge 1 extended: fifteen groups of sixteenths instead of seven.']]}
+];
+
+const NET = [
+ {id:'N-sonata3',x:120,y:70,t:'Sonata No. 3, Op. 28',s:'1917',type:'own',d:'Same subtitle, “From old notebooks”. Both sonatas were reworked from Conservatory material and are often paired.'},
+ {id:'N-symph',x:110,y:170,t:'Symphony in E minor',s:'1908, abandoned',type:'own',d:'The source of the Andante. Prokofiev doubted he would ever pull the symphony “from under the dust”, so he moved its slow movement into the sonata.'},
+ {id:'N-andante',x:120,y:270,t:'Andante, Op. 29 bis',s:'1934, orchestra',type:'own',d:'Prokofiev’s orchestral version of the slow movement. Its scoring (bassoons staccato-tenuto, basses pizzicato) is the strongest clue for the piano’s left-hand thirds.',bar:['II',1]},
+ {id:'N-conc2',x:150,y:370,t:'Piano Concerto No. 2',s:'Op. 16',type:'own',d:'Also connected to Maximilian Schmidthof, the friend to whom Sonata No. 4 is dedicated.'},
+ {id:'N-toccata',x:680,y:60,t:'Toccata, Op. 11',s:'1912',type:'own',d:'The model of Prokofiev’s Toccata line, heard in the finale’s precipitato second bridge.',bar:['III',153]},
+ {id:'N-schumann',x:700,y:150,t:'Schumann, Toccata Op. 7',s:'precedent',type:'model',d:'Prokofiev named Schumann’s Toccata as the inspiration for his own toccata style. Robinson also hears a Schumannesque, almost shapeless quality in Sonata No. 4.'},
+ {id:'N-brahms',x:710,y:240,t:'Brahms',s:'hemiolas',type:'model',d:'Berman hears the hemiolas of the development (mm. 107–109) as Brahmsian.',bar:['I',107]},
+ {id:'N-haydn',x:690,y:330,t:'Haydn XVI:50 · Mozart K. 396 · Bach BWV 903',s:'written-out improvisation',type:'model',d:'The finale’s opening flourish resembles the written-out improvisatory runs in these works.',bar:['III',1]},
+ {id:'N-sonata8',x:420,y:395,t:'Sonata No. 8, Op. 84',s:'1944',type:'own',d:'Berman’s two kinds of lyrical line, illustrated in No. 8, help to read the Andante (contemplative) and the finale’s theme C (naive).',bar:['III',83]},
+ {id:'N-schmidthof',x:420,y:32,t:'Maximilian Schmidthof',s:'dedicatee · d. 1913',type:'person',d:'Prokofiev’s closest friend at the Conservatory. His suicide in 1913 deeply affected Prokofiev; the sonata is dedicated to his memory.'}
+];
+
+const SOURCES = {
+ 'Theses':[
+  ['Cho, Soyoung. <i>Prokofiev’s Piano Sonata No. 4 in C Minor, Op. 29 (1917): A Performance Guide Based on Interpretations by György Sándor and Boris Berman.</i>','DMA diss., University of North Texas, 2023','Main source · 31 notes'],
+  ['O’Shea, Gary. <i>Prokofiev’s Early Solo Piano Music: Context, Influences, Forms, Performance.</i>','PhD diss., University of Sheffield, 2013','Context'],
+  ['Bradshaw, Michael Lane. <i>Prokofiev’s New Simplicity and Expressive Form.</i>','PhD diss., University of Queensland, 2018','Analysis of Nos. 2 and 4']],
+ 'Books & articles':[
+  ['Berman, Boris. <i>Prokofiev’s Piano Sonatas: A Guide for the Listener and the Performer.</i>','Yale University Press, 2008','Master class · cited via Cho'],
+  ['Berman, Boris. <i>Notes from the Pianist’s Bench.</i>','Yale University Press, 2nd ed. 2017','Method'],
+  ['Sándor, György. <i>On Piano Playing: Motion, Sound and Expression.</i>','Schirmer, 1981','Grace notes, pedal'],
+  ['Robinson, Harlow. <i>Sergei Prokofiev: A Biography.</i>','Northeastern University Press, 2002','Reception'],
+  ['Prokofiev, Sergey. <i>Autobiography, Articles and Reminiscences.</i> Ed. S. Shlifstein','Moscow, 1959','The five lines'],
+  ['Merrick, Frank. “Prokofiev’s Piano Sonatas.”','Proc. Royal Musical Association 75 (1948)','Reception']],
+ 'Editions':[
+  ['First edition, A. Gutheil / Breitkopf & Härtel','1918 · public domain · shown on this page','Score',"https://imslp.org/wiki/Piano_Sonata_No.4,_Op.29_(Prokofiev,_Sergey)"],
+  ['Complete Piano Sonatas, ed. György Sándor','MCA Music, 1967 · out of print','Fingering, pedal, commentary'],
+  ['Sonatas for Piano, ed. Boris Berman','Shanghai Music Publishing House, 2011','Fingering, pedal, hand distribution'],
+  ['Sonatas Opp. 1, 14, 28, 29, ed. Thomas Schumacher','Alfred, 2017','Not yet summarised']],
+ 'Recordings':[
+  ['Prokofiev plays Prokofiev (Andante only)','Naxos Historical 8.110670 · rec. 1935','Composer’s own reading',"https://www.youtube.com/results?search_query=Prokofiev+plays+Andante+Sonata+No.+4+1935"],
+  ['György Sándor · Complete solo piano music, vol. 1','Vox CDX3-3500','Compared bar by bar',"https://www.youtube.com/results?search_query=Gyorgy+Sandor+Prokofiev+Sonata+No.+4"],
+  ['Boris Berman · Complete piano sonatas','Chandos CHAN9637','Compared bar by bar',"https://www.youtube.com/results?search_query=Boris+Berman+Prokofiev+Sonata+No.+4"],
+  ['Neeme Järvi, Scottish National Orchestra · Andante Op. 29 bis','Chandos CHAN 8728','Orchestral version',"https://www.youtube.com/results?search_query=Prokofiev+Andante+Op.+29+bis"],
+  ['Sviatoslav Richter · Sonata No. 4','various live recordings','Not yet summarised',"https://www.youtube.com/results?search_query=Richter+Prokofiev+Sonata+No.+4"]]
+};
+
+/* ======================== STATE ======================== */
+const store = {get(k,d){try{const v=localStorage.getItem('oi:'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('oi:'+k,JSON.stringify(v))}catch(e){}}};
+const voted = new Set(store.get('voted',[]));
+const qvotes = store.get('qvotes',{});
+const userComments = store.get('ucmt',{});
+let curMv = 'I', curAnn = null, curBar = null;
+const annById = Object.fromEntries(ANN.map(a=>[a.id,a]));
+ANN.forEach(a=>{a.c.forEach((c,i)=>c.key=a.id+'#'+i); (userComments[a.id]||[]).forEach(u=>a.c.push(u));});
+
+const $ = s=>document.querySelector(s);
+const esc = s=>String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+const barLabel = (from,to)=> from===0&&to===0 ? 'upbeat' : (from===to ? 'm. '+from : 'mm. '+from+'–'+to);
+const roleCls = r=>({Teacher:'teacher',Performer:'performer',Musicologist:'musicologist',Imported:'imported',You:'you'}[r]||'');
+const initials = n=>n.startsWith('Imported')?'YT':n.split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase();
+function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2200)}
+function cmtCount(a){return a.c.reduce((s,c)=>s+1+(c.replies?c.replies.length:0),0)}
+function voteVal(c){return c.v+(voted.has(c.key)?1:0)}
+function annFor(mv,bar){return ANN.find(a=>a.mv===mv&&bar>=a.from&&bar<=a.to)}
+
+/* ======================== SEARCH ======================== */
+const INDEX = [
+ {k:'prok4',t:'Prokofiev · Piano Sonata No. 4 in C minor, Op. 29',s:'1917 · “From old notebooks”',st:'ready'},
+ {k:'prok3',t:'Prokofiev · Piano Sonata No. 3 in A minor, Op. 28',s:'1917 · “From old notebooks”',st:'draft'},
+ {k:'prok7',t:'Prokofiev · Piano Sonata No. 7 in B-flat major, Op. 83',s:'1942 · War Sonatas',st:'draft'},
+ {k:'prokand',t:'Prokofiev · Andante, Op. 29 bis (orchestra)',s:'1934 · from Sonata No. 4',st:'collect'},
+ {k:'rach',t:'Rachmaninoff · Rhapsody on a Theme of Paganini, Op. 43',s:'1934 · piano and orchestra',st:'collect'},
+ {k:'chopin',t:'Chopin · Ballade No. 1 in G minor, Op. 23',s:'1835',st:'draft'},
+ {k:'beet',t:'Beethoven · Piano Sonata No. 31 in A-flat major, Op. 110',s:'1821',st:'draft'},
+ {k:'schub',t:'Schubert · Impromptu in G-flat major, D. 899 No. 3',s:'1827',st:'collect'},
+ {k:'bach',t:'Bach · Partita No. 2 in C minor, BWV 826',s:'1727',st:'collect'}
+];
+const ST = {ready:['st-ready','Page ready'],draft:['st-draft','AI draft · in review'],collect:['st-collect','Collecting sources'],none:['st-none','No page yet']};
+const norm = s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+function classify(q){
+  const n=norm(q);
+  const prok=/pro[ck]+o?[fvw]|prokf|prokof|prokov|prok/.test(n);
+  const op29=/op ?29|\b29\b/.test(n);
+  const four=/(^| )(4|no ?4|nr ?4|four|iv|4th|fourth|vierte)( |$)/.test(n);
+  const three=/(^| )(3|no ?3|three|iii|third)( |$)/.test(n)||/op ?28/.test(n);
+  const seven=/(^| )(7|seven|vii)( |$)/.test(n);
+  if(prok&&(op29||four)) return 'prok4';
+  if(prok&&three) return 'prok3';
+  if(prok&&seven) return 'prok7';
+  if(prok) return 'prok';
+  if(/rach|paganini|rhaps/.test(n)) return 'rach';
+  if(/chopin|ballade/.test(n)) return 'chopin';
+  if(/beethoven|110/.test(n)) return 'beet';
+  if(/schubert|impromptu/.test(n)) return 'schub';
+  if(/bach|partita/.test(n)) return 'bach';
+  return n? 'none':'';
+}
+function suggestions(q){
+  const n=norm(q); if(!n) return [];
+  const c=classify(q); const words=n.split(' ');
+  let list=INDEX.filter(it=>{const t=norm(it.t+' '+it.s);return words.every(w=>t.includes(w))});
+  if(c==='prok4'||c==='prok') list=[INDEX[0],...INDEX.filter(i=>i.k.startsWith('prok')&&i.k!=='prok4')];
+  else if(c&&c!=='none'){const hit=INDEX.find(i=>i.k===c); if(hit) list=[hit,...list.filter(i=>i!==hit)];}
+  return list.slice(0,6);
+}
+function bindSearch(input){
+  const host=input.parentElement; let box=null, idx=-1, items=[];
+  const close=()=>{if(box){box.remove();box=null}idx=-1};
+  const render=()=>{
+    items=suggestions(input.value); close(); if(!items.length) return;
+    box=document.createElement('div'); box.className='suggest'; box.setAttribute('role','listbox');
+    box.innerHTML=items.map((it,i)=>`<button type="button" data-i="${i}"><span class="t"><b>${esc(it.t)}</b><small>${esc(it.s)}</small></span><span class="status ${ST[it.st][0]}">${ST[it.st][1]}</span></button>`).join('');
+    box.addEventListener('mousedown',e=>{const b=e.target.closest('button');if(!b)return;e.preventDefault();const it=items[+b.dataset.i];input.value=it.k==='prok4'?'Prokofiev Sonata No. 4':it.t.split(' · ')[0]+' '+it.t.split(' · ')[1];close();runSearch(input.value,it.k)});
+    host.appendChild(box);
+  };
+  input.addEventListener('input',render);
+  input.addEventListener('focus',render);
+  input.addEventListener('blur',()=>setTimeout(close,120));
+  input.addEventListener('keydown',e=>{
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){if(!box)return;e.preventDefault();idx=(idx+(e.key==='ArrowDown'?1:-1)+items.length)%items.length;box.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('on',i===idx))}
+    else if(e.key==='Enter'){e.preventDefault();const it=idx>=0?items[idx]:null;close();runSearch(input.value,it?it.k:null)}
+    else if(e.key==='Escape'){close()}
+  });
+}
+
+function show(view){
+  ['home','results','piece'].forEach(v=>$('#'+v).hidden=v!==view);
+  $('#topbar').hidden=view==='home';
+  window.scrollTo({top:0,behavior:'auto'});
+}
+function runSearch(q,forced){
+  q=(q||'').trim(); if(!q) return;
+  $('#q2').value=q;
+  const kind=forced||classify(q);
+  renderResults(q,kind); show('results');
+}
+
+function renderResults(q,kind){
+  const el=$('#results');
+  const canonical='Prokofiev Piano Sonata No. 4 in C minor, Op. 29';
+  if(kind==='prok4'||kind==='prok'){
+    const corrected = norm(q)!==norm('prokofiev sonata no 4')&&norm(q)!==norm('prokofiev sonata 4');
+    el.innerHTML=`
+      <div class="res-meta">${corrected?`Showing results for <b>${canonical}</b>. You searched for “${esc(q)}”.`:`About <b>${ANN.length+QUESTIONS.length+19}</b> results in Open Interpretation`}</div>
+      <div class="res-grid"><div>
+        <button class="topcard" id="openPiece">
+          <div class="kicker"><span class="label">Piece page</span><span class="status st-ready">Page ready</span><span class="badge b-ok">✓ checked by 6 musicians</span></div>
+          <h2>Piano Sonata No. 4 in C minor, Op. 29</h2>
+          <div class="sub">Sergei Prokofiev · 1917 (1908) · “D’après des vieux cahiers” · 3 movements, about 20 minutes</div>
+          <div class="facts">
+            <div class="fact"><b>${ANN.length}</b><span>annotated passages</span></div>
+            <div class="fact"><b>${QUESTIONS.length}</b><span>open interpretive questions</span></div>
+            <div class="fact"><b>${Object.values(SOURCES).flat().length}</b><span>sources cited</span></div>
+            <div class="fact"><b>${ANN.reduce((s,a)=>s+cmtCount(a),0)}</b><span>community notes</span></div>
+          </div>
+          <span class="open">Open the page →</span>
+        </button>
+        <div class="secthits"><h3>Inside this page</h3>
+          ${[['Bar note','II-1','II, mm. 1–4 · Theme A: how to play the left-hand thirds','Prokofiev’s 1935 recording vs. Sándor vs. Berman vs. the orchestral version'],
+             ['Bar note','I-17','I, mm. 17–18 · Transition: the grace notes','On the beat (Sándor) or melodic and soft (Berman)?'],
+             ['Question','Q-cadenza','II, m. 33 · What happens to the pulse at 12/8?','The composer’s recording and his score disagree'],
+             ['Bar note','III-25','III, mm. 25–39 · Bridge 1: a hidden pattern','A whole-tone line and a bass in major thirds: a memory aid']].map(h=>`<button class="hit" data-open="${h[1]}"><span class="type">${h[0]}</span><span class="ht"><b>${h[2]}</b><small>${h[3]}</small></span></button>`).join('')}
+        </div>
+        <div class="secthits"><h3>Related pages</h3>
+          ${INDEX.filter(i=>i.k!=='prok4'&&i.k.startsWith('prok')).map(i=>`<button class="hit" data-stub="${i.k}"><span class="type">Piece</span><span class="ht"><b>${esc(i.t)}</b><small>${esc(i.s)} · <span class="status ${ST[i.st][0]}" style="margin-left:4px">${ST[i.st][1]}</span></small></span></button>`).join('')}
+        </div>
+        <div class="secthits"><h3>Sources that discuss it</h3>
+          <a class="hit" href="https://digital.library.unt.edu/search/?q=Prokofiev+Piano+Sonata+No.+4+Cho&t=fulltext" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><span class="type">Thesis</span><span class="ht"><b>Cho, Prokofiev’s Piano Sonata No. 4 … A Performance Guide (UNT, 2023)</b><small>Summarised into 31 bar notes on the page ↗</small></span></a>
+          <div class="hit" style="cursor:default"><span class="type">Book</span><span class="ht"><b>Berman, Prokofiev’s Piano Sonatas: A Guide for the Listener and the Performer (Yale, 2008)</b><small>Master-class chapter, cited via Cho</small></span></div>
+          <div class="hit" style="cursor:default"><span class="type">Recording</span><span class="ht"><b>Prokofiev plays the Andante (1935)</b><small>The composer’s only recording of this sonata</small></span></div>
+        </div>
+      </div>
+      <aside>
+        <div class="side-box"><h3>How this page was made</h3>
+          <ol class="pipeline-mini"><li><i>1</i><span>AI agents searched libraries, theses, editions and comment sections.</span></li><li><i>2</i><span>They summarised every finding and linked it to its source and its bars.</span></li><li><i>3</i><span>Students and teachers checked, corrected and added their own views.</span></li><li><i>4</i><span>The community keeps voting the best ideas up.</span></li></ol></div>
+        <div class="side-box"><h3>Part of the mdw pilot</h3><p>One of the 20 pieces most played in mdw piano exams, built with mdw students.</p></div>
+      </aside></div>`;
+  } else if(kind && kind!=='none'){
+    const it=INDEX.find(i=>i.k===kind);
+    el.innerHTML=`<div class="res-meta">Results for <b>${esc(q)}</b></div>
+      <div class="res-grid"><div>
+        <div class="topcard" style="cursor:default"><div class="kicker"><span class="label">Piece page</span><span class="status ${ST[it.st][0]}">${ST[it.st][1]}</span></div>
+          <h2>${esc(it.t.split(' · ')[1])}</h2><div class="sub">${esc(it.t.split(' · ')[0])} · ${esc(it.s)}</div>
+          <div class="facts"><div class="fact"><b>${it.k==='rach'?47:23}</b><span>sources found so far</span></div><div class="fact"><b>0</b><span>reviewed by musicians</span></div></div>
+          <p style="margin-top:16px;color:var(--muted)">${it.st==='collect'?'AI agents are still collecting and summarising sources. The page opens once musicians have reviewed the first draft.':'An AI draft exists and is waiting for review by musicians.'} In this prototype, only Prokofiev’s Sonata No. 4 is built out.</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px"><button class="btn" data-toast="Thanks. You’re on the reviewer list for this piece (demo).">Help review this page</button><button class="btn ghost" data-run="Prokofiev Sonata No. 4">See a finished page</button></div>
+        </div></div><aside><div class="side-box"><h3>Want to contribute?</h3><p>Students, teachers and performers can check the AI draft, correct it and add their own views.</p></div></aside></div>`;
+  } else {
+    el.innerHTML=`<div class="res-meta">No piece page matches <b>${esc(q)}</b> yet.</div>
+      <div class="res-grid"><div><div class="topcard" style="cursor:default"><div class="kicker"><span class="status st-none">No page yet</span></div>
+      <h2>Request this piece</h2><div class="sub">AI agents will start collecting sources, then musicians review the draft.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px"><button class="btn" data-toast="Request noted (demo).">Request a page</button><button class="btn ghost" data-run="Prokofiev Sonata No. 4">Try: Prokofiev Sonata No. 4</button></div></div></div><aside></aside></div>`;
+  }
+  const op=$('#openPiece'); if(op) op.onclick=()=>openPiece();
+  el.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{openPiece(); const id=b.dataset.open; setTimeout(()=>id.startsWith('Q-')?goQuestion(id):goAnn(id),60)});
+  el.querySelectorAll('[data-stub]').forEach(b=>b.onclick=()=>runSearch(INDEX.find(i=>i.k===b.dataset.stub).t,b.dataset.stub));
+  el.querySelectorAll('[data-toast]').forEach(b=>b.onclick=()=>toast(b.dataset.toast));
+  el.querySelectorAll('[data-run]').forEach(b=>b.onclick=()=>runSearch(b.dataset.run,'prok4'));
+}
+
+/* ======================== PIECE PAGE ======================== */
+let pieceBuilt=false;
+function openPiece(){
+  if(!pieceBuilt){buildPiece();pieceBuilt=true}
+  show('piece');
+}
+function buildPiece(){
+  $('#statSources').textContent=Object.values(SOURCES).flat().length;
+  $('#statAnn').textContent=ANN.length;
+  updateCounts();
+  // five lines
+  $('#lines').innerHTML=LINES.map(l=>`<div class="line-card"><div class="label">Prokofiev’s line</div><h4>${l[0]}</h4><p>${l[1]}</p><p style="color:var(--ink)">${l[2]}</p><div class="where">${l[3].map(b=>barBtn(b[0],b[1])).join('')}</div></div>`).join('');
+  // forms
+  $('#forms').innerHTML=Object.entries(FORMS).map(([mv,f])=>{
+    const tot=f.total;
+    return `<div class="form-mv"><header><h3>${f.title}</h3><span>${f.sub} · ${tot} bars</span></header><div class="bands-scroll"><div>
+      <div class="bands">${f.secs.map(s=>`<button class="band g${s[4]}" style="flex:${Math.max(s[2]-s[1]+1,3)}" data-mv="${mv}" data-bar="${s[1]}" title="${esc(s[0])} · mm. ${s[1]}–${s[2]} ${s[3]?'· '+esc(s[3]):''}"><b>${esc(s[0])}</b><span>${s[1]}–${s[2]}</span></button>`).join('')}</div>
+      <div class="groups">${f.groups.map(g=>`<div style="flex:${g[2]-g[1]+1}">${g[0]}</div>`).join('')}</div>
+      <div class="form-key">${f.secs.filter(s=>s[3]).map(s=>`<b>${esc(s[0])}</b> ${esc(s[3])}`).join(' · ')}</div></div></div></div>`;
+  }).join('');
+  $('#forms').querySelectorAll('.band').forEach(b=>b.onclick=()=>goBar(b.dataset.mv,+b.dataset.bar));
+  // people + questions
+  $('#people').innerHTML=PEOPLE.map(p=>`<div class="person"><div class="av">${p.i}</div><div><h4>${p.n}</h4><div class="school">${p.s}</div><p>${p.p}</p></div></div>`).join('');
+  renderQuestions();
+  // movement tabs
+  $('#mvtabs').innerHTML=['I','II','III'].map(m=>`<button data-mv="${m}">${FORMS[m].title}</button>`).join('');
+  $('#mvtabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{setMv(b.dataset.mv);const first=ANN.find(a=>a.mv===b.dataset.mv);selectAnn(first,first.from)});
+  setMv('I'); selectAnn(annById['II-1']&&curMv==='II'?annById['II-1']:annById['I-1'],1);
+  renderArcs(); renderNet(); renderVoices('All'); renderSources();
+  // secnav highlighting
+  const links=[...document.querySelectorAll('#secnav a')];
+  const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.toggle('on',l.getAttribute('href')==='#'+e.target.id))}})},{rootMargin:'-40% 0px -55% 0px'});
+  document.querySelectorAll('section.block').forEach(s=>obs.observe(s));
+}
+function barBtn(mv,bar){const a=annFor(mv,bar);const lab=a?barLabel(a.from,a.to):'m. '+bar;return `<button class="barlink" data-mv="${mv}" data-bar="${bar}">${mv} · ${lab}</button>`}
+document.addEventListener('click',e=>{const b=e.target.closest('.barlink');if(b){goBar(b.dataset.mv,+b.dataset.bar)}});
+
+function updateCounts(){const n=ANN.reduce((s,a)=>s+cmtCount(a),0);$('#statCmt').textContent=n;const p=$('#pCmt');if(p)p.textContent=n}
+
+/* ---- questions ---- */
+function renderQuestions(){
+  $('#questions').innerHTML=QUESTIONS.map(q=>{
+    const my=qvotes[q.id];
+    const counts=q.pos.map((p,i)=>p[3]+(my===i?1:0)); const tot=counts.reduce((a,b)=>a+b,0);
+    return `<article class="q" id="${q.id}"><div class="q-head"><div><div class="label">${esc(q.where)}</div><h3>${esc(q.title)}</h3><p>${esc(q.text)}</p></div>${barBtn(q.bar[0],q.bar[1])}</div>
+      <div class="q-pos">${q.pos.map((p,i)=>`<div class="pos"><div><div class="who">${esc(p[0])}</div><div class="how">${esc(p[1])}</div></div><p>${esc(p[2])}</p>
+        <div class="agree"><button class="${my===i?'on':''}" data-q="${q.id}" data-i="${i}">${my===i?'✓ Convinced':'Convinces me'}</button><span class="meter"><i style="width:${Math.round(counts[i]/tot*100)}%"></i></span><span class="pct">${Math.round(counts[i]/tot*100)}%</span></div></div>`).join('')}</div>
+      <div class="q-foot"><span>${tot} musicians have weighed in</span><span>Sources: Cho 2023 · editions and recordings listed below</span></div></article>`}).join('');
+  $('#questions').querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{const id=b.dataset.q,i=+b.dataset.i;qvotes[id]=qvotes[id]===i?undefined:i;store.set('qvotes',qvotes);renderQuestions()});
+}
+function goQuestion(id){const el=document.getElementById(id);if(!el)return;el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash')}
+
+/* ---- score explorer ---- */
+function setMv(mv){
+  curMv=mv;
+  $('#mvtabs').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.mv===mv));
+  const S=SCORE[mv]; const [cx,cy,cw,ch]=S.crop;
+  let html=`<img src="${S.img}" alt="Score, first page of movement ${mv}, first edition" width="${cw}" height="${ch}">`;
+  S.systems.forEach(sys=>{
+    for(let i=0;i<sys.xs.length-1;i++){
+      const bar=sys.first+i, x0=sys.xs[i], x1=sys.xs[i+1];
+      const a=annFor(mv,bar);
+      const l=(x0-cx)/cw*100, t=(sys.y[0]-cy)/ch*100, w=(x1-x0)/cw*100, h=(sys.y[1]-sys.y[0])/ch*100;
+      html+=`<button class="barbox${a?' ann':''}" data-bar="${bar}" style="left:${l}%;top:${t}%;width:${w}%;height:${h}%" aria-label="${bar===0?'Upbeat':'Bar '+bar}${a?', has notes':''}"><span class="n">${bar===0?'up':bar}</span></button>`;
+    }
+  });
+  $('#scoreImg').innerHTML=html;
+  $('#scoreImg').querySelectorAll('.barbox').forEach(b=>b.onclick=()=>{const bar=+b.dataset.bar;const a=annFor(mv,bar);selectAnn(a,bar)});
+  const lastBar=S.systems.at(-1).first+S.systems.at(-1).xs.length-2;
+  $('#scoreCap').textContent=`${S.label} · first edition (Gutheil), ${S.page} · bars ${S.systems[0].first===0?'upbeat':S.systems[0].first}–${lastBar} shown`;
+  renderHeat();
+}
+function pageRange(mv){const S=SCORE[mv];return [S.systems[0].first,S.systems.at(-1).first+S.systems.at(-1).xs.length-2]}
+function renderHeat(){
+  const mv=curMv, N=SCORE[mv].total, [p0,p1]=pageRange(mv);
+  const vals=[]; for(let b=1;b<=N;b++){const a=annFor(mv,b);vals.push(a?cmtCount(a)+2:0)}
+  const max=Math.max(...vals,1);
+  const f=FORMS[mv];
+  $('#heat').innerHTML=`<div class="heat-top"><span><b style="color:var(--ink)">${f.title}</b> · discussion across all ${N} bars</span><span class="heat-legend"><span><i style="background:var(--heat)"></i>notes and comments</span><span><i style="background:var(--pencil)"></i>on the score page shown</span></span></div>
+   <div class="heat-bars" id="hb">${vals.map((v,i)=>`<div class="hb${v?' a':''}${(i+1)>=p0&&(i+1)<=p1?' p':''}" data-bar="${i+1}" style="height:${v?Math.max(8,v/max*100):4}%"></div>`).join('')}
+   <div class="heat-page" style="left:${(Math.max(p0,1)-1)/N*100}%;width:${(p1-Math.max(p0,1)+1)/N*100}%"></div></div>
+   <div class="heat-axis"><span>1</span><span>${Math.round(N/4)}</span><span>${Math.round(N/2)}</span><span>${Math.round(3*N/4)}</span><span>${N}</span></div>`;
+  const hb=$('#hb'); let tip=null;
+  hb.addEventListener('mousemove',e=>{const el=e.target.closest('.hb');if(!el)return;const b=+el.dataset.bar;const a=annFor(mv,b);if(!tip){tip=document.createElement('div');tip.className='heat-tip';hb.appendChild(tip)}tip.textContent=a?`${barLabel(a.from,a.to)} · ${a.title}`:`m. ${b} · no notes yet`;tip.style.left=(el.offsetLeft+el.offsetWidth/2)+'px'});
+  hb.addEventListener('mouseleave',()=>{if(tip){tip.remove();tip=null}});
+  hb.addEventListener('click',e=>{const el=e.target.closest('.hb');if(!el)return;const b=+el.dataset.bar;selectAnn(annFor(mv,b),b)});
+  markSel();
+}
+function markSel(){
+  const a=curAnn;
+  $('#scoreImg').querySelectorAll('.barbox').forEach(bx=>{const b=+bx.dataset.bar;bx.classList.toggle('sel',a?(a.mv===curMv&&b>=a.from&&b<=a.to):b===curBar)});
+  document.querySelectorAll('#hb .hb').forEach(h=>{const b=+h.dataset.bar;h.classList.toggle('sel',a?(a.mv===curMv&&b>=a.from&&b<=a.to):b===curBar)});
+}
+function selectAnn(a,bar){curAnn=a||null;curBar=bar;renderPanel();markSel()}
+function goAnn(id){const a=annById[id];if(!a)return;if(curMv!==a.mv)setMv(a.mv);selectAnn(a,a.from);document.getElementById('score').scrollIntoView({behavior:'smooth'})}
+function goBar(mv,bar){if(curMv!==mv)setMv(mv);selectAnn(annFor(mv,bar),bar);document.getElementById('score').scrollIntoView({behavior:'smooth'})}
+
+const upSvg='<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2l4.5 6h-9z" fill="currentColor"/></svg>';
+function cmtHtml(c,reply){
+  return `<div class="cmt"><button class="vote${voted.has(c.key)?' on':''}" data-key="${c.key}" aria-label="Upvote">${upSvg}<span>${voteVal(c)}</span></button><div><div class="by"><b>${esc(c.u)}</b><span class="role ${roleCls(c.r)}">${esc(c.r)}</span></div><p>${esc(c.t)}</p>${(c.replies&&c.replies.length)?`<div class="replies">${c.replies.map(r=>cmtHtml(r,true)).join('')}</div>`:''}</div></div>`;
+}
+function renderPanel(){
+  const P=$('#panel'), a=curAnn, mv=curMv;
+  const [p0,p1]=pageRange(mv);
+  if(!a){
+    const near=ANN.filter(x=>x.mv===mv).sort((x,y)=>Math.abs(x.from-curBar)-Math.abs(y.from-curBar)).slice(0,3);
+    P.innerHTML=`<div class="empty"><div class="label">Mvt ${mv} · m. ${curBar}</div><h3>No notes on this bar yet</h3><p>Know something about m. ${curBar}? A teacher’s image, a fingering, a source? Add the first note.</p>
+      <div class="compose"><textarea id="newNote" placeholder="Your note on m. ${curBar}…"></textarea><div class="row"><small>Demo: saved in this browser only</small><button class="btn" id="addFirst">Post note</button></div></div>
+      <div style="margin-top:22px" class="label">Nearby notes</div><div class="links" style="margin-top:8px">${near.map(n=>`<button class="linkc" data-ann="${n.id}"><span class="mono">${barLabel(n.from,n.to)}</span>${esc(n.title)}</button>`).join('')}</div></div>`;
+    $('#addFirst').onclick=()=>{const t=$('#newNote').value.trim();if(!t){toast('Write a note first.');return}
+      const id=`${mv}-u${curBar}`; const na={id,mv,from:curBar,to:curBar,title:'Community note',sec:'',tags:['community'],a:'',src:[],ip:[],links:[],c:[]};
+      ANN.push(na);annById[id]=na;addComment(na,t);setMv(mv);selectAnn(na,curBar)};
+    P.querySelectorAll('[data-ann]').forEach(b=>b.onclick=()=>goAnn(b.dataset.ann));
+    return;
+  }
+  const off = a.from>p1 || a.to<p0;
+  const sorted=[...a.c].sort((x,y)=>voteVal(y)-voteVal(x));
+  const linkHtml=a.links.map(l=>{
+    if(l.startsWith('Q-')){const q=QUESTIONS.find(q=>q.id===l);return q?`<button class="linkc" data-q="${l}"><span class="mono">question</span>${esc(q.title)}</button>`:''}
+    if(l.startsWith('N-')){const n=NET.find(n=>n.id===l);return n?`<button class="linkc" data-net="${l}"><span class="mono">work</span>${esc(n.t)}</button>`:''}
+    const t=annById[l];return t?`<button class="linkc" data-ann="${l}"><span class="mono">${t.mv} · ${barLabel(t.from,t.to)}</span>${esc(t.title)}</button>`:'';
+  }).join('');
+  P.innerHTML=`<div class="panel-head"><div class="loc"><span class="badge b-pencil mono">Mvt ${a.mv} · ${barLabel(a.from,a.to)}</span>${a.sec?`<span class="label">${esc(a.sec)}</span>`:''}</div>
+      <h3>${esc(a.title)}</h3><div class="tags">${a.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
+      ${off?`<div class="offpage">This passage is beyond the first page of the score shown in the prototype. In the full platform the score scrolls here.</div>`:''}</div>
+    ${a.a?`<div class="pblock"><h4><span class="label">Analysis</span></h4><p>${esc(a.a)}</p>
+      <div class="prov-line">${a.src.map(s=>`<span class="badge b-src">${esc(s)}</span>`).join('')}<span class="badge b-ai">AI summary</span><span class="badge b-ok">✓ checked</span></div></div>`:''}
+    ${a.ip.length?`<div class="pblock"><h4><span class="label">How they play it</span><span class="badge b-ai">${a.ip.length} views</span></h4><div class="interp">${a.ip.map(p=>`<div class="ip"><div class="av ${p.kind}">${p.kind==='orch'?'Orch':initials(p.who)}</div><div><b>${esc(p.who)}</b><small>${esc(p.how)}</small><p>${esc(p.t)}</p></div></div>`).join('')}</div></div>`:''}
+    ${linkHtml?`<div class="pblock"><h4><span class="label">Connected to</span></h4><div class="links">${linkHtml}</div></div>`:''}
+    <div class="pblock"><h4><span class="label">Discussion · ${cmtCount(a)}</span><span style="font-size:12px;color:var(--muted)">ranked by votes</span></h4>
+      <div id="cmts">${sorted.length?sorted.map(c=>cmtHtml(c)).join(''):'<p style="color:var(--muted);font-size:15px">No comments yet.</p>'}</div>
+      <div class="compose"><textarea id="newCmt" placeholder="Add your view on ${barLabel(a.from,a.to)}: an image, a fingering, a teacher’s remark…"></textarea><div class="row"><small>Demo: saved in this browser only</small><button class="btn" id="postCmt">Post</button></div></div></div>`;
+  P.querySelectorAll('[data-ann]').forEach(b=>b.onclick=()=>goAnn(b.dataset.ann));
+  P.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>goQuestion(b.dataset.q));
+  P.querySelectorAll('[data-net]').forEach(b=>b.onclick=()=>{document.getElementById('connections').scrollIntoView({behavior:'smooth'});selectNode(b.dataset.net)});
+  $('#postCmt').onclick=()=>{const t=$('#newCmt').value.trim();if(!t){toast('Write something first.');return}addComment(a,t);renderPanel();renderHeat();toast('Posted. Others can now vote on it.')};
+}
+function addComment(a,t){
+  const c={u:'You',r:'You',v:1,t,replies:[],key:a.id+'#u'+Date.now()};
+  a.c.push(c); (userComments[a.id]=userComments[a.id]||[]).push(c); store.set('ucmt',userComments);
+  updateCounts(); renderVoices(curFilter);
+}
+document.addEventListener('click',e=>{
+  const v=e.target.closest('.vote'); if(!v) return;
+  const k=v.dataset.key; voted.has(k)?voted.delete(k):voted.add(k); store.set('voted',[...voted]);
+  const c=findCmt(k); v.classList.toggle('on',voted.has(k)); v.querySelector('span').textContent=voteVal(c);
+  document.querySelectorAll(`.vote[data-key="${CSS.escape(k)}"]`).forEach(o=>{o.classList.toggle('on',voted.has(k));o.querySelector('span').textContent=voteVal(c)});
+});
+function findCmt(k){for(const a of ANN){for(const c of a.c){if(c.key===k)return c;for(const r of (c.replies||[]))if(r.key===k)return r}}}
+ANN.forEach(a=>a.c.forEach(c=>(c.replies||[]).forEach((r,j)=>r.key=c.key+'r'+j)));
+
+/* ---- arcs ---- */
+function renderArcs(){
+  const W=1000,H=270,base=220,pad=20,gap=24;
+  const tot=SCORE.I.total+1+SCORE.II.total+SCORE.III.total;
+  const usable=W-2*pad-2*gap; const k=usable/tot;
+  const off={I:pad,II:pad+(SCORE.I.total+1)*k+gap,III:pad+(SCORE.I.total+1+SCORE.II.total)*k+2*gap};
+  const X=(mv,b)=>off[mv]+(mv==='I'?b:b-1)*k;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Arc diagram of motifs across the sonata"><g id="arcG">`;
+  THREADS.forEach(th=>th.arcs.forEach((a,i)=>{
+    const x1=X(a[0][0],a[0][1]),x2=X(a[1][0],a[1][1]);const h=Math.min(200,Math.abs(x2-x1)*0.55+18);
+    s+=`<path class="arc" data-t="${th.k}" data-i="${i}" stroke="${th.col}" d="M${x1},${base} C${x1},${base-h} ${x2},${base-h} ${x2},${base}"/>`;
+  }));
+  s+='</g>';
+  ['I','II','III'].forEach(mv=>{const x0=X(mv,mv==='I'?0:1),x1=X(mv,SCORE[mv].total);
+    s+=`<line x1="${x0}" y1="${base}" x2="${x1}" y2="${base}" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>`;
+    FORMS[mv].secs.forEach(sec=>{const xx=X(mv,sec[1]);s+=`<line x1="${xx}" y1="${base-4}" x2="${xx}" y2="${base+4}" stroke="var(--faint)" stroke-width="1"/>`});
+    s+=`<text x="${x0}" y="${base+26}" fill="var(--ink)" font-family="var(--f-display)" font-size="17" font-weight="600">${mv}</text><text x="${x0+26}" y="${base+26}" fill="var(--muted)" font-size="12" font-family="var(--f-body)">${FORMS[mv].title.split('. ')[1]} · ${SCORE[mv].total} bars</text>`;
+  });
+  s+='</svg>';
+  $('#arcs').innerHTML=s;
+  $('#threadLegend').innerHTML=THREADS.map(t=>`<button data-t="${t.k}"><i style="background:${t.col}"></i>${t.name}</button>`).join('');
+  const g=$('#arcG');
+  const pick=(t,i)=>{
+    g.parentNode.classList.add('arcs-dim');
+    g.querySelectorAll('.arc').forEach(p=>p.classList.toggle('on',p.dataset.t===t&&(i===undefined||+p.dataset.i===i)));
+    const th=THREADS.find(x=>x.k===t);
+    if(i===undefined){$('#arcCap').innerHTML=`<div><b>${th.name}</b><p>${th.arcs.length} connections. Click one arc to read it.</p></div>`;return}
+    const a=th.arcs[i];
+    $('#arcCap').innerHTML=`<div><b style="color:${th.col}">${th.name}</b><p>${esc(a[2])}</p></div><div class="links">${barBtn(a[0][0],a[0][1])}${barBtn(a[1][0],a[1][1])}</div>`;
+  };
+  g.querySelectorAll('.arc').forEach(p=>{p.addEventListener('click',()=>pick(p.dataset.t,+p.dataset.i));p.addEventListener('mouseenter',()=>pick(p.dataset.t,+p.dataset.i))});
+  $('#threadLegend').querySelectorAll('button').forEach(b=>b.onclick=()=>pick(b.dataset.t));
+}
+
+/* ---- network ---- */
+function renderNet(){
+  const W=880,H=440,cx=420,cy=215;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Network of related works"><g>`;
+  NET.forEach(n=>{s+=`<path class="edge" data-e="${n.id}" d="M${cx},${cy} Q${(cx+n.x)/2},${(cy+n.y)/2-20} ${n.x},${n.y}" ${n.type==='model'?'stroke-dasharray="5 4"':''}/>`});
+  s+='</g>';
+  NET.forEach(n=>{const w=Math.max(n.t.length,n.s.length)*7.1+24;
+    s+=`<g class="node" data-n="${n.id}" tabindex="0" role="button" aria-label="${esc(n.t)}"><rect x="${n.x-w/2}" y="${n.y-22}" width="${w}" height="44" rx="8"/><text x="${n.x}" y="${n.y-3}" text-anchor="middle">${esc(n.t)}</text><text class="s" x="${n.x}" y="${n.y+13}" text-anchor="middle">${esc(n.s)}</text></g>`});
+  s+=`<g class="center-node"><rect x="${cx-110}" y="${cy-30}" width="220" height="60" rx="10"/><text x="${cx}" y="${cy+2}" text-anchor="middle">Sonata No. 4, Op. 29</text><text class="s" x="${cx}" y="${cy+20}" text-anchor="middle" font-size="11">this page</text></g>`;
+  s+=`<g font-size="12" font-family="var(--f-body)"><line x1="20" y1="${H-14}" x2="44" y2="${H-14}" stroke="var(--faint)" stroke-width="1.5"/><text x="50" y="${H-10}" fill="var(--muted)">Prokofiev’s own work or life</text><line x1="230" y1="${H-14}" x2="254" y2="${H-14}" stroke="var(--faint)" stroke-width="1.5" stroke-dasharray="5 4"/><text x="260" y="${H-10}" fill="var(--muted)">model or precedent</text></g>`;
+  s+='</svg>';
+  $('#net').innerHTML=s;
+  $('#net').querySelectorAll('.node').forEach(g=>{g.addEventListener('click',()=>selectNode(g.dataset.n));g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectNode(g.dataset.n)}})});
+}
+function selectNode(id){
+  const n=NET.find(x=>x.id===id); if(!n) return;
+  $('#net').querySelectorAll('.node').forEach(g=>g.classList.toggle('on',g.dataset.n===id));
+  $('#net').querySelectorAll('.edge').forEach(e=>e.classList.toggle('on',e.dataset.e===id));
+  $('#netCap').innerHTML=`<div><b>${esc(n.t)}</b><p>${esc(n.d)}</p></div>${n.bar?`<div class="links">${barBtn(n.bar[0],n.bar[1])}</div>`:''}`;
+}
+
+/* ---- voices ---- */
+let curFilter='All';
+function renderVoices(f){
+  curFilter=f;
+  const roles=['All','Teacher','Student','Performer','Musicologist','Imported'];
+  $('#vfilters').innerHTML=roles.map(r=>`<button class="${r===f?'on':''}" data-f="${r}">${r==='All'?'All':r==='Imported'?'Imported comments':r+'s'}</button>`).join('');
+  $('#vfilters').querySelectorAll('button').forEach(b=>b.onclick=()=>renderVoices(b.dataset.f));
+  const all=[]; ANN.forEach(a=>a.c.forEach(c=>all.push({a,c})));
+  const list=all.filter(x=>f==='All'||x.c.r===f).sort((x,y)=>voteVal(y.c)-voteVal(x.c)).slice(0,12);
+  $('#voiceList').innerHTML=list.map(({a,c})=>`<div class="vcard"><button class="vote${voted.has(c.key)?' on':''}" data-key="${c.key}" aria-label="Upvote">${upSvg}<span>${voteVal(c)}</span></button><div><div class="by"><b>${esc(c.u)}</b><span class="role ${roleCls(c.r)}">${esc(c.r)}</span></div><p>${esc(c.t)}</p><div class="where">${barBtn(a.mv,a.from)} <span style="font-size:13px;color:var(--muted)">${esc(a.title)}</span></div></div></div>`).join('');
+}
+
+/* ---- sources ---- */
+function renderSources(){
+  $('#srcs').innerHTML=Object.entries(SOURCES).map(([g,l])=>`<div class="srcgroup"><h3><span>${g}</span><span class="mono">${l.length}</span></h3>${l.map(s=>`<div class="src"><div class="t">${s[0]}<small>${esc(s[1])}</small></div><div class="r">${s[3]?`<a class="badge b-pencil" href="${s[3]}" target="_blank" rel="noopener">Open ↗</a>`:''}<span class="badge ${/Not yet/.test(s[2])?'b-src':'b-ok'}">${esc(s[2])}</span></div></div>`).join('')}</div>`).join('');
+}
+
+/* ======================== BOOT ======================== */
+bindSearch($('#q1')); bindSearch($('#q2'));
+document.querySelectorAll('[data-try]').forEach(b=>b.onclick=()=>{$('#q1').value=b.dataset.try;runSearch(b.dataset.try)});
+$('#brandBtn').onclick=()=>show('home');
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go="home"]');if(g)show('home')});
+if(location.hash==='#piece'){openPiece()}
+</script>
+
+</body>
+</html>
