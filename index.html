@@ -278,6 +278,14 @@ article.art p+p{margin-top:12px}
 .work2 .to button:hover{border-color:var(--pencil)}
 .keyb{font-family:var(--f-mono);font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:2px}
 /* v4 additions */
+.kpis.kpi3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.kpi3 b{font-size:40px}
+@media (max-width:560px){.kpis.kpi3{grid-template-columns:1fr}}
+.lrow{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-top:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.lrow:first-child{border-top:0}
+.lrow b{font-family:var(--f-display);font-size:20px;font-weight:600}
+.lrow span{color:var(--pencil-ink);font-weight:600;font-size:14px}
+.lrow:hover{background:var(--pencil-soft)}
 .oitem{padding:18px 20px;border-top:1px solid var(--line)}
 .oitem:first-child{border-top:0}
 .oitem h3{font-family:var(--f-display);font-size:21px;font-weight:600;margin-bottom:6px}
@@ -1048,62 +1056,47 @@ function otherView(){
 }
 
 /* ---------- 8 statistics ---------- */
+function monoPath(P){ /* monotone cubic through points, no overshoot */
+  const n=P.length,dx=[],dy=[],m=[],s=[];
+  for(let i=0;i<n-1;i++){dx[i]=P[i+1][0]-P[i][0];dy[i]=P[i+1][1]-P[i][1];s[i]=dy[i]/dx[i]}
+  m[0]=s[0];m[n-1]=s[n-2];
+  for(let i=1;i<n-1;i++){m[i]=s[i-1]*s[i]<=0?0:(s[i-1]+s[i])/2}
+  for(let i=0;i<n-1;i++){if(s[i]===0){m[i]=m[i+1]=0}else{const a=m[i]/s[i],b=m[i+1]/s[i],h=a*a+b*b;if(h>9){const k=3/Math.sqrt(h);m[i]=k*a*s[i];m[i+1]=k*b*s[i]}}}
+  let d=`M${P[0][0]},${P[0][1]}`;
+  for(let i=0;i<n-1;i++){const h=dx[i]/3;d+=` C${P[i][0]+h},${P[i][1]+m[i]*h} ${P[i+1][0]-h},${P[i+1][1]-m[i+1]*h} ${P[i+1][0]},${P[i+1][1]}`}
+  return d;
+}
 function statsView(){
-  const order=['ppp','pp','p','mp','mf','f','ff','sf'];
+  const order=['ppp','pp','p','mp','mf','f','ff'];
   const cnt=Object.fromEntries(order.map(k=>[k,DYN.filter(d=>d[0]===k).length]));
-  const max=Math.max(...Object.values(cnt));
-  const most=order.filter(k=>cnt[k]===max), least=order.filter(k=>cnt[k]===Math.min(...order.map(k=>cnt[k])));
-  // dynamic curve
-  const Wd=1000,H=200,pad=34,k=(Wd-2*pad)/(TOTAL.I+1),X=b=>pad+b*k,Y=l=>170-l*24;
-  let lv=null,pts=[];
-  for(let b=0;b<=TOTAL.I;b++){const ds=DYN.filter(d=>d[1]===b&&d[0]!=='sf');if(ds.length)lv=LEVEL[ds.at(-1)[0]];if(lv!==null)pts.push([b,lv])}
-  let path='';pts.forEach(([b,l],i)=>{path+=(i?`H${X(b)}V${Y(l)}`:`M${X(b)},${Y(l)}`)});path+=`H${X(TOTAL.I+1)}`;
-  let curve=`<svg viewBox="0 0 ${Wd} ${H}" role="img" aria-label="Dynamic level across the movement">`;
-  ['ppp','pp','p','mp','mf','f','ff'].forEach((d,i)=>{curve+=`<line x1="${pad}" x2="${Wd-pad}" y1="${Y(i)}" y2="${Y(i)}" stroke="var(--line)" stroke-width="1"/><text x="${pad-8}" y="${Y(i)+4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="var(--f-display)" font-style="italic">${d}</text>`});
-  FORMS.I.groups.forEach(g=>{curve+=`<line x1="${X(g[1])}" x2="${X(g[1])}" y1="20" y2="175" stroke="var(--faint)" stroke-dasharray="3 4"/><text x="${X(g[1])+4}" y="192" font-size="11" fill="var(--muted)" font-family="var(--f-body)">${g[0]}</text>`});
-  curve+=`<path d="${path}" fill="none" stroke="var(--pencil)" stroke-width="2.5"/>`;
-  DYN.filter(d=>d[0]==='sf').forEach(d=>{curve+=`<circle cx="${X(d[1])}" cy="${Y(5)}" r="3.5" fill="var(--heat)"/>`});
-  DYN.forEach(d=>{if(d[0]!=='sf')curve+=`<circle class="node" data-go="bar-I-${d[1]}" cx="${X(d[1])}" cy="${Y(LEVEL[d[0]])}" r="4" fill="var(--surface)" stroke="var(--pencil)" stroke-width="2"><title>${d[0]} · ${one(d[1])}</title></circle>`});
-  curve+='</svg>';
-  // words
-  const terms={};WORDS.forEach(w=>{(terms[w[0]]=terms[w[0]]||{k:w[2],b:[]}).b.push(w[1])});
-  const termRows=Object.entries(terms).sort((a,b)=>b[1].b.length-a[1].b.length||a[1].b[0]-b[1].b[0]);
-  const f=FORMS.I.groups;
+  const max=Math.max(...order.map(k=>cnt[k])),min=Math.min(...order.map(k=>cnt[k]));
+  const most=order.filter(k=>cnt[k]===max)[0],least=order.filter(k=>cnt[k]===min)[0];
+  const Wd=1000,H=230,pad=40,k=(Wd-2*pad)/TOTAL.I,X=b=>pad+b*k,Y=l=>190-l*26;
+  /* level in force at every bar, then a gentle smoothing so the curve shows the overall shape */
+  const lv=[];let cur=LEVEL.pp;for(let b=0;b<=TOTAL.I;b++){const ds=DYN.filter(d=>d[1]===b&&d[0]!=='sf');if(ds.length)cur=LEVEL[ds.at(-1)[0]];lv.push(cur)}
+  const sig=2.5,sm=lv.map((_,b)=>{let s=0,w=0;for(let j=-8;j<=8;j++){const q=b+j;if(q<0||q>TOTAL.I)continue;const g=Math.exp(-(j*j)/(2*sig*sig));s+=lv[q]*g;w+=g}return s/w});
+  const pts=sm.filter((_,b)=>b%2===0||b===TOTAL.I).map((l,i,arr)=>{const b=Math.min(i*2,TOTAL.I);return [X(b),Y(l)]});
+  const line=monoPath(pts);
+  let s=`<svg viewBox="0 0 ${Wd} ${H}" role="img" aria-label="Dynamic level across the movement">`;
+  order.forEach((d,i)=>{s+=`<text x="${pad-10}" y="${Y(i)+4}" text-anchor="end" font-size="13" fill="var(--muted)" font-family="var(--f-display)" font-style="italic">${d}</text><line x1="${pad}" x2="${Wd-pad}" y1="${Y(i)}" y2="${Y(i)}" stroke="var(--line)" stroke-width="1"/>`});
+  FORMS.I.groups.forEach(g=>{s+=`<text x="${X(g[1])}" y="${H-6}" font-size="12" fill="var(--muted)" font-family="var(--f-body)">${g[0]}</text>`});
+  s+=`<path d="${line} L${X(TOTAL.I)},${Y(0)+6} L${pts[0][0]},${Y(0)+6} Z" fill="var(--pencil-soft)"/><path d="${line}" fill="none" stroke="var(--pencil)" stroke-width="3" stroke-linecap="round"/>`;
+  s+='</svg>';
   return `<div class="view"><div class="vh"><h1>Statistics</h1></div>
-   <div class="kpis">
-     <div><span>Bars</span><b>197</b><small>+ upbeat</small></div>
-     <div><span>Dynamic markings</span><b>${DYN.length}</b><small>incl. ${cnt.sf} sf</small></div>
-     <div><span>Most written</span><b><i>${most.join(', ')}</i></b><small>${max} times</small></div>
-     <div><span>Least written</span><b><i>${least.join(', ')}</i></b><small>${cnt[least[0]]} time${cnt[least[0]]>1?'s':''}</small></div>
-     <div><span>Loudest</span><b><i>ff</i></b><small>${cnt.ff} times, no fff</small></div>
-     <div><span>Softest</span><b><i>ppp</i></b><small>once, ${one(162)}</small></div>
+   <div class="kpis kpi3">
+     <div><span>Most common dynamic</span><b><i>${most}</i></b><small>${cnt[most]} times</small></div>
+     <div><span>Least common dynamic</span><b><i>${least}</i></b><small>${cnt[least]} time, ${one(162)}</small></div>
+     <div><span>Most common note</span><b>G</b><small>example value</small></div>
    </div>
-   <div class="sec-title">Dynamics</div>
-   <div class="card statc"><div class="bars">${order.map(k2=>`<div class="bcol"><span class="bn">${cnt[k2]}</span><span class="bb" style="height:${cnt[k2]/max*100}%"></span><span class="bl">${k2}</span></div>`).join('')}</div>
-     <div class="where">${order.map(k2=>`<div class="wrow"><b>${k2}</b><div class="chips">${DYN.filter(d=>d[0]===k2).map(d=>chip('I',d[1])).join('')}</div></div>`).join('')}</div></div>
    <div class="sec-title">Dynamic level, bar by bar</div>
-   <div class="card"><div class="arcs">${curve}</div></div>
-   <div class="sec-title">Words written in the score</div>
-   <div class="card wtab">${termRows.map(([t,o])=>`<div class="wt"><i>${esc(t)}</i><span class="kind">${o.k}</span><b class="mono">${o.b.length}×</b><div class="chips">${o.b.map(b=>chip('I',b)).join('')}</div></div>`).join('')}</div>
-   <div class="sec-title">Form, keys and metre</div>
-   <div class="card">
-     <div class="kv"><div>Proportions</div><div><div class="prop">${f.map((g,i)=>`<span style="flex:${g[2]-g[1]+1};background:${['var(--pencil-soft)','var(--heat-soft)','var(--pencil-soft)'][i]}">${g[0]}<b>${g[2]-g[1]+1}</b></span>`).join('')}</div></div></div>
-     <div class="kv"><div>Key signature</div><div>Three flats (C minor) in mm. 1–161 · none (C major) in 162–182 · three flats again from ${chip('I',183)}</div></div>
-     <div class="kv"><div>Metre</div><div>3/4 throughout, except two bars of 4/4 at ${chip('I',16)} and ${chip('I',148)}</div></div>
-     <div class="kv"><div>Harmonic landmarks</div><div class="lm">
-       <span>${chip('I',3)} cadence, inner voice B♭–A♭–G</span><span>${chip('I',6)} cadence, inner voice A♯–B–C</span><span>${chip('I',40)} E♭ major against G minor</span>
-       <span>${chip('I',61)} ii–V7 over V–I</span><span>${chip('I',117)} C minor → E♭ minor → F♯ minor over G</span><span>${chip('I',135)} Neapolitan colour</span><span>${chip('I',194)} C♯ and F♯ inside the final V–I</span></div></div>
-   </div>
-   <div class="sec-title">Needs a digital score</div>
-   <div class="pending">${['Most common notes','Most common intervals','Chord types','Note values','Notes per bar'].map(x=>`<div>${x}</div>`).join('')}</div>
-   <div class="srcl">Dynamics and words counted from the first edition (Gutheil / Breitkopf &amp; Härtel). Hairpins, accents and slurs not yet counted.</div></div>`;
+   <div class="card"><div class="arcs">${s}</div></div></div>`;
 }
 
 /* ---------- 9 listening ---------- */
+const LISTEN=[['Sviatoslav Richter','Richter Prokofiev Sonata No. 4'],['Boris Berman','Boris Berman Prokofiev Sonata No. 4'],['György Sándor','Gyorgy Sandor Prokofiev Sonata No. 4'],['Nikolai Lugansky','Lugansky Prokofiev Sonata No. 4']];
 function listenView(){
   return `<div class="view"><div class="vh"><h1>Listening</h1></div>
-   <div class="card">${RECS.map(r=>`<div class="kv"><div>${esc(r[0])}</div><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><span>${esc(r[1])}${r[2]?` · <b>${esc(r[2])}</b>`:''}</span><a class="chip" href="${yt(r[0]+' Prokofiev Sonata No. 4')}" target="_blank" rel="noopener">Search ↗</a></div></div>`).join('')}</div>
-   <div class="srcl">Cho 2023, pp. 2, 54</div></div>`;
+   <div class="card">${LISTEN.map(r=>`<a class="lrow" href="${yt(r[1])}" target="_blank" rel="noopener"><b>${r[0]}</b><span>Listen ↗</span></a>`).join('')}</div></div>`;
 }
 
 /* ---------- 10 sources ---------- */
