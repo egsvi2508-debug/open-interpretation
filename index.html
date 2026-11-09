@@ -278,6 +278,21 @@ article.art p+p{margin-top:12px}
 .work2 .to button:hover{border-color:var(--pencil)}
 .keyb{font-family:var(--f-mono);font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:2px}
 /* v4 additions */
+.chain{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap}
+.cnode{flex:1;min-width:150px;text-align:left;border:1.5px solid var(--line);background:var(--paper);border-radius:12px;padding:12px 14px;cursor:pointer}
+.cnode:hover{border-color:var(--pencil)}
+.cnode small{display:block;font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.cnode b{font-family:var(--f-display);font-size:19px;font-weight:600}
+.cnode.on{background:var(--ink);border-color:var(--ink);color:var(--paper);cursor:default}
+.cnode.on small{color:var(--paper);opacity:.7}
+.clink{display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--pencil-ink);min-width:90px}
+.clink span{font-size:22px;line-height:1}
+.clink small{font-size:12px;color:var(--muted);text-align:center}
+@media (max-width:640px){.chain{flex-direction:column}.clink{flex-direction:row;gap:8px;min-width:0}}
+.idea2{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:18px;align-items:center}
+.idea2 svg{width:100%;height:auto}
+@media (max-width:640px){.idea2{grid-template-columns:1fr}}
+.emptywin{border:1.5px dashed var(--line);border-radius:14px;min-height:260px}
 .kpis.kpi3{grid-template-columns:repeat(3,minmax(0,1fr))}
 .kpi3 b{font-size:40px}
 @media (max-width:560px){.kpis.kpi3{grid-template-columns:1fr}}
@@ -886,7 +901,7 @@ function route(){
   const h=location.hash.replace('#','');
   let m;
   if(!h||h==='home'){window.scrollTo(0,0);return home()}
-  if(m=h.match(/^w-(\w+)$/)){window.scrollTo(0,0);return workPage(m[1])}
+  if(m=h.match(/^x-(cha|bee|sch)(?:-(\w+))?$/)){return xRoute(m[1],m[2])}
   if(h==='piece'){window.scrollTo(0,0);return shell('',pieceHome())}
   if(m=h.match(/^bar-I+-(\d+)$/)){window.scrollTo(0,0);return shell('score',barView('I',+m[1]),()=>bindBar('I',+m[1]))}
   if(m=h.match(/^motif-(\w+)$/)){window.scrollTo(0,0);return shell('connections',motifView(m[1]))}
@@ -912,7 +927,7 @@ function results(){
   const p=/pro[ck]o?[fv]|prokof|prokov|op\.? ?29/.test(n);
   let h='';
   if(p) h+=`<button class="res-item" data-go="piece"><div><b>Piano Sonata No. 4, Op. 29 · I</b><span>Sergei Prokofiev · Allegro molto sostenuto</span></div><i>→</i></button>`;
-  findWorks(n).forEach(w=>{h+=`<button class="res-item" data-go="w-${w.id}" style="margin-top:10px"><div><b>${w.t}</b><span>${w.comp}</span></div><i>→</i></button>`});
+  findX(n).forEach(id=>{h+=`<button class="res-item" data-go="x-${id}" style="margin-top:10px"><div><b>${XP[id].t}</b><span>${XP[id].comp}</span></div><i>→</i></button>`});
   $('#res').innerHTML=h||`<div class="res-none">No results</div>`;
 }
 
@@ -1107,42 +1122,23 @@ const binders={
   context(){document.querySelectorAll('[data-art]').forEach(a=>a.onclick=e=>{e.preventDefault();document.getElementById('art-'+a.dataset.art).scrollIntoView({behavior:'smooth'})})},
 };
 
-/* ---------- example 2: individual pieces, linked through one idea (Rosen, Music and Sentiment, pp. 24–27) ---------- */
-const WORKS=[
- {id:'cha',comp:'J. S. Bach',t:'Chaconne',al:'chaconne partita violin bwv 1004 d minor',q:'Bach Violin Partita No.2 BWV 1004',
-  ctx:'Rosen quotes the opening of the Chaconne as an example of a bass that descends from the tonic to the dominant. This kind of short, repeating bass was a useful formula for serious music built on an ostinato, and it survived for a long time.',
-  links:[['cru','the same formula, used by Bach as an ostinato bass'],['pas','Bach’s other option: a bass that goes up a fifth instead'],['bee','the formula a century later, as the theme of a set of variations'],['sch','the descent moved into the tenor'],['lis','the formula in Liszt’s variations'],['bra','a chaconne-style finale where the formula still lingers'],['cho','the same descent with no funereal meaning at all']]},
- {id:'cru',comp:'J. S. Bach',t:'Crucifixus, Mass in B minor',al:'crucifixus mass b minor bwv 232',q:'Bach Mass in B minor BWV 232',
-  ctx:'Over a descending chromatic fourth in the bass, repeated as an ostinato. Daniel Heartz used it as his main example to argue that this bass was a symbol of death throughout the 18th century. Rosen disagrees: every such fourth starts on the tonic and goes to the dominant, simply because an 18th-century ostinato bass could hardly do anything else. The Crucifixus version is just the most succinct and economical one.',
-  links:[['cha','the same formula, quoted by Rosen'],['pas','the only real alternative'],['cho','Rosen’s counter-example to the “death” reading']]},
- {id:'pas',comp:'J. S. Bach',t:'Passacaglia',al:'passacaglia bwv 582 organ c minor',q:'Bach Passacaglia BWV 582',
-  ctx:'Rosen names the Passacaglia as the only possible variant of the formula: its ostinato goes straight up a fifth to the dominant and then back to the tonic, instead of falling a fourth. He adds that the Crucifixus version is more succinct, but not essentially different.',
-  links:[['cru','the falling version'],['cha','the falling version, as a chaconne']]},
- {id:'bee',comp:'Ludwig van Beethoven',t:'Variations in C minor',al:'variations c minor woo 80 32',q:'Beethoven 32 Variations WoO 80',
-  ctx:'Rosen quotes the theme of the Variations in C minor as another case of the formula: serious, in the minor mode, built on a bass that falls chromatically from tonic to dominant.',
-  links:[['sch','Schubert may have had its rhythm in mind'],['cha','the same formula in Bach']]},
- {id:'sch',comp:'Franz Schubert',t:'Sonata in C minor',al:'sonata c minor d 958 d958',q:'Schubert Piano Sonata D.958',
-  ctx:'Here the chromatic descent sits in the tenor: C, B♭, A natural, A♭, G. Rosen suggests Schubert may have been thinking of the rhythm of Beethoven’s Variations in C minor, but adds that the motif was enough of a cliché that he could have found it elsewhere.',
-  links:[['bee','the possible model'],['cha','the same formula in Bach']]},
- {id:'lis',comp:'Franz Liszt',t:'Variations on “Weinen, Klagen”',al:'weinen klagen sorgen zagen variations',q:'Liszt Variations Weinen Klagen',
-  ctx:'Liszt used the formula in his variations on Weinen, Klagen. Here, Rosen agrees, it does carry a sense of mortality.',
-  links:[['cru','the piece Heartz read as a symbol of death'],['cha','the same formula in Bach']]},
- {id:'bra',comp:'Johannes Brahms',t:'Symphony No. 4, finale',al:'symphony 4 fourth finale chaconne e minor',q:'Brahms Symphony No.4',
-  ctx:'Rosen’s latest example of how long the formula lingered: the chaconne-style finale of the Fourth Symphony. The chromatic descent is no longer kept in the bass but parcelled out to the other voices.',
-  links:[['cha','another chaconne on the formula'],['bee','the formula as a theme for variations']]},
- {id:'cho',comp:'Frédéric Chopin',t:'Étude in C minor, Op. 10 No. 12 “Revolutionary”',al:'revolutionary etude op 10 no 12 c minor',q:'Chopin Etude Op.10 No.12',
-  ctx:'The bass of the main theme descends chromatically a fourth, from C to G. Rosen’s point: there is nothing lugubrious or funereal about this piece. The same descent does not carry a fixed meaning.',
-  links:[['cru','the piece read as a symbol of death'],['cha','the same formula in Bach']]}
-];
-const wById=Object.fromEntries(WORKS.map(w=>[w.id,w]));
-const STOP=new Set(['in','minor','major','no','op','the','of','on','a','c','d','e','b','s','j','and','sonata','variations','symphony']);
-function lev(a,b){const m=a.length,n=b.length,d=Array.from({length:m+1},(_,i)=>[i]);for(let j=1;j<=n;j++)d[0][j]=j;for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n]}
-function findWorks(n){
-  const toks=n.split(/[^a-z0-9]+/).filter(t=>t&&!STOP.has(t));
+/* ---------- example 2: three pieces linked by one bass line (Rosen, Music and Sentiment, pp. 24–25) ---------- */
+const XP={
+ cha:{comp:'J. S. Bach',t:'Chaconne',al:'bach chaconne',
+  ctx:'Rosen quotes the opening of Bach’s Chaconne as an example of a bass that descends from the tonic to the dominant. A short repeating bass like this was a useful formula for serious music, and it survived for a long time.'},
+ bee:{comp:'Ludwig van Beethoven',t:'Variations in C minor',al:'beethoven variations c minor',
+  ctx:'Rosen quotes the theme of the Variations in C minor as another case of the same formula: serious, in the minor mode, over a bass that falls chromatically from the tonic to the dominant.'},
+ sch:{comp:'Franz Schubert',t:'Sonata in C minor',al:'schubert sonata c minor',
+  ctx:'Here the chromatic descent is in the tenor: C, B♭, A natural, A♭, G. Rosen suggests Schubert may have been thinking of the rhythm of Beethoven’s Variations in C minor, but adds that the motif was enough of a cliché that he could have found it elsewhere.'}
+};
+const CHAIN=['cha','bee','sch'];
+const CHAIN_LINKS={'cha>bee':'the same formula','bee>sch':'perhaps the same rhythm'};
+function findX(n){
+  const toks=n.split(/[^a-z0-9]+/).filter(t=>t.length>=4&&!['minor','major','sonata','variations','sonate'].includes(t));
   if(!toks.length) return [];
-  return WORKS.filter(w=>{const words=(w.comp+' '+w.t+' '+w.al).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').split(/[^a-z0-9]+/).filter(Boolean);
-    return toks.every(t=>words.some(x=>x===t||(t.length>=4&&(x.startsWith(t)||lev(t,x)<=2))))});
+  return CHAIN.filter(id=>{const words=XP[id].al.split(' ');return toks.some(t=>words.some(w=>w===t||w.startsWith(t)||lev(t,w)<=2))});
 }
+function lev(a,b){const m=a.length,n=b.length,d=Array.from({length:m+1},(_,i)=>[i]);for(let j=1;j<=n;j++)d[0][j]=j;for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n]}
 function formulaSvg(){
   const names=['C','B','B♭','A','A♭','G'], steps=[3,2,2,1,1,0], xs=[60,100,140,180,220,260];
   let s=`<svg viewBox="0 0 290 100" role="img" aria-label="A bass falling by semitones from C to G">`;
@@ -1154,22 +1150,42 @@ function formulaSvg(){
     s+=`<ellipse cx="${x}" cy="${y}" rx="6.5" ry="5" transform="rotate(-20 ${x} ${y})" fill="var(--ink)"/><text x="${x}" y="92" font-size="12" text-anchor="middle" fill="var(--muted)" font-family="var(--f-mono)">${names[i]}</text>`});
   return s+'</svg>';
 }
-function workPage(id){
-  const w=wById[id]; if(!w) return home();
+function xShell(id,active,html){
+  const p=XP[id];
   $('#app').innerHTML=`<header class="top"><div class="wrap"><div class="row1">
-      <button class="iconbtn" data-go="home" aria-label="Back"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg></button>
-      <button class="ptitle" data-go="w-${w.id}"><b>${w.t}</b><span>${w.comp}</span></button>
-      <button class="iconbtn" data-go="home" aria-label="Search" style="margin-left:auto"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8.5" cy="8.5" r="6"/><path d="M13 13l5 5"/></svg></button></div></div></header>
-   <main class="wrap"><div class="view wpage">
-    <div class="phead" style="padding-top:12px"><div class="comp">${w.comp}</div><h1>${w.t}</h1><a class="chip" style="margin-top:12px" href="${imslp(w.q)}" target="_blank" rel="noopener">Score on IMSLP ↗</a></div>
-    <div class="sec-title">Context</div>
-    <div class="card wbox"><p>${w.ctx}</p></div>
-    <div class="sec-title">The idea it shares</div>
-    <div class="card wbox idea"><div><h3>The descending chromatic fourth</h3><p>A bass that falls by semitones from the tonic to the dominant. For Rosen it is a common tool of tonal music, not a symbol with a fixed meaning: it sounds serious in many pieces, but what it expresses depends on the music around it.</p></div>${formulaSvg()}</div>
-    <div class="sec-title">Linked pieces</div>
-    <div class="card">${w.links.map(([id,why])=>`<button class="mrow" data-go="w-${id}"><span class="mn">${wById[id].comp.split(' ').pop()} · ${wById[id].t}</span><span class="refs" style="font-family:var(--f-body);font-size:14px">${why}</span></button>`).join('')}</div>
-    <div class="srcl">Charles Rosen, Music and Sentiment (Yale University Press, 2010), pp. 24–27</div>
-   </div></main>`;
+      <button class="iconbtn" data-go="${active?'x-'+id:'home'}" aria-label="Back"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg></button>
+      <button class="ptitle" data-go="x-${id}"><b>${p.t}</b><span>${p.comp}</span></button>
+      <button class="iconbtn" data-go="home" aria-label="Search" style="margin-left:auto"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8.5" cy="8.5" r="6"/><path d="M13 13l5 5"/></svg></button></div>
+    ${active?`<nav class="tabs">${WINDOWS.map(w=>`<button class="${w[0]===active?'on':''}" data-go="x-${id}-${w[0]}">${w[1]}</button>`).join('')}</nav>`:''}</div></header>
+    <main class="wrap">${html}</main>`;
+  const on=document.querySelector('.tabs .on'); if(on) on.scrollIntoView({inline:'center',block:'nearest'});
+}
+function xHome(id){
+  const p=XP[id],nm=Object.fromEntries(WINDOWS);let n=0;
+  return `<div class="phead"><div class="comp">${p.comp}</div><h1>${p.t}</h1></div>
+   ${GROUPS.map(g=>`<div class="sec-title">${g[0]}</div><div class="tiles">${g[1].map(k=>`<button class="tile${k==='score'?' big':''}" data-go="x-${id}-${k}"><span class="num">${String(++n).padStart(2,'0')}</span><b>${nm[k]}</b></button>`).join('')}</div>`).join('')}<div style="height:60px"></div>`;
+}
+function xContext(id){
+  const p=XP[id];
+  let chain='<div class="chain">';
+  CHAIN.forEach((c,i)=>{
+    if(i) chain+=`<div class="clink"><span>→</span><small>${CHAIN_LINKS[CHAIN[i-1]+'>'+c]}</small></div>`;
+    chain+=`<button class="cnode${c===id?' on':''}" data-go="x-${c}-context"><small>${XP[c].comp}</small><b>${XP[c].t}</b></button>`;
+  });
+  chain+='</div>';
+  return `<div class="view"><div class="vh"><h1>Context</h1></div>
+   <article class="art"><div class="kick">01</div><h2>A chain of three pieces</h2>${chain}<p style="margin-top:18px">${p.ctx}</p></article>
+   <article class="art"><div class="kick">02</div><h2>The shared idea: a descending chromatic fourth</h2>
+     <div class="idea2"><p>A bass that falls by semitones from the tonic to the dominant. For Rosen it is a common tool of tonal music, not a symbol with a fixed meaning: it sounds serious in all three pieces, but what it expresses depends on the music around it.</p>${formulaSvg()}</div>
+     <div class="srcl">Charles Rosen, Music and Sentiment (Yale University Press, 2010), pp. 24–25</div></article></div>`;
+}
+function xEmpty(name){return `<div class="view"><div class="vh"><h1>${name}</h1></div><div class="emptywin"></div></div>`}
+function xRoute(id,win){
+  window.scrollTo(0,0);
+  if(!win) return xShell(id,'',xHome(id));
+  const nm=Object.fromEntries(WINDOWS);
+  if(win==='context') return xShell(id,'context',xContext(id));
+  return xShell(id,win,xEmpty(nm[win]||''));
 }
 
 /* fetch every score page up front so excerpts are never blank */
