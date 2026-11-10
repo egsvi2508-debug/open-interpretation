@@ -278,6 +278,10 @@ article.art p+p{margin-top:12px}
 .work2 .to button:hover{border-color:var(--pencil)}
 .keyb{font-family:var(--f-mono);font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:2px}
 /* v4 additions */
+.tiles2{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:8px}
+@media (max-width:640px){.tiles2{grid-template-columns:1fr 1fr}}
+.tile2{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px 20px;text-align:left;cursor:pointer;font-family:var(--f-display);font-size:22px;font-weight:600;color:var(--ink)}
+.tile2:hover{border-color:var(--pencil);color:var(--pencil-ink)}
 .chain{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap}
 .cnode{flex:1;min-width:150px;text-align:left;border:1.5px solid var(--line);background:var(--paper);border-radius:12px;padding:12px 14px;cursor:pointer}
 .cnode:hover{border-color:var(--pencil)}
@@ -945,7 +949,7 @@ function shell(active,html,after){
 function pieceHome(){
   const nm=Object.fromEntries(WINDOWS);let n=0;
   return `<div class="phead"><div class="comp">Sergei Prokofiev</div><h1>Piano Sonata No. 4 in C minor <em>Op. 29</em></h1><div class="mvt">I. Allegro molto sostenuto</div></div>
-   ${GROUPS.map(g=>`<div class="sec-title">${g[0]}</div><div class="tiles">${g[1].map(k=>`<button class="tile${k==='score'?' big':''}" data-go="${k}"><span class="num">${String(++n).padStart(2,'0')}</span><b>${nm[k]}</b></button>`).join('')}</div>`).join('')}<div style="height:60px"></div>`;
+   <div class="tiles2">${WINDOWS.map(w=>`<button class="tile2" data-go="${w[0]}">${w[1]}</button>`).join('')}</div><div style="height:60px"></div>`;
 }
 
 /* ---------- 1 at a glance ---------- */
@@ -1163,7 +1167,7 @@ function xShell(id,active,html){
 function xHome(id){
   const p=XP[id],nm=Object.fromEntries(WINDOWS);let n=0;
   return `<div class="phead"><div class="comp">${p.comp}</div><h1>${p.t}</h1></div>
-   ${GROUPS.map(g=>`<div class="sec-title">${g[0]}</div><div class="tiles">${g[1].map(k=>`<button class="tile${k==='score'?' big':''}" data-go="x-${id}-${k}"><span class="num">${String(++n).padStart(2,'0')}</span><b>${nm[k]}</b></button>`).join('')}</div>`).join('')}<div style="height:60px"></div>`;
+   <div class="tiles2">${WINDOWS.map(w=>`<button class="tile2" data-go="x-${id}-${w[0]}">${w[1]}</button>`).join('')}</div><div style="height:60px"></div>`;
 }
 function xContext(id){
   const p=XP[id];
